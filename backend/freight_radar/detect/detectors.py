@@ -87,6 +87,16 @@ class DetectionConfig:
     holiday_suppress: bool = True
     holiday_downweight: float = 0.25
     holiday_windows: tuple = ()
+    # Persistent level-shift detector (see persistent.py): catches disruptions that
+    # pre-date the rolling baseline — e.g. a multi-month chokepoint collapse the
+    # 28-day detector has since adapted to and now reads as "normal".
+    persist_roll: int = 21
+    persist_current: int = 21
+    persist_days: int = 21
+    persist_scan: int = 45
+    persist_min_pct: float = 50.0
+    persist_min_level: float = 8.0
+    persist_min_history: int = 60
 
 
 @dataclass(frozen=True)

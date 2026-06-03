@@ -26,7 +26,10 @@ export default function App() {
       const flag = flagByPort[c.portid] || null;
       return {
         id: c.portid, name: c.name, type: 'chokepoint', lat: c.lat, lon: c.lon,
-        metric: c.pct_change, n_total: c.n_total, baseline: c.baseline,
+        // flagged rows show the flag's own pct (e.g. Hormuz -92% persistent), not
+        // the noisy latest-vs-28d snapshot value (+124%); normals show the snapshot.
+        metric: flag ? flag.pct_change : c.pct_change,
+        n_total: c.n_total, baseline: c.baseline,
         flag, severity: flag ? flag.severity : null, critical: !!flag,
         weight: c.n_total || 0,
       };
@@ -169,6 +172,8 @@ export default function App() {
             setFilter={setFilter}
             criticalCount={criticalCount}
             exposure={data.exposure}
+            series={ts?.series}
+            dates={ts?.dates}
             selected={selected}
             onSelect={selectEntity}
             asOf={asOf}
