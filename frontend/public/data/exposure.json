@@ -1,8 +1,8 @@
 {
   "total_flows": 24,
   "total_value_usd": 596500000,
-  "exposed_lanes": 8,
-  "exposed_value_usd": 273000000,
-  "value_at_risk_usd": 2057535,
-  "active_disruptions_hitting_you": 4
+  "exposed_lanes": 9,
+  "exposed_value_usd": 314000000,
+  "value_at_risk_usd": 3126028,
+  "active_disruptions_hitting_you": 5
 }

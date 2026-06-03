@@ -1,5 +1,52 @@
 [
   {
+    "flag_id": "b74be045769441ea",
+    "kind": "chokepoint_persistent_collapse",
+    "entity": "Strait of Hormuz",
+    "portid": "chokepoint6",
+    "lat": 26.29685349,
+    "lon": 56.85984844,
+    "severity": 83,
+    "headline": "Strait of Hormuz transit ~92% below its pre-disruption norm (sustained)",
+    "brief_md": "**Strait of Hormuz** has run at **~6 vessels/day** since around **2026-03-01**, **~92% below** its prior norm of **~75/day** \u2014 a level shift sustained for **~91 days**.\n\n_This is a persistent disruption, not a fresh blip. A 28-day rolling baseline has since adapted to the new level, which is why a same-day anomaly detector reads it as 'normal'; it is flagged by comparing today's level to the pre-shift norm._\n\n_Method: sustained level-shift vs pre-disruption norm. Source: IMF PortWatch \u2014 daily granularity, refreshed weekly._",
+    "metric": "n_total",
+    "value": 5.67,
+    "baseline": 74.87,
+    "pct_change": -92.4,
+    "zscore": 0.0,
+    "as_of": "2026-03-01",
+    "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "method": "sustained level-shift vs pre-disruption norm",
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 65000000,
+      "exposed_teu": 1700,
+      "exposed_lanes": [
+        {
+          "lane_id": "L16",
+          "from": "Dammam",
+          "to": "Rotterdam",
+          "item": "Petrochemicals",
+          "value_usd": 41000000
+        },
+        {
+          "lane_id": "L15",
+          "from": "Jebel Ali",
+          "to": "Shanghai (Pudong)",
+          "item": "Chemicals",
+          "value_usd": 24000000
+        }
+      ],
+      "lane_count": 2,
+      "top_items": [
+        "Petrochemicals",
+        "Chemicals"
+      ],
+      "est_delay_days": 6,
+      "value_at_risk_usd": 1068493
+    }
+  },
+  {
     "flag_id": "8e4b4bfda2c11a49",
     "kind": "port_activity_drop",
     "entity": "Shanghai (Pudong)",

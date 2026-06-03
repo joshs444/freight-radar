@@ -1,6 +1,7 @@
 import { severityCss } from '../lib/colors.js';
 import { money } from '../lib/format.js';
 import { Markdown } from '../lib/md.jsx';
+import { Sparkline, SparkHistory } from './Sparkline.jsx';
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -39,7 +40,9 @@ function BusinessImpact({ b }) {
   );
 }
 
-function Row({ e, active, onSelect }) {
+function Row({ e, active, onSelect, series, dates }) {
+  const ser = series?.[e.id];
+  const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   return (
     <button
       className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
@@ -59,29 +62,25 @@ function Row({ e, active, onSelect }) {
             {e.type}{e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
           </span>
         </div>
+        {ser && <Sparkline values={ser.values} color={sparkColor} />}
         <Metric v={e.metric} alert={e.critical} />
       </div>
-      {active && e.flag && (
+      {active && (
         <div className="fr-row-brief">
-          <Markdown text={e.flag.brief_md} />
-          <BusinessImpact b={e.flag.business} />
+          {e.flag && <Markdown text={e.flag.brief_md} />}
+          <SparkHistory s={ser} dates={dates} asOf={e.flag?.as_of} baseline={e.flag?.baseline ?? e.baseline} color={sparkColor} />
+          {e.flag && <BusinessImpact b={e.flag.business} />}
           <div className="fr-row-meta">
-            <span>{e.flag.method}</span>
-            <span>as of {e.flag.as_of}</span>
+            {e.flag ? <span>{e.flag.method}</span> : <span>{e.type} · monitored</span>}
+            {e.flag && <span>as of {e.flag.as_of}</span>}
           </div>
-        </div>
-      )}
-      {active && !e.flag && (
-        <div className="fr-row-brief fr-row-stats">
-          {e.n_total != null && <span>{e.n_total} vessels/day · 28-day avg {e.baseline ?? '—'}</span>}
-          {e.vessels != null && <span>{e.vessels.toLocaleString()} vessels/yr</span>}
         </div>
       )}
     </button>
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
@@ -110,7 +109,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
       <div className="fr-rows">
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
-          <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} />
+          <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates} />
         ))}
       </div>
       <div className="fr-feed-foot">

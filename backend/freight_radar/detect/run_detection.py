@@ -23,6 +23,7 @@ from .cape_reroute import detect_cape_reroute
 from .detectors import DetectionConfig, Flag, detect_series, load_config
 from .holidays import apply_holiday_suppression
 from .lifecycle import apply_lifecycle
+from .persistent import detect_persistent
 
 FLAGS_SCHEMA = Path(__file__).resolve().parent / "flags_schema.sql"
 FLAGS_JSON = REPO_ROOT / "frontend" / "public" / "data" / "flags.json"
@@ -52,11 +53,13 @@ def _detect_chokepoints(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) ->
     ).df()
 
     flags: list[Flag] = []
+    series_by_id: dict[str, pd.Series] = {}
     for portid, grp in daily.groupby("portid"):
         if portid not in dims.index:
             continue
         d = dims.loc[portid]
         series = pd.Series(grp["n_total"].to_numpy(), index=pd.to_datetime(grp["date"]))
+        series_by_id[portid] = series
         flag = detect_series(
             portid=portid,
             entity=str(d["fullname"]),
@@ -72,6 +75,26 @@ def _detect_chokepoints(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) ->
         )
         if flag:
             flags.append(flag)
+
+    # Persistent level-shift pass: catch sustained disruptions the fresh detector
+    # (28-day baseline) has adapted to and now reads as "normal" (e.g. Hormuz).
+    flagged = {f.portid for f in flags}
+    for portid, series in series_by_id.items():
+        if portid in flagged:
+            continue
+        d = dims.loc[portid]
+        pf = detect_persistent(
+            portid=portid,
+            entity=str(d["fullname"]),
+            values=series,
+            cfg=cfg,
+            lat=float(d["lat"]) if pd.notna(d["lat"]) else None,
+            lon=float(d["lon"]) if pd.notna(d["lon"]) else None,
+            econ_weight=weights.get(portid, 1.0),
+            unit="vessels",
+        )
+        if pf:
+            flags.append(pf)
     return flags
 
 
