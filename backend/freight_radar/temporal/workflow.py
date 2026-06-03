@@ -48,6 +48,7 @@ class FreightRadarWorkflow:
         detect = await step("detect", activities.compute_and_detect)
         result["detect"] = detect
         result["attribute"] = await step("attribute", activities.llm_attribute, detect["flag_ids"])
+        result["enrich"] = await step("enrich", activities.enrich_sidecars, timeout_s=300)
         result["assemble"] = await step("assemble", activities.assemble_snapshot)
         result["publish"] = await step("publish", activities.publish)
 

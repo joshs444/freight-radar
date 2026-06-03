@@ -106,6 +106,13 @@ async def llm_attribute(flag_ids: list[str]) -> dict:
 
 # --- 4. assemble snapshot --------------------------------------------------
 @activity.defn
+async def enrich_sidecars() -> dict:
+    # one code path for static + durable: exposure + news + timeseries (+ future layers)
+    from ..enrich import build_ctx, run_enrichers
+    return run_enrichers(build_ctx())
+
+
+@activity.defn
 async def assemble_snapshot() -> dict:
     # real detection (compute_and_detect) owns flags.json; don't clobber it.
     return export(db_path=db_path(), out_dir=publish_dir(), write_flags=False)
@@ -126,6 +133,7 @@ ALL_ACTIVITIES = [
     fetch_portwatch,
     compute_and_detect,
     llm_attribute,
+    enrich_sidecars,
     assemble_snapshot,
     publish,
 ]
