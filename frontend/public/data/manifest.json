@@ -1,9 +1,9 @@
 {
-  "version": 2,
+  "version": 3,
   "as_of": "2026-05-31",
-  "generated_at": "2026-06-03T13:06:08",
+  "generated_at": "2026-06-03T13:22:59",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
-  "flag_count": 13,
+  "flag_count": 4,
   "chokepoints": 28,
   "ports": 2065,
   "lanes": 10

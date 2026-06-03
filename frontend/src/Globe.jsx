@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
+import { TripsLayer } from '@deck.gl/geo-layers';
 import { AMBER, CYAN, LANE, severityColor } from './lib/colors.js';
 
 // Dark, token-free basemap (CARTO dark-matter raster) draped on the v5 globe.
@@ -61,7 +62,7 @@ const ADDITIVE = {
 
 const sqrtScale = (v, k) => Math.sqrt(Math.max(0, v)) * k;
 
-function buildLayers({ ports, chokepoints, lanes, flags, pulse, selectedId, onSelectFlag }) {
+function buildLayers({ ports, chokepoints, lanes, flags, ships, tripTime, tMax, pulse, selectedId, onSelectFlag }) {
   return [
     // --- shipping lanes (great-circle arcs) -------------------------------
     new ArcLayer({
@@ -73,6 +74,23 @@ function buildLayers({ ports, chokepoints, lanes, flags, pulse, selectedId, onSe
       getTargetColor: [...LANE, 200],
       getWidth: (d) => 1 + d.intensity * 3,
       greatCircle: true,
+      parameters: ADDITIVE,
+    }),
+
+    // --- live/sim ship trails (optional garnish; empty-safe) --------------
+    new TripsLayer({
+      id: 'ships',
+      data: ships || [],
+      getPath: (d) => d.path.map((p) => [p[0], p[1]]),
+      getTimestamps: (d) => d.path.map((p) => p[2]),
+      getColor: [130, 225, 255],
+      opacity: 0.85,
+      widthMinPixels: 1.6,
+      capRounded: true,
+      jointRounded: true,
+      trailLength: Math.max(18, tMax * 0.35),
+      currentTime: tripTime,
+      fadeTrail: true,
       parameters: ADDITIVE,
     }),
 
@@ -170,7 +188,7 @@ function buildLayers({ ports, chokepoints, lanes, flags, pulse, selectedId, onSe
   ];
 }
 
-export default function Globe({ snapshot, lanes, flags, selectedFlag, onSelectFlag, mapApiRef }) {
+export default function Globe({ snapshot, lanes, flags, ships, selectedFlag, onSelectFlag, mapApiRef }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
@@ -179,11 +197,13 @@ export default function Globe({ snapshot, lanes, flags, selectedFlag, onSelectFl
   propsRef.current = { flags, selectedFlag, onSelectFlag };
 
   // Stable data refs so deck.gl reuses GPU buffers across animation frames.
-  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [] });
+  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], tMax: 100 });
   dataRef.current = {
     ports: snapshot?.ports ?? [],
     chokepoints: snapshot?.chokepoints ?? [],
     lanes: lanes ?? [],
+    ships: ships?.ships ?? [],
+    tMax: ships?.t_max ?? 100,
   };
 
   // --- create the map once ------------------------------------------------
@@ -245,9 +265,12 @@ export default function Globe({ snapshot, lanes, flags, selectedFlag, onSelectFl
     // --- single rAF loop: pulse + idle auto-rotate + push deck layers -----
     let raf;
     const t0 = performance.now();
+    const AIS_LOOP_MS = 9000;
     const tick = (t) => {
       const st = stateRef.current;
       st.pulse = (Math.sin((t - t0) / 620) + 1) / 2;
+      const tMax = dataRef.current.tMax;
+      const tripTime = ((t - t0) % AIS_LOOP_MS) / AIS_LOOP_MS * tMax;
 
       // gentle attract-mode spin when idle
       if (st.ready && t - st.lastInteract > 4200 && !map.isMoving()) {
@@ -260,6 +283,7 @@ export default function Globe({ snapshot, lanes, flags, selectedFlag, onSelectFl
         layers: buildLayers({
           ...dataRef.current,
           flags: fl ?? [],
+          tripTime,
           pulse: st.pulse,
           selectedId: sel?.flag_id ?? null,
           onSelectFlag: sl,
