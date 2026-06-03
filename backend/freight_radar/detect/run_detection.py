@@ -19,7 +19,10 @@ import duckdb
 import pandas as pd
 
 from ..config import DEFAULT_DB_PATH, REPO_ROOT
+from .cape_reroute import detect_cape_reroute
 from .detectors import DetectionConfig, Flag, detect_series, load_config
+from .holidays import apply_holiday_suppression
+from .lifecycle import apply_lifecycle
 
 FLAGS_SCHEMA = Path(__file__).resolve().parent / "flags_schema.sql"
 FLAGS_JSON = REPO_ROOT / "frontend" / "public" / "data" / "flags.json"
@@ -123,6 +126,73 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
     return flags
 
 
+def _detect_cape_reroute(
+    con: duckdb.DuckDBPyConnection, cfg: DetectionConfig
+) -> list[Flag]:
+    """Wave 5: one cape_reroute flag iff Red Sea is down while the Cape is up.
+
+    Pulls the combined (summed) Suez+Bab daily series and the Cape series, joins on
+    date so the windows align, and delegates to ``detect_cape_reroute``. Returns []
+    when the data shows no divergence (the honest default on a calm window).
+    """
+    rs_ids = list(cfg.red_sea_portids)
+    placeholders = ", ".join("?" for _ in rs_ids)
+    rs = con.execute(
+        f"""
+        SELECT date, SUM(n_total) AS n_total
+        FROM fct_chokepoint_daily
+        WHERE portid IN ({placeholders})
+        GROUP BY date ORDER BY date
+        """,
+        rs_ids,
+    ).df()
+    cape = con.execute(
+        "SELECT date, n_total FROM fct_chokepoint_daily WHERE portid = ? ORDER BY date",
+        [cfg.cape_portid],
+    ).df()
+    if rs.empty or cape.empty:
+        return []
+    geo = con.execute(
+        "SELECT lat, lon FROM dim_chokepoint WHERE portid = ?", [cfg.cape_portid]
+    ).fetchone()
+    cape_lat = float(geo[0]) if geo and geo[0] is not None else None
+    cape_lon = float(geo[1]) if geo and geo[1] is not None else None
+
+    rs_s = pd.Series(rs["n_total"].to_numpy(), index=pd.to_datetime(rs["date"]))
+    cape_s = pd.Series(cape["n_total"].to_numpy(), index=pd.to_datetime(cape["date"]))
+    as_of = max(rs_s.index[-1], cape_s.index[-1]).date()
+    flag = detect_cape_reroute(
+        red_sea=rs_s,
+        cape=cape_s,
+        cape_lat=cape_lat,
+        cape_lon=cape_lon,
+        as_of=as_of,
+        cfg=cfg,
+    )
+    return [flag] if flag else []
+
+
+def _load_prior_flags(con: duckdb.DuckDBPyConnection) -> dict[str, dict]:
+    """Most-recent prior ``fct_flags`` state keyed by flag_id (for lifecycle).
+
+    Reads the rows from the latest ``detected_date`` only, excluding already-
+    resolved tombstones (so a cleared flag doesn't keep re-resolving). Empty when
+    the table doesn't exist yet (first ever run).
+    """
+    con.execute(FLAGS_SCHEMA.read_text())
+    try:
+        rows = con.execute(
+            """
+            SELECT * FROM fct_flags
+            WHERE detected_date = (SELECT max(detected_date) FROM fct_flags)
+              AND COALESCE(lifecycle, '') <> 'resolved'
+            """
+        ).df()
+    except duckdb.Error:
+        return {}
+    return {r["flag_id"]: r.to_dict() for _, r in rows.iterrows()}
+
+
 def _upsert_flags(con: duckdb.DuckDBPyConnection, flags: list[Flag]) -> None:
     con.execute(FLAGS_SCHEMA.read_text())
     if not flags:
@@ -157,10 +227,26 @@ def _write_json(flags: list[Flag], path: Path = FLAGS_JSON) -> None:
 
 
 def run(db_path=DEFAULT_DB_PATH, flags_json: Path | None = None) -> list[Flag]:
+    """Detect, gate, label lifecycle, suppress holidays -> upsert + publish.
+
+    Wave-5 pipeline (order matters): read the prior fct_flags state BEFORE writing
+    -> run the (change-point-gated) chokepoint/port detectors + the Cape-reroute
+    detector -> downweight benign holiday dips -> label lifecycle (and emit resolved
+    tombstones) -> upsert + write flags.json. Public API is unchanged: returns the
+    final ``list[Flag]`` (now carrying real lifecycle labels), and the JSON keeps
+    the 18-key contract.
+    """
     cfg = load_config()
     con = duckdb.connect(str(db_path))
     try:
-        flags = _detect_chokepoints(con, cfg) + _detect_ports(con, cfg)
+        prior = _load_prior_flags(con)
+        detected = (
+            _detect_chokepoints(con, cfg)
+            + _detect_ports(con, cfg)
+            + _detect_cape_reroute(con, cfg)
+        )
+        detected = apply_holiday_suppression(detected, cfg)
+        flags = apply_lifecycle(detected, prior, cfg)
         _upsert_flags(con, flags)
     finally:
         con.close()

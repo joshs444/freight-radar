@@ -11,3 +11,38 @@ persistence_window: 7  # how many trailing days feed the persistence factor
 persistence_z: 2.0     # a day counts as "anomalous" for persistence when |z| >= this
 top_n_ports: 75        # only the busiest ports (by vessel_count_total) are scanned
 min_history_days: 35   # need at least this many points to trust STL + a 28d window
+
+# --- Wave 5: change-point gate (CUSUM + ruptures PELT) ---------------------
+# A flag is confirmed only when (|z| trips OR CUSUM trips) AND a PELT breakpoint
+# lies within pelt_window days of the flagged day. This gate prunes single-day
+# z-spikes that aren't backed by a genuine level shift (false-positive control).
+use_changepoint_gate: true  # set false to fall back to the raw Wave-2 z-only path
+cusum_k: 0.5           # CUSUM slack (in residual-sigma); drift smaller than k is ignored
+cusum_h: 5.0           # CUSUM decision threshold (in residual-sigma); |S| >= h trips
+pelt_penalty: 1.0      # ruptures Pelt(model="rbf") penalty; higher -> fewer breakpoints.
+                       # Calibrated on the STL residual (whose long-trend smoother
+                       # damps the step, so a small penalty is needed to surface a
+                       # genuine 3-6d level shift while still rejecting 1-day spikes).
+pelt_min_size: 3       # minimum segment length PELT will return
+pelt_window: 7         # a PELT breakpoint must lie within +/- this many days of the flag
+
+# --- Wave 5: lifecycle (new/ongoing/escalated/resolved + hysteresis) -------
+escalate_margin: 10    # severity must rise by > this vs the prior run to 'escalate'
+resolve_decay: 0.5     # a resolved flag's prior severity is multiplied by this once
+
+# --- Wave 5: Cape-of-Good-Hope reroute divergence detector -----------------
+cape_window: 14            # trailing window (days) compared to the prior window
+cape_min_divergence: 8.0   # min |pct move| (each side) to call a sustained move
+red_sea_portids: ["chokepoint1", "chokepoint4"]  # Suez Canal + Bab el-Mandeb Strait
+cape_portid: "chokepoint7"                        # Cape of Good Hope
+
+# --- Wave 5: holiday demand-dip suppression --------------------------------
+# During these recurring windows a benign seasonal dip is expected, so *_drop /
+# *_collapse flags are downweighted (not a crisis). Spikes are never suppressed.
+# Dates are matched by (month, day) so they recur every year. See holidays.py.
+holiday_suppress: true
+holiday_downweight: 0.25   # multiply a suppressed drop's severity by this (0 = drop it)
+holiday_windows:
+  - {name: "Lunar New Year", start: "02-08", end: "02-20"}
+  - {name: "Christmas / New Year", start: "12-22", end: "01-02"}
+  - {name: "Golden Week (China)", start: "10-01", end: "10-07"}
