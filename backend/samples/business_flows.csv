@@ -1,0 +1,25 @@
+lane_id,direction,origin_region,origin_port,dest_region,dest_port,item_category,annual_value_usd,annual_teu
+L01,import,East Asia,Shanghai (Pudong),North Europe,Rotterdam,Electronics,58000000,4200
+L02,import,East Asia,Shanghai (Pudong),North America West,Los Angeles,Electronics,46000000,3600
+L03,import,East Asia,Shanghai (Pudong),North America East,New York,Apparel,21000000,2600
+L04,import,East Asia,Ningbo,North Europe,Hamburg,Furniture,17500000,2900
+L05,import,East Asia,Taichung,North America West,Los Angeles,Semiconductors,72000000,1400
+L06,import,East Asia,Busan,North Europe,Antwerp,Machinery,33000000,1800
+L07,import,East Asia,Qingdao,Mediterranean,Genoa,Apparel,14000000,2100
+L08,import,Southeast Asia,Tanjung Priok,North Europe,Rotterdam,Furniture,12500000,2200
+L09,import,Southeast Asia,Saigon,North America East,Savannah,Apparel,19000000,2700
+L10,import,Southeast Asia,Port Klang,North Europe,Felixstowe,Rubber & Plastics,9500000,1500
+L11,import,Black Sea,Rostov-on-Don,Mediterranean,Genoa,Grain & Agri,28000000,0
+L12,import,Black Sea,Novorossiysk,North Europe,Rotterdam,Grain & Agri,21000000,0
+L13,import,Baltic,Gdansk,North Europe,Felixstowe,Machinery,16000000,1900
+L14,import,Baltic,Gothenburg,North Europe,Rotterdam,Paper & Wood,8000000,1300
+L15,import,Gulf,Jebel Ali,East Asia,Shanghai (Pudong),Chemicals,24000000,1700
+L16,import,Gulf,Dammam,North Europe,Rotterdam,Petrochemicals,41000000,0
+L17,export,North Europe,Rotterdam,East Asia,Singapore,Chemicals,31000000,2000
+L18,export,North Europe,Antwerp,East Asia,Busan,Pharmaceuticals,38000000,900
+L19,export,North America East,New York,North Europe,Rotterdam,Machinery,12000000,1100
+L20,export,North America West,Los Angeles,East Asia,Tokyo,Agri & Food,15500000,2400
+L21,import,East Asia,Hong Kong,North Europe,Rotterdam,Electronics,26000000,2000
+L22,import,Southeast Asia,Singapore,Mediterranean,Barcelona,Rubber & Plastics,11000000,1600
+L23,import,South Asia,Nhava Sheva,North Europe,Rotterdam,Apparel,13500000,2300
+L24,export,Mediterranean,Istanbul,North America East,New York,Machinery,9000000,1000

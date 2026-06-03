@@ -21,13 +21,14 @@ export function useData() {
 
     Promise.all(Object.values(CORE).map(getJson))
       .then(async ([snapshot, lanes, flags]) => {
-        // timeseries + ships are optional garnish — features hide if absent
-        const [timeseries, ships] = await Promise.all([
+        // timeseries + ships + exposure are optional — features hide if absent
+        const [timeseries, ships, exposure] = await Promise.all([
           getJson('data/timeseries.json').catch(() => null),
           getJson('data/ships.json').catch(() => null),
+          getJson('data/exposure.json').catch(() => null),
         ]);
         if (!alive) return;
-        setState({ loading: false, error: null, data: { snapshot, lanes, flags, timeseries, ships } });
+        setState({ loading: false, error: null, data: { snapshot, lanes, flags, timeseries, ships, exposure } });
       })
       .catch((e) => alive && setState({ loading: false, error: e.message, data: null }));
     return () => {
