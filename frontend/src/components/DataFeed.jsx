@@ -2,6 +2,7 @@ import { severityCss } from '../lib/colors.js';
 import { money } from '../lib/format.js';
 import { Markdown } from '../lib/md.jsx';
 import { Sparkline, SparkHistory } from './Sparkline.jsx';
+import { computeTrend, trendLabel } from '../lib/trend.js';
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -68,6 +69,7 @@ function NewsBlock({ news }) {
 function Row({ e, active, onSelect, series, dates, news }) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
+  const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
   return (
     <button
       className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
@@ -85,6 +87,7 @@ function Row({ e, active, onSelect, series, dates, news }) {
           <span className="fr-row-name">{e.name}</span>
           <span className="fr-row-sub">
             {e.type}{e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
+            {tl && <span className={`fr-trend ${tl.cls}`}> · {tl.arrow} {tl.label}</span>}
           </span>
         </div>
         {ser && <Sparkline values={ser.values} color={sparkColor} />}
@@ -94,6 +97,12 @@ function Row({ e, active, onSelect, series, dates, news }) {
         <div className="fr-row-brief">
           {e.flag && <Markdown text={e.flag.brief_md} />}
           <SparkHistory s={ser} dates={dates} asOf={e.flag?.as_of} baseline={e.flag?.baseline ?? e.baseline} color={sparkColor} />
+          {tl && (
+            <div className={`fr-trendline ${tl.cls}`}>
+              Trending <b>{tl.arrow} {tl.label}</b>
+              {tl.pct ? ` — ${tl.pct > 0 ? '+' : ''}${tl.pct}% over the last 10 days` : ''}
+            </div>
+          )}
           {e.flag && <BusinessImpact b={e.flag.business} />}
           {e.flag && news && <NewsBlock news={news} />}
           <div className="fr-row-meta">

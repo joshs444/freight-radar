@@ -227,6 +227,19 @@ html, body, #root {
 .fr-brief-p { margin: 0 0 8px; }
 .fr-brief-p strong { color: var(--ink); }
 .fr-brief-p em { color: var(--ink-faint); font-style: normal; font-size: 11.5px; }
+/* trend read */
+.fr-trend { font-weight: 700; }
+.fr-trend.tr-bad { color: #c0392b; }
+.fr-trend.tr-good { color: #0d9488; }
+.fr-trend.tr-flat { color: var(--ink-faint); }
+.fr-trendline {
+  margin: 8px 0 2px; font-size: 12px; color: var(--ink-dim);
+}
+.fr-trendline b { font-weight: 700; }
+.fr-trendline.tr-bad b { color: #c0392b; }
+.fr-trendline.tr-good b { color: #0d9488; }
+.fr-trendline.tr-flat b { color: var(--ink); }
+
 .fr-history { margin: 10px 0 4px; }
 .fr-histsvg {
   display: block; width: 100%; background: #fafbfc;
