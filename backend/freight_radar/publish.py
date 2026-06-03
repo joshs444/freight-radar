@@ -52,12 +52,14 @@ def write_manifest(out_dir: Path) -> dict:
 
 
 def publish_static(db=None, out_dir=None) -> dict:
-    """Detect -> snapshot/lanes -> manifest, no Temporal. Returns the manifest."""
+    """Detect -> business exposure -> snapshot/lanes -> manifest, no Temporal."""
+    from .business.exposure import enrich_from_files
     from .detect import run_detection
 
     out = Path(out_dir) if out_dir else publish_dir()
     db = Path(db) if db else db_path()
     run_detection.run(db, flags_json=out / "flags.json")
+    enrich_from_files(flags_path=out / "flags.json", out_dir=out)  # link flags -> trade exposure
     export(db_path=db, out_dir=out, write_flags=False)
     return write_manifest(out)
 

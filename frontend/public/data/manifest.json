@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "as_of": "2026-05-31",
-  "generated_at": "2026-06-03T13:22:59",
+  "generated_at": "2026-06-03T15:29:17",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
   "flag_count": 4,
   "chokepoints": 28,

@@ -17,7 +17,49 @@
     "as_of": "2026-05-25",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "ongoing"
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 149000000,
+      "exposed_teu": 12100,
+      "exposed_lanes": [
+        {
+          "lane_id": "L01",
+          "from": "Shanghai (Pudong)",
+          "to": "Rotterdam",
+          "item": "Electronics",
+          "value_usd": 58000000
+        },
+        {
+          "lane_id": "L02",
+          "from": "Shanghai (Pudong)",
+          "to": "Los Angeles",
+          "item": "Electronics",
+          "value_usd": 46000000
+        },
+        {
+          "lane_id": "L15",
+          "from": "Jebel Ali",
+          "to": "Shanghai (Pudong)",
+          "item": "Chemicals",
+          "value_usd": 24000000
+        },
+        {
+          "lane_id": "L03",
+          "from": "Shanghai (Pudong)",
+          "to": "New York",
+          "item": "Apparel",
+          "value_usd": 21000000
+        }
+      ],
+      "lane_count": 4,
+      "top_items": [
+        "Electronics",
+        "Chemicals",
+        "Apparel"
+      ],
+      "est_delay_days": 3,
+      "value_at_risk_usd": 1224658
+    }
   },
   {
     "flag_id": "bce0e2fdd63be992",
@@ -37,7 +79,26 @@
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "ongoing"
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 28000000,
+      "exposed_teu": 0,
+      "exposed_lanes": [
+        {
+          "lane_id": "L11",
+          "from": "Rostov-on-Don",
+          "to": "Genoa",
+          "item": "Grain & Agri",
+          "value_usd": 28000000
+        }
+      ],
+      "lane_count": 1,
+      "top_items": [
+        "Grain & Agri"
+      ],
+      "est_delay_days": 4,
+      "value_at_risk_usd": 306849
+    }
   },
   {
     "flag_id": "b34e04d7a651a706",
@@ -57,7 +118,26 @@
     "as_of": "2026-05-28",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "ongoing"
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 72000000,
+      "exposed_teu": 1400,
+      "exposed_lanes": [
+        {
+          "lane_id": "L05",
+          "from": "Taichung",
+          "to": "Los Angeles",
+          "item": "Semiconductors",
+          "value_usd": 72000000
+        }
+      ],
+      "lane_count": 1,
+      "top_items": [
+        "Semiconductors"
+      ],
+      "est_delay_days": 2,
+      "value_at_risk_usd": 394521
+    }
   },
   {
     "flag_id": "b3729b17446dc9df",
@@ -77,6 +157,33 @@
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "ongoing"
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 24000000,
+      "exposed_teu": 3200,
+      "exposed_lanes": [
+        {
+          "lane_id": "L13",
+          "from": "Gdansk",
+          "to": "Felixstowe",
+          "item": "Machinery",
+          "value_usd": 16000000
+        },
+        {
+          "lane_id": "L14",
+          "from": "Gothenburg",
+          "to": "Rotterdam",
+          "item": "Paper & Wood",
+          "value_usd": 8000000
+        }
+      ],
+      "lane_count": 2,
+      "top_items": [
+        "Machinery",
+        "Paper & Wood"
+      ],
+      "est_delay_days": 2,
+      "value_at_risk_usd": 131507
+    }
   }
 ]

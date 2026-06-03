@@ -168,6 +168,7 @@ export default function App() {
             filter={filter}
             setFilter={setFilter}
             criticalCount={criticalCount}
+            exposure={data.exposure}
             selected={selected}
             onSelect={selectEntity}
             asOf={asOf}

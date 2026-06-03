@@ -106,6 +106,44 @@ html, body, #root {
 }
 .fr-feed-count { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
 .fr-feed-count b { color: var(--amber); }
+/* exposure summary banner */
+.fr-exposure {
+  margin: 0 16px 12px; padding: 11px 13px; border-radius: 11px;
+  background: #fbf6ee; border: 1px solid #f0e2cb;
+}
+.fr-exp-label {
+  font-family: var(--mono); font-size: 9.5px; color: #b07b1e;
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; font-weight: 700;
+}
+.fr-exp-label span { color: var(--ink-faint); font-weight: 400; }
+.fr-exp-row { display: flex; gap: 8px; }
+.fr-exp-row > div {
+  flex: 1; display: flex; flex-direction: column; gap: 1px;
+  padding: 6px 8px; background: #fff; border: 1px solid var(--line); border-radius: 8px;
+}
+.fr-exp-row b { font-family: var(--display); font-size: 16px; font-weight: 800; color: var(--ink); }
+.fr-exp-row span {
+  font-family: var(--mono); font-size: 8.5px; color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+/* business-impact block inside an expanded flag */
+.fr-biz {
+  margin: 10px 0 4px; padding: 10px 12px; border-radius: 9px;
+  background: #fbf6ee; border: 1px solid #f0e2cb;
+}
+.fr-biz-head {
+  font-family: var(--mono); font-size: 9.5px; color: #b07b1e; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.fr-biz-stat { font-size: 12.5px; color: var(--ink-dim); line-height: 1.5; }
+.fr-biz-stat b { color: var(--ink); }
+.fr-biz-items {
+  margin-top: 5px; font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fr-biz-none { font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
 .fr-filters {
   display: flex; gap: 6px; padding: 0 16px 12px; border-bottom: 1px solid var(--line);
 }
