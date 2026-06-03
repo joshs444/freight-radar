@@ -1,0 +1,30 @@
+[project]
+name = "freight-radar-backend"
+version = "0.1.0"
+description = "Freight Radar — PortWatch ingest + DuckDB backbone + detection + Temporal loop"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "duckdb>=1.5",
+    "pandas>=2.2",
+    "pyarrow>=16",
+    "tenacity>=9",
+    "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=1"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+markers = [
+    "live: hits live PortWatch ArcGIS endpoints (network required)",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["freight_radar"]
