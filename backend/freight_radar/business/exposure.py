@@ -94,6 +94,11 @@ def _exposed_lanes(flag: dict, flows: list[dict]) -> list[dict]:
     return [ln for ln in flows if entity in (ln["origin_port"], ln["dest_port"])]
 
 
+# Annual inventory carrying cost (low/expected/high). The v1 number silently used
+# 100%/yr (value*delay/365) — a ~4x overstatement; industry is ~20-30%/yr.
+CARRYING_RATE = (0.20, 0.25, 0.30)
+
+
 def _delay_days(flag: dict) -> int:
     if _is_chokepoint(flag):
         return REROUTE_DELAY.get(flag["entity"], DEFAULT_CHOKE_DELAY)
@@ -101,11 +106,27 @@ def _delay_days(flag: dict) -> int:
     return max(2, round(flag.get("severity", 30) / 12))
 
 
+def _delay_band(flag: dict) -> dict:
+    d = _delay_days(flag)
+    return {"low": max(1, round(d * 0.7)), "expected": d, "high": round(d * 1.35)}
+
+
+def _carrying_band(value: float, db: dict) -> dict:
+    # cost-of-delay = value × carrying_rate × delay/365 (the corrected figure)
+    return {k: round(value * CARRYING_RATE[i] * db[k] / 365)
+            for i, k in enumerate(("low", "expected", "high"))}
+
+
+def _working_capital_band(value: float, db: dict) -> dict:
+    # capital LOCKED in goods in transit longer = gross value prorated (not lost)
+    return {k: round(value * db[k] / 365) for k in ("low", "expected", "high")}
+
+
 def _business_for_flag(flag: dict, flows: list[dict]) -> dict:
     lanes = _exposed_lanes(flag, flows)
     value = sum(ln["annual_value_usd"] for ln in lanes)
     teu = sum(ln["annual_teu"] for ln in lanes)
-    delay = _delay_days(flag)
+    delay_band = _delay_band(flag)
     by_item: dict[str, float] = defaultdict(float)
     for ln in lanes:
         by_item[ln["item_category"]] += ln["annual_value_usd"]
@@ -120,9 +141,10 @@ def _business_for_flag(flag: dict, flows: list[dict]) -> dict:
         ],
         "lane_count": len(lanes),
         "top_items": top_items,
-        "est_delay_days": delay,
-        # value of goods delayed ≈ annual value prorated over the delay window
-        "value_at_risk_usd": round(value * delay / 365),
+        "est_delay_days": delay_band,                              # band, not a point
+        "carrying_cost_of_delay_usd": _carrying_band(value, delay_band),  # corrected (×rate)
+        "working_capital_tied_up_usd": _working_capital_band(value, delay_band),  # locked ≠ lost
+        "carrying_rate_assumed": CARRYING_RATE[1],
     }
 
 
@@ -130,7 +152,8 @@ def enrich(flags: list[dict], flows: list[dict]) -> dict:
     """Attach `business` to each flag; return a portfolio exposure summary."""
     active = [f for f in flags if f.get("lifecycle") != "resolved"]
     exposed_lane_ids: set[str] = set()
-    total_var = 0
+    carry = {"low": 0, "expected": 0, "high": 0}
+    wc = {"low": 0, "expected": 0, "high": 0}
     disrupted = 0
     for f in flags:
         f["business"] = _business_for_flag(f, flows)
@@ -138,7 +161,9 @@ def enrich(flags: list[dict], flows: list[dict]) -> dict:
         b = f["business"]
         if b["lane_count"]:
             disrupted += 1
-            total_var += b["value_at_risk_usd"]
+            for k in ("low", "expected", "high"):
+                carry[k] += b["carrying_cost_of_delay_usd"][k]
+                wc[k] += b["working_capital_tied_up_usd"][k]
             exposed_lane_ids.update(ln["lane_id"] for ln in b["exposed_lanes"])
 
     total_value = sum(ln["annual_value_usd"] for ln in flows)
@@ -150,7 +175,9 @@ def enrich(flags: list[dict], flows: list[dict]) -> dict:
         "total_value_usd": round(total_value),
         "exposed_lanes": len(exposed_lane_ids),
         "exposed_value_usd": round(exposed_value),
-        "value_at_risk_usd": round(total_var),
+        "carrying_cost_of_delay_usd": carry,           # banded; the corrected headline
+        "working_capital_tied_up_usd": wc,             # capital locked in transit (not lost)
+        "carrying_rate_assumed": CARRYING_RATE[1],
         "active_disruptions_hitting_you": disrupted,
     }
 
