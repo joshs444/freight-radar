@@ -3,12 +3,13 @@ export const AMBER = [255, 158, 44];
 export const CYAN = [54, 224, 232];
 export const LANE = [122, 142, 255];
 
-// Severity ramp 0 -> 100 : teal-green -> amber -> orange -> red.
+// Severity ramp 0 -> 100 : cool slate -> warm amber -> red. No green
+// (green reads "all clear", wrong for an alert). Muted, not neon.
 const RAMP = [
-  [0, [64, 209, 160]],
-  [35, [255, 206, 84]],
-  [65, [255, 142, 60]],
-  [100, [255, 73, 79]],
+  [0, [125, 142, 170]],
+  [40, [224, 168, 96]],
+  [70, [233, 130, 74]],
+  [100, [231, 92, 86]],
 ];
 
 export function severityColor(s, alpha = 255) {

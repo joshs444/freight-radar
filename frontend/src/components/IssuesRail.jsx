@@ -11,14 +11,6 @@ const LIFECYCLE = {
 // active issues first (by severity), resolved tombstones dimmed at the bottom
 const order = (f) => (f.lifecycle === 'resolved' ? 1 : 0);
 
-function SeverityBadge({ s }) {
-  return (
-    <span className="fr-sev" style={{ color: severityCss(s), borderColor: severityCss(s) }}>
-      {s}
-    </span>
-  );
-}
-
 function FlagCard({ flag, active, onSelect }) {
   const accent = severityCss(flag.severity);
   const lc = LIFECYCLE[flag.lifecycle] || null;
@@ -30,11 +22,15 @@ function FlagCard({ flag, active, onSelect }) {
       onClick={() => onSelect(active ? null : flag)}
     >
       <div className="fr-card-top">
-        <SeverityBadge s={flag.severity} />
-        <span className="fr-card-entity">{flag.entity}</span>
+        <span className="fr-sev" style={{ color: accent, borderColor: accent }}>
+          {flag.severity}
+        </span>
+        <div className="fr-card-titles">
+          <span className="fr-card-entity">{flag.entity}</span>
+          <span className="fr-card-kind-row">{flag.kind.replaceAll('_', ' ')}</span>
+        </div>
         {lc && <span className={`fr-lc ${lc.cls}`}>{lc.label}</span>}
       </div>
-      <div className="fr-card-kind-row">{flag.kind.replaceAll('_', ' ')}</div>
       <div className="fr-card-headline">{flag.headline}</div>
       {active && (
         <div className="fr-card-brief">
