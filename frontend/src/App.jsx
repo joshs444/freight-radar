@@ -1,35 +1,102 @@
 import { useRef, useState, useCallback, useMemo } from 'react';
 import Globe from './Globe.jsx';
-import IssuesRail from './components/IssuesRail.jsx';
+import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
 import { useData } from './lib/useData.js';
 
 export default function App() {
   const { loading, error, data } = useData();
-  const [selectedFlag, setSelectedFlag] = useState(null);
-  const [scrubIndex, setScrubIndex] = useState(null); // null = live (present)
+  const [selected, setSelected] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [scrubIndex, setScrubIndex] = useState(null);
   const [playing, setPlaying] = useState(false);
   const mapApiRef = useRef(null);
 
-  const onSelectFlag = useCallback((flag) => {
-    setSelectedFlag(flag);
-    if (flag && mapApiRef.current) mapApiRef.current.flyTo(flag.lon, flag.lat);
-  }, []);
-
   const ts = data?.timeseries;
 
-  // When scrubbing, the globe replays that day: chokepoint glow uses the day's
-  // real vessel count, and flags that had fired by then are shown.
-  const display = useMemo(() => {
+  // --- the monitor universe: chokepoints + flagged ports + top ports ------
+  const sets = useMemo(() => {
+    if (!data) return { choke: [], portFlags: [], topPorts: [] };
+    const flagByPort = {};
+    (data.flags || [])
+      .filter((f) => f.lifecycle !== 'resolved')
+      .forEach((f) => { flagByPort[f.portid] = f; });
+
+    const choke = (data.snapshot?.chokepoints || []).map((c) => {
+      const flag = flagByPort[c.portid] || null;
+      return {
+        id: c.portid, name: c.name, type: 'chokepoint', lat: c.lat, lon: c.lon,
+        metric: c.pct_change, n_total: c.n_total, baseline: c.baseline,
+        flag, severity: flag ? flag.severity : null, critical: !!flag,
+        weight: c.n_total || 0,
+      };
+    });
+    const chokeIds = new Set(choke.map((c) => c.id));
+    const portFlags = Object.values(flagByPort)
+      .filter((f) => !chokeIds.has(f.portid))
+      .map((f) => ({
+        id: f.portid, name: f.entity, type: 'port', lat: f.lat, lon: f.lon,
+        metric: f.pct_change, flag: f, severity: f.severity, critical: true, weight: 1e9,
+      }));
+    const topPorts = [...(data.snapshot?.ports || [])]
+      .sort((a, b) => b.vessels - a.vessels)
+      .slice(0, 40)
+      .filter((p) => !flagByPort[p.portid])
+      .map((p) => ({
+        id: p.portid, name: p.name, type: 'port', lat: p.lat, lon: p.lon,
+        metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
+      }));
+    return { choke, portFlags, topPorts };
+  }, [data]);
+
+  // critical first (by severity), then normal by real traffic — not by noisy %
+  const byCritThenSeverity = (a, b) =>
+    b.critical - a.critical || (b.severity || 0) - (a.severity || 0) ||
+    (b.weight || 0) - (a.weight || 0);
+
+  const rows = useMemo(() => {
+    const { choke, portFlags, topPorts } = sets;
+    let list;
+    if (filter === 'critical') list = [...choke, ...portFlags].filter((e) => e.critical);
+    else if (filter === 'chokepoints') list = choke;
+    else if (filter === 'ports') list = [...portFlags, ...topPorts];
+    else list = [...choke, ...portFlags];
+    return [...list].sort(byCritThenSeverity);
+  }, [sets, filter]);
+
+  const criticalCount = useMemo(
+    () => [...sets.choke, ...sets.portFlags].filter((e) => e.critical).length,
+    [sets]
+  );
+
+  const selectEntity = useCallback((e) => {
+    setSelected(e);
+    if (e && e.lat != null && mapApiRef.current) mapApiRef.current.flyTo(e.lon, e.lat);
+  }, []);
+
+  // a flag ring clicked on the globe -> select the matching feed entity
+  const onSelectFlagFromGlobe = useCallback((flag) => {
+    selectEntity({
+      id: flag.portid, name: flag.entity, type: flag.kind.startsWith('chokepoint') ? 'chokepoint' : 'port',
+      lat: flag.lat, lon: flag.lon, metric: flag.pct_change, flag, severity: flag.severity, critical: true,
+    });
+  }, [selectEntity]);
+
+  // globe replay: scrub swaps chokepoint glow + which flags have fired
+  const globeView = useMemo(() => {
     if (!data) return { snapshot: null, flags: [] };
-    if (scrubIndex === null || !ts) return { snapshot: data.snapshot, flags: data.flags };
+    if (scrubIndex === null || !ts) {
+      return {
+        snapshot: data.snapshot,
+        flags: (data.flags || []).filter((f) => f.lifecycle !== 'resolved'),
+      };
+    }
     const day = ts.dates[scrubIndex];
     const chokepoints = ts.chokepoints.map((c) => ({
       portid: c.portid, name: c.name, lat: c.lat, lon: c.lon,
-      n_total: c.values[scrubIndex], baseline: null, pct_change: null, as_of: day,
+      n_total: c.values[scrubIndex], pct_change: null,
     }));
-    const flags = ts.flags.filter((f) => f.as_of <= day);
-    return { snapshot: { ...data.snapshot, chokepoints }, flags };
+    return { snapshot: { ...data.snapshot, chokepoints }, flags: ts.flags.filter((f) => f.as_of <= day) };
   }, [data, ts, scrubIndex]);
 
   if (error) {
@@ -37,81 +104,77 @@ export default function App() {
       <div className="fr-fallback">
         <h1>Freight Radar</h1>
         <p>Could not load the snapshot ({error}).</p>
-        <p className="dim">Run the exporter: <code>python -m freight_radar.export_snapshot</code></p>
+        <p className="dim">Run the exporter: <code>python -m freight_radar.publish</code></p>
       </div>
     );
   }
 
-  const snapshot = data?.snapshot;
-  const asOf = snapshot?.as_of ?? '—';
-  const source = snapshot?.source ?? 'IMF PortWatch';
+  const asOf = data?.snapshot?.as_of ?? '—';
+  const source = data?.snapshot?.source ?? 'IMF PortWatch';
 
   return (
     <div className="fr-app">
-      <div className="fr-stars" aria-hidden />
-      {data && (
-        <Globe
-          snapshot={display.snapshot}
-          lanes={data.lanes}
-          flags={display.flags.filter((f) => f.lifecycle !== 'resolved')}
-          ships={data.ships}
-          selectedFlag={selectedFlag}
-          onSelectFlag={onSelectFlag}
-          mapApiRef={mapApiRef}
-        />
-      )}
-      <div className="fr-vignette" aria-hidden />
-
-      <header className="fr-head">
+      <header className="fr-topbar">
         <div className="fr-brand">
-          <span className="fr-logo" aria-hidden>◑</span>
+          <span className="fr-logo" aria-hidden>◐</span>
           <div>
-            <h1>FREIGHT&nbsp;RADAR</h1>
-            <p className="fr-tag">Ocean-freight chokepoints, glowing by real activity — disruptions auto-flagged.</p>
+            <h1>FREIGHT RADAR</h1>
+            <p className="fr-tag">Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.</p>
           </div>
         </div>
         <div className="fr-asof">
-          <span className="fr-dot" /> {source}
-          <br />
+          <span className="fr-dot" /> {source}<br />
           data as of <b>{asOf}</b>
         </div>
       </header>
 
-      <div className="fr-legend">
-        <span><i className="sw amber" /> chokepoint</span>
-        <span><i className="sw cyan" /> port</span>
-        <span><i className="sw lane" /> lane</span>
-        <span><i className="sw pulse" /> flagged issue</span>
-        <span className={`fr-ais ais-${data?.ships?.mode || 'offline'}`}>
-          <i className="sw ais" /> AIS · {data?.ships?.mode === 'live' ? 'live' : data?.ships?.mode === 'demo' ? 'simulated' : 'offline'}
-        </span>
+      <div className="fr-main">
+        <section className="fr-stage">
+          {data && (
+            <Globe
+              snapshot={globeView.snapshot}
+              lanes={data.lanes}
+              flags={globeView.flags}
+              ships={data.ships}
+              selectedFlag={selected?.flag || null}
+              onSelectFlag={onSelectFlagFromGlobe}
+              mapApiRef={mapApiRef}
+            />
+          )}
+          <div className="fr-legend">
+            <span><i className="sw amber" /> chokepoint</span>
+            <span><i className="sw port" /> port</span>
+            <span><i className="sw pulse" /> flagged</span>
+            <span className={`fr-ais ais-${data?.ships?.mode || 'offline'}`}>
+              <i className="sw ais" /> AIS · {data?.ships?.mode === 'live' ? 'live' : data?.ships?.mode === 'demo' ? 'simulated' : 'offline'}
+            </span>
+          </div>
+          {ts && ts.dates?.length > 1 && (
+            <TimeScrubber
+              timeseries={ts}
+              index={scrubIndex}
+              playing={playing}
+              onChange={(i) => setScrubIndex(i)}
+              onPlayToggle={() => setPlaying((p) => !p)}
+              onLive={() => { setPlaying(false); setScrubIndex(null); }}
+            />
+          )}
+          {loading && <div className="fr-loading">acquiring signal…</div>}
+        </section>
+
+        {data && (
+          <DataFeed
+            rows={rows}
+            filter={filter}
+            setFilter={setFilter}
+            criticalCount={criticalCount}
+            selected={selected}
+            onSelect={selectEntity}
+            asOf={asOf}
+            source={source}
+          />
+        )}
       </div>
-
-      {data && (
-        <IssuesRail
-          flags={data.flags}
-          selectedFlag={selectedFlag}
-          onSelect={onSelectFlag}
-          asOf={asOf}
-          source={source}
-        />
-      )}
-
-      {ts && ts.dates?.length > 1 && (
-        <TimeScrubber
-          timeseries={ts}
-          index={scrubIndex}
-          playing={playing}
-          onChange={(i) => setScrubIndex(i)}
-          onPlayToggle={() => setPlaying((p) => !p)}
-          onLive={() => {
-            setPlaying(false);
-            setScrubIndex(null);
-          }}
-        />
-      )}
-
-      {loading && <div className="fr-loading">acquiring signal…</div>}
     </div>
   );
 }
