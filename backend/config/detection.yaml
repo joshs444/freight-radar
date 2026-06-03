@@ -1,0 +1,13 @@
+# Freight Radar — detection-brain thresholds (Wave 2).
+# Every knob the STL + rolling-z detector uses lives here; detectors.py loads it
+# with pyyaml so tuning never requires a code edit.
+
+stl_period: 7          # weekly seasonality (PortWatch is daily granularity)
+z_window: 28           # trailing window for the rolling z-score of the STL residual
+detection_window: 14   # scan the last N days; flag each entity on its most-extreme-z day
+collapse_z: -3.0       # z <= this -> transit collapse / port activity drop
+spike_z: 3.5           # z >= this -> transit spike / port congestion spike
+persistence_window: 7  # how many trailing days feed the persistence factor
+persistence_z: 2.0     # a day counts as "anomalous" for persistence when |z| >= this
+top_n_ports: 75        # only the busiest ports (by vessel_count_total) are scanned
+min_history_days: 35   # need at least this many points to trust STL + a 28d window
