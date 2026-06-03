@@ -8,7 +8,7 @@
 
 CREATE TABLE IF NOT EXISTS fct_flags (
     flag_id        VARCHAR PRIMARY KEY,   -- sha1(kind|portid|isoYear-Wweek)[:16]
-    kind           VARCHAR,               -- chokepoint_transit_collapse | _spike | port_activity_drop | port_congestion_spike
+    kind           VARCHAR,               -- chokepoint_transit_collapse | _spike | port_activity_drop | port_congestion_spike | cape_reroute (Wave 5)
     entity         VARCHAR,               -- human name (e.g. 'Suez Canal')
     portid         VARCHAR,
     lat            DOUBLE,
@@ -25,6 +25,6 @@ CREATE TABLE IF NOT EXISTS fct_flags (
     detected_date  DATE,                  -- the date detection ran (today)
     source         VARCHAR,
     method         VARCHAR,
-    lifecycle      VARCHAR,               -- 'new' for Wave 2 (lifecycle lands in Wave 5)
+    lifecycle      VARCHAR,               -- Wave 5: new | ongoing | escalated | resolved (hysteresis)
     computed_at    TIMESTAMP
 );

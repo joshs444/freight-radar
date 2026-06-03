@@ -68,6 +68,25 @@ class DetectionConfig:
     persistence_z: float = 2.0
     top_n_ports: int = 75
     min_history_days: int = 35
+    # Wave 5: change-point gate (CUSUM + ruptures PELT). See changepoint.py.
+    use_changepoint_gate: bool = True
+    cusum_k: float = 0.5
+    cusum_h: float = 5.0
+    pelt_penalty: float = 1.0
+    pelt_min_size: int = 3
+    pelt_window: int = 7
+    # Wave 5: lifecycle (new/ongoing/escalated/resolved). See lifecycle.py.
+    escalate_margin: int = 10
+    resolve_decay: float = 0.5
+    # Wave 5: Cape-reroute divergence detector. See cape_reroute.py.
+    cape_window: int = 14
+    cape_min_divergence: float = 8.0
+    red_sea_portids: tuple[str, ...] = ("chokepoint1", "chokepoint4")
+    cape_portid: str = "chokepoint7"
+    # Wave 5: holiday demand-dip suppression. See holidays.py.
+    holiday_suppress: bool = True
+    holiday_downweight: float = 0.25
+    holiday_windows: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -95,10 +114,22 @@ class Flag:
 
 
 def load_config(path: str | Path = CONFIG_PATH) -> DetectionConfig:
-    """Load thresholds from detection.yaml (pyyaml). Unknown keys are ignored."""
+    """Load thresholds from detection.yaml (pyyaml). Unknown keys are ignored.
+
+    YAML sequences land as lists; the dataclass is ``frozen`` (hashable), so any
+    field whose default is a tuple is coerced list->tuple. ``holiday_windows`` is
+    kept as a tuple of frozen items so the config stays hashable.
+    """
     raw = yaml.safe_load(Path(path).read_text()) or {}
     fields = DetectionConfig.__dataclass_fields__
-    return DetectionConfig(**{k: raw[k] for k in fields if k in raw})
+    vals = {k: raw[k] for k in fields if k in raw}
+    if "red_sea_portids" in vals:
+        vals["red_sea_portids"] = tuple(vals["red_sea_portids"])
+    if "holiday_windows" in vals:
+        vals["holiday_windows"] = tuple(
+            (w["name"], w["start"], w["end"]) for w in vals["holiday_windows"]
+        )
+    return DetectionConfig(**vals)
 
 
 # --- numeric core ----------------------------------------------------------
@@ -231,6 +262,33 @@ def _brief(
     return headline, brief
 
 
+def _confirmed_changepoint(resid: pd.Series, cfg: DetectionConfig) -> set[int]:
+    """Positions confirmed by the Wave-5 gate: a PELT breakpoint within
+    ``pelt_window`` and either |z| or CUSUM tripping there.
+
+    Imported lazily to avoid a circular import (changepoint imports DetectionConfig
+    from this module). Returns the set of confirmable indices in the scanned tail;
+    ``detect_series`` intersects its z-threshold candidates with this set.
+    """
+    from .changepoint import cusum_trips, pelt_breakpoints
+
+    bkps = pelt_breakpoints(resid, cfg)
+    if not bkps:
+        return set()
+    n = len(resid)
+    lo = max(cfg.z_window, n - cfg.detection_window)
+    ok: set[int] = set()
+    for end in range(lo, n):
+        near_bkp = any(abs(b - end) <= cfg.pelt_window for b in bkps)
+        if not near_bkp:
+            continue
+        z = rolling_zscore(resid, cfg.z_window, end=end)
+        z_trips = z <= cfg.collapse_z or z >= cfg.spike_z
+        if z_trips or cusum_trips(resid, cfg, end):
+            ok.add(end)
+    return ok
+
+
 def detect_series(
     *,
     portid: str,
@@ -263,12 +321,25 @@ def detect_series(
     # Scan the trailing detection window; keep the threshold-crossing day with the
     # largest |z|. ``as_of`` (passed in) is the data's max date for provenance, but
     # the flag's own as_of binds to the peak day.
+    #
+    # Wave 5 change-point gate: when ``use_changepoint_gate`` is on, a candidate
+    # day must ALSO sit within ``pelt_window`` of a PELT breakpoint — a real level
+    # shift, not an isolated z-spike. CUSUM is an OR-side trigger that can promote a
+    # sustained shift the z-threshold alone misses (it still needs PELT to confirm).
+    # The gate is purely subtractive: it never invents a flag the z-scan didn't see.
     n = len(values)
+    gate = bool(getattr(cfg, "use_changepoint_gate", False))
+    confirmed = _confirmed_changepoint(resid, cfg) if gate else None
     best_end: int | None = None
     best_z = 0.0
     for end in range(max(cfg.z_window, n - cfg.detection_window), n):
         z = rolling_zscore(resid, cfg.z_window, end=end)
-        if (z <= cfg.collapse_z or z >= cfg.spike_z) and abs(z) > abs(best_z):
+        z_trips = z <= cfg.collapse_z or z >= cfg.spike_z
+        if not z_trips:
+            continue
+        if gate and end not in confirmed:
+            continue  # spurious spike with no nearby change-point -> suppressed
+        if abs(z) > abs(best_z):
             best_z, best_end = z, end
     if best_end is None:
         return None
