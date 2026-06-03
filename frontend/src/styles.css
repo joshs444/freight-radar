@@ -27,7 +27,9 @@ html, body, #root {
 .fr-app { position: fixed; inset: 0; }
 
 /* --- globe + atmosphere ------------------------------------------------- */
-.fr-globe { position: absolute; inset: 0; }
+/* explicit viewport units: maplibre adds .maplibregl-map { position:relative },
+   so we can't rely on inset:0 alone to give the container height. */
+.fr-globe { position: absolute; inset: 0; width: 100vw; height: 100vh; }
 .fr-globe canvas { outline: none; }
 
 .maplibregl-ctrl-attrib {
