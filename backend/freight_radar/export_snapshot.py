@@ -79,6 +79,8 @@ def _chokepoints(con) -> list[dict]:
         ORDER BY r.n_total DESC
         """
     ).df()
+    rows = rows.astype(object)
+    rows = rows.where(rows.notna(), None)  # NaN/NA -> None so JSON stays valid
 
     out = []
     for _, r in rows.iterrows():
@@ -123,6 +125,8 @@ def _ports(con) -> list[dict]:
         WHERE d.lat IS NOT NULL AND d.lon IS NOT NULL
         """
     ).df()
+    rows = rows.astype(object)
+    rows = rows.where(rows.notna(), None)  # NaN/NA -> None so JSON stays valid
     return [
         {
             "portid": r["portid"],
@@ -156,7 +160,7 @@ def _preview_flags(chokepoints: list[dict], as_of: str) -> list[dict]:
         brief = (
             f"**{c['name']}** handled **{c['n_total']} vessels** on {c['as_of']}, "
             f"vs a 28-day average of **{c['baseline']:.0f}/day** "
-            f"({pct:+.0f}%, z = {z:+.1f}). Top industry: {c['industry']}.\n\n"
+            f"({pct:+.0f}%, z = {z:+.1f}). Top industry: {c['industry'] or 'n/a'}.\n\n"
             f"_Preview signal: latest day vs 28-day mean. Full STL anomaly "
             f"detection lands in the detection-brain release._"
         )
