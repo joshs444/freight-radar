@@ -175,6 +175,7 @@ export default function App() {
             series={ts?.series}
             dates={ts?.dates}
             news={data.news?.items}
+            market={data.market}
             selected={selected}
             onSelect={selectEntity}
             asOf={asOf}
