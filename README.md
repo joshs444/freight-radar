@@ -1,6 +1,6 @@
 # Freight Radar
 
-**A living dark-globe of ocean freight where the world's maritime chokepoints glow by real daily activity, and a durable agent auto-flags disruptions — congestion spikes, transit collapses, Cape-of-Good-Hope reroutes — into a severity-ranked "current issues" board.**
+**A clean, filterable monitor of ocean freight: a light 3D globe where maritime chokepoints are sized by real daily activity, beside a live disruptions feed where a durable agent auto-flags congestion spikes, transit collapses, and Cape-of-Good-Hope reroutes — filterable to All / Critical / Chokepoints / Ports.**
 
 Every number traces back to source. Nothing is hand-waved.
 
@@ -18,8 +18,8 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 |---|---|---|
 | ![globe](docs/hero.png) | ![flag detail](docs/flag-detail.png) | ![time scrubber](docs/timescrubber.png) |
 
-- **Glowing globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints (amber) and ~2,065 ports (cyan) sized by real vessel activity, with great-circle lane arcs and an atmospheric rim.
-- **Current Issues rail** — severity-ranked, auto-flagged anomalies. Click one → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1").
+- **Light globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints as crisp amber marks and ~2,065 ports as faint dust, sized by real vessel activity, with great-circle lane arcs.
+- **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1").
 - **Time-scrubber** — replay the trailing 120 days; chokepoint glow dims/brightens by each day's real count and a flag pulses on the actual date it was detected.
 - **Durable agent** — a Temporal workflow on a Schedule fetches → detects → attributes → publishes, crash-durably, forever.
 

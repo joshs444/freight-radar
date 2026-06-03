@@ -1,15 +1,16 @@
-// Warm/cool identity: chokepoints = amber (watched), ports = cyan (ambient).
-export const AMBER = [255, 158, 44];
-export const CYAN = [54, 224, 232];
-export const LANE = [122, 142, 255];
+// Light-theme marks: deep amber chokepoints, slate port-dust, soft slate lanes.
+export const AMBER = [230, 122, 14];
+export const PORT = [71, 85, 105];
+export const LANE = [128, 138, 158];
+export const CYAN = [13, 148, 136]; // teal accent (used sparingly)
 
-// Severity ramp 0 -> 100 : cool slate -> warm amber -> red. No green
-// (green reads "all clear", wrong for an alert). Muted, not neon.
+// Severity ramp 0 -> 100 : slate -> amber -> red, tuned to read on a light bg.
+// No green (green = "all clear", wrong for an alert). Muted, not neon.
 const RAMP = [
-  [0, [125, 142, 170]],
-  [40, [224, 168, 96]],
-  [70, [233, 130, 74]],
-  [100, [231, 92, 86]],
+  [0, [96, 116, 146]],
+  [40, [223, 150, 52]],
+  [70, [223, 110, 52]],
+  [100, [214, 66, 66]],
 ];
 
 export function severityColor(s, alpha = 255) {
