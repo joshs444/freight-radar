@@ -42,8 +42,22 @@
         "Petrochemicals",
         "Chemicals"
       ],
-      "est_delay_days": 6,
-      "value_at_risk_usd": 1068493
+      "est_delay_days": {
+        "low": 4,
+        "expected": 6,
+        "high": 8
+      },
+      "carrying_cost_of_delay_usd": {
+        "low": 142466,
+        "expected": 267123,
+        "high": 427397
+      },
+      "working_capital_tied_up_usd": {
+        "low": 712329,
+        "expected": 1068493,
+        "high": 1424658
+      },
+      "carrying_rate_assumed": 0.25
     }
   },
   {
@@ -104,8 +118,22 @@
         "Chemicals",
         "Apparel"
       ],
-      "est_delay_days": 3,
-      "value_at_risk_usd": 1224658
+      "est_delay_days": {
+        "low": 2,
+        "expected": 3,
+        "high": 4
+      },
+      "carrying_cost_of_delay_usd": {
+        "low": 163288,
+        "expected": 306164,
+        "high": 489863
+      },
+      "working_capital_tied_up_usd": {
+        "low": 816438,
+        "expected": 1224658,
+        "high": 1632877
+      },
+      "carrying_rate_assumed": 0.25
     }
   },
   {
@@ -143,8 +171,22 @@
       "top_items": [
         "Grain & Agri"
       ],
-      "est_delay_days": 4,
-      "value_at_risk_usd": 306849
+      "est_delay_days": {
+        "low": 3,
+        "expected": 4,
+        "high": 5
+      },
+      "carrying_cost_of_delay_usd": {
+        "low": 46027,
+        "expected": 76712,
+        "high": 115068
+      },
+      "working_capital_tied_up_usd": {
+        "low": 230137,
+        "expected": 306849,
+        "high": 383562
+      },
+      "carrying_rate_assumed": 0.25
     }
   },
   {
@@ -182,8 +224,22 @@
       "top_items": [
         "Semiconductors"
       ],
-      "est_delay_days": 2,
-      "value_at_risk_usd": 394521
+      "est_delay_days": {
+        "low": 1,
+        "expected": 2,
+        "high": 3
+      },
+      "carrying_cost_of_delay_usd": {
+        "low": 39452,
+        "expected": 98630,
+        "high": 177534
+      },
+      "working_capital_tied_up_usd": {
+        "low": 197260,
+        "expected": 394521,
+        "high": 591781
+      },
+      "carrying_rate_assumed": 0.25
     }
   },
   {
@@ -229,8 +285,22 @@
         "Machinery",
         "Paper & Wood"
       ],
-      "est_delay_days": 2,
-      "value_at_risk_usd": 131507
+      "est_delay_days": {
+        "low": 1,
+        "expected": 2,
+        "high": 3
+      },
+      "carrying_cost_of_delay_usd": {
+        "low": 13151,
+        "expected": 32877,
+        "high": 59178
+      },
+      "working_capital_tied_up_usd": {
+        "low": 65753,
+        "expected": 131507,
+        "high": 197260
+      },
+      "carrying_rate_assumed": 0.25
     }
   }
 ]

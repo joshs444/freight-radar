@@ -27,16 +27,26 @@ function BusinessImpact({ b }) {
     return <div className="fr-biz"><div className="fr-biz-head">Business impact</div>
       <div className="fr-biz-none">No exposure in your trade data.</div></div>;
   }
+  const d = b.est_delay_days || {};
+  const cc = b.carrying_cost_of_delay_usd || {};
+  const wc = b.working_capital_tied_up_usd || {};
   return (
     <div className="fr-biz">
-      <div className="fr-biz-head">Business impact</div>
+      <div className="fr-biz-head">Business impact <span className="fr-biz-est">estimate</span></div>
       <div className="fr-biz-stat">
         <b>{money(b.exposed_value_usd)}</b> of your trade exposed · {b.lane_count} lane{b.lane_count > 1 ? 's' : ''}
       </div>
       <div className="fr-biz-stat">
-        est. <b>+{b.est_delay_days}d</b> delay → <b>{money(b.value_at_risk_usd)}</b> in-transit value at risk
+        est. <b>+{d.low}–{d.high}d</b> delay → cost of delay <b>{money(cc.expected)}</b>{' '}
+        <span className="fr-biz-range">({money(cc.low)}–{money(cc.high)})</span>
+      </div>
+      <div className="fr-biz-stat fr-biz-sub">
+        ≈<b>{money(wc.expected)}</b> working capital tied up (locked, not lost)
       </div>
       {b.top_items?.length > 0 && <div className="fr-biz-items">{b.top_items.join(' · ')}</div>}
+      <div className="fr-biz-note">
+        assumes ~{Math.round((b.carrying_rate_assumed || 0.25) * 100)}%/yr carrying cost · replace with your terms
+      </div>
     </div>
   );
 }
@@ -159,7 +169,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
           <div className="fr-exp-label">Your exposure <span>· your trade data</span></div>
           <div className="fr-exp-row">
             <div><b>{money(exposure.exposed_value_usd)}</b><span>exposed</span></div>
-            <div><b>{money(exposure.value_at_risk_usd)}</b><span>at risk</span></div>
+            <div><b>{money(exposure.carrying_cost_of_delay_usd?.expected)}</b><span>cost of delay</span></div>
             <div><b>{exposure.active_disruptions_hitting_you}</b><span>hitting you</span></div>
           </div>
         </div>

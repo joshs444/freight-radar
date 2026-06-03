@@ -3,6 +3,16 @@
   "total_value_usd": 596500000,
   "exposed_lanes": 9,
   "exposed_value_usd": 314000000,
-  "value_at_risk_usd": 3126028,
+  "carrying_cost_of_delay_usd": {
+    "low": 404384,
+    "expected": 781506,
+    "high": 1269040
+  },
+  "working_capital_tied_up_usd": {
+    "low": 2021917,
+    "expected": 3126028,
+    "high": 4230138
+  },
+  "carrying_rate_assumed": 0.25,
   "active_disruptions_hitting_you": 5
 }

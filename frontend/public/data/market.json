@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-03T16:44:57",
+  "generated_at": "2026-06-03T18:31:13",
   "indicators": {
     "brent": {
-      "value": 98.08,
-      "change_pct": 1.32,
+      "value": 97.41,
+      "change_pct": 0.63,
       "change_basis": "intraday",
       "as_of": "2026-06-03",
       "source": "Stooq",
@@ -13,10 +13,10 @@
       "stale": false
     },
     "wti": {
-      "value": 96.44,
-      "change_pct": 2.78,
+      "value": 95.84,
+      "change_pct": 0.09,
       "change_basis": "intraday",
-      "as_of": "2026-06-03",
+      "as_of": "2026-06-04",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=cl.f",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": false
     },
     "natgas": {
-      "value": 3.24,
-      "change_pct": 2.31,
+      "value": 3.245,
+      "change_pct": -0.03,
       "change_basis": "intraday",
-      "as_of": "2026-06-03",
+      "as_of": "2026-06-04",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=ng.f",
       "name": "Henry Hub gas",
@@ -35,10 +35,10 @@
       "stale": false
     },
     "eurusd": {
-      "value": 1.1598,
-      "change_pct": -0.27,
+      "value": 1.1597,
+      "change_pct": -0.01,
       "change_basis": "intraday",
-      "as_of": "2026-06-03",
+      "as_of": "2026-06-04",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=eurusd",
       "name": "EUR/USD",
@@ -59,8 +59,8 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 736,
-      "change_pct": 1.32,
+      "value": 731,
+      "change_pct": 0.63,
       "change_basis": "modeled",
       "as_of": "2026-06-03",
       "source": "modeled from Brent (~7.5x)",
