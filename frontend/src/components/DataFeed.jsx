@@ -40,7 +40,32 @@ function BusinessImpact({ b }) {
   );
 }
 
-function Row({ e, active, onSelect, series, dates }) {
+function NewsBlock({ news }) {
+  if (!news) return null;
+  return (
+    <div className="fr-news">
+      <div className="fr-news-head">Possibly related coverage <span>· not a confirmed cause</span></div>
+      {news.items?.length ? (
+        news.items.map((a, i) => (
+          <span
+            key={i}
+            className="fr-news-item"
+            role="link"
+            tabIndex={0}
+            onClick={(ev) => { ev.stopPropagation(); window.open(a.url, '_blank', 'noopener'); }}
+          >
+            <span className="fr-news-title">{a.title}</span>
+            <span className="fr-news-meta">{a.source}{a.source && a.published ? ' · ' : ''}{a.published}</span>
+          </span>
+        ))
+      ) : (
+        <div className="fr-news-none">No qualifying recent coverage found.</div>
+      )}
+    </div>
+  );
+}
+
+function Row({ e, active, onSelect, series, dates, news }) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   return (
@@ -70,6 +95,7 @@ function Row({ e, active, onSelect, series, dates }) {
           {e.flag && <Markdown text={e.flag.brief_md} />}
           <SparkHistory s={ser} dates={dates} asOf={e.flag?.as_of} baseline={e.flag?.baseline ?? e.baseline} color={sparkColor} />
           {e.flag && <BusinessImpact b={e.flag.business} />}
+          {e.flag && news && <NewsBlock news={news} />}
           <div className="fr-row-meta">
             {e.flag ? <span>{e.flag.method}</span> : <span>{e.type} · monitored</span>}
             {e.flag && <span>as of {e.flag.as_of}</span>}
@@ -80,7 +106,7 @@ function Row({ e, active, onSelect, series, dates }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, news, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
@@ -109,7 +135,8 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
       <div className="fr-rows">
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
-          <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates} />
+          <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates}
+            news={e.flag ? news?.[e.flag.flag_id] : null} />
         ))}
       </div>
       <div className="fr-feed-foot">

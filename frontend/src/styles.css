@@ -144,6 +144,26 @@ html, body, #root {
 }
 .fr-biz-none { font-size: 12px; color: var(--ink-faint); font-style: italic; }
 
+/* possibly-related news */
+.fr-news { margin: 10px 0 4px; }
+.fr-news-head {
+  font-family: var(--mono); font-size: 9.5px; color: var(--ink-faint); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px;
+}
+.fr-news-head span { font-weight: 400; }
+.fr-news-item {
+  display: block; padding: 6px 9px; margin-bottom: 4px; cursor: pointer;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px;
+  transition: border-color 0.12s, background 0.12s;
+}
+.fr-news-item:hover { border-color: var(--line-strong); background: var(--hover); }
+.fr-news-title { display: block; font-size: 12px; color: var(--ink); line-height: 1.35; }
+.fr-news-meta {
+  display: block; margin-top: 2px; font-family: var(--mono); font-size: 9.5px;
+  color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.03em;
+}
+.fr-news-none { font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
 .fr-filters {
   display: flex; gap: 6px; padding: 0 16px 12px; border-bottom: 1px solid var(--line);
 }
