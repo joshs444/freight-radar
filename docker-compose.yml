@@ -1,0 +1,73 @@
+# Freight Radar — full live loop. `docker compose up` brings online:
+#   temporal (dev server, persistent) · worker · schedule-init · api · frontend
+#
+# The Temporal CLI dev server persists to a volume (--db-filename) so the Schedule
+# survives restarts. Kill the worker mid-run and restart it: Temporal re-drives the
+# in-flight workflow from its last completed activity (the durability demo).
+services:
+  temporal:
+    image: temporalio/temporal:latest
+    command: server start-dev --ip 0.0.0.0 --db-filename /home/temporal/data/temporal.db
+    ports:
+      - "7233:7233"   # gRPC
+      - "8233:8233"   # Temporal Web UI
+    volumes:
+      - temporal-data:/home/temporal/data
+    healthcheck:
+      test: ["CMD", "temporal", "workflow", "list", "--address", "127.0.0.1:7233"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    build: ./backend
+    command: python -m freight_radar.temporal.worker
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      FREIGHT_RADAR_DB: /data/freight_radar.duckdb
+      FREIGHT_RADAR_PUBLISH_DIR: /published
+    volumes:
+      - duckdb-data:/data
+      - published:/published
+    depends_on:
+      temporal:
+        condition: service_healthy
+    restart: unless-stopped
+
+  schedule-init:
+    build: ./backend
+    command: python -m freight_radar.temporal.schedule
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    depends_on:
+      temporal:
+        condition: service_healthy
+    restart: on-failure   # idempotent: create-or-update the Schedule
+
+  api:
+    build: ./backend
+    command: uvicorn freight_radar.api.app:app --host 0.0.0.0 --port 8000
+    environment:
+      FREIGHT_RADAR_DB: /data/freight_radar.duckdb
+      FREIGHT_RADAR_PUBLISH_DIR: /published
+    ports:
+      - "8000:8000"
+    volumes:
+      - duckdb-data:/data
+      - published:/published
+    depends_on:
+      - worker
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - published:/published:ro
+    depends_on:
+      - api
+
+volumes:
+  temporal-data:
+  duckdb-data:
+  published:
