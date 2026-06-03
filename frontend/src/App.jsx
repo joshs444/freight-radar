@@ -174,6 +174,7 @@ export default function App() {
             exposure={data.exposure}
             series={ts?.series}
             dates={ts?.dates}
+            news={data.news?.items}
             selected={selected}
             onSelect={selectEntity}
             asOf={asOf}
