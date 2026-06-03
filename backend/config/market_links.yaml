@@ -1,0 +1,11 @@
+# Chokepoint -> market instruments it plausibly touches. CONTEXT, not causation —
+# a price moves for many reasons; this only says "these are the markets in its orbit".
+# Keyed by dim_chokepoint.fullname. Anything not listed gets an empty (honest) set.
+Strait of Hormuz: [brent, natgas, bunker_vlsfo]
+Suez Canal: [brent, bunker_vlsfo]
+Bab el-Mandeb Strait: [brent, bunker_vlsfo]
+Panama Canal: [wti]
+Bosporus Strait: [brent]
+Kerch Strait: [brent]
+Malacca Strait: [brent, bunker_vlsfo]
+Gibraltar Strait: [bunker_vlsfo]

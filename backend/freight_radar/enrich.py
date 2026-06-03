@@ -57,11 +57,17 @@ def _timeseries(ctx: EnrichCtx) -> dict:
     return {"name": "timeseries", "sidecar": "timeseries.json", "series": r.get("series")}
 
 
+def _market(ctx: EnrichCtx) -> dict:
+    from .business.market import run as market_run
+    return market_run(ctx)
+
+
 # (name, run(ctx)->receipt, depends_on_flags). New waves append here.
 ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("exposure", _exposure, True),
     ("news", _news, True),
     ("timeseries", _timeseries, False),
+    ("market", _market, True),
 ]
 
 

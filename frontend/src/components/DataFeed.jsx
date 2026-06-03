@@ -41,6 +41,36 @@ function BusinessImpact({ b }) {
   );
 }
 
+function MarketBlock({ market, flagId }) {
+  const link = market?.items?.[flagId];
+  if (!link) return null;
+  const inds = market.indicators || {};
+  const shown = link.linked.map((k) => inds[k]).filter((v) => v && v.value != null);
+  if (!shown.length) return null;
+  return (
+    <div className="fr-market">
+      <div className="fr-market-head">Market context <span>· in this chokepoint's orbit</span></div>
+      <div className="fr-market-grid">
+        {shown.map((v) => {
+          const up = (v.change_pct || 0) >= 0;
+          return (
+            <div key={v.name} className="fr-mkt">
+              <span className="fr-mkt-name">{v.name}{v.estimate ? ' ·est' : ''}</span>
+              <span className="fr-mkt-row">
+                <b>{v.value}</b><span className="fr-mkt-unit">{v.unit}</span>
+                {v.change_pct != null && (
+                  <span className={`fr-mkt-chg ${up ? 'up' : 'down'}`}>{up ? '▲' : '▼'} {up ? '+' : ''}{v.change_pct}%</span>
+                )}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="fr-market-foot">{link.disclaimer}</div>
+    </div>
+  );
+}
+
 function NewsBlock({ news }) {
   if (!news) return null;
   return (
@@ -66,7 +96,7 @@ function NewsBlock({ news }) {
   );
 }
 
-function Row({ e, active, onSelect, series, dates, news }) {
+function Row({ e, active, onSelect, series, dates, news, market }) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
@@ -104,6 +134,7 @@ function Row({ e, active, onSelect, series, dates, news }) {
             </div>
           )}
           {e.flag && <BusinessImpact b={e.flag.business} />}
+          {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
           {e.flag && news && <NewsBlock news={news} />}
           <div className="fr-row-meta">
             {e.flag ? <span>{e.flag.method}</span> : <span>{e.type} · monitored</span>}
@@ -115,7 +146,7 @@ function Row({ e, active, onSelect, series, dates, news }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, news, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, news, market, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
@@ -145,7 +176,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
           <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates}
-            news={e.flag ? news?.[e.flag.flag_id] : null} />
+            news={e.flag ? news?.[e.flag.flag_id] : null} market={market} />
         ))}
       </div>
       <div className="fr-feed-foot">
