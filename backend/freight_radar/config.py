@@ -7,6 +7,7 @@ These endpoints were verified live during design (see PLAN.md). The org id is
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 # --- paths -----------------------------------------------------------------
@@ -15,6 +16,19 @@ BACKEND_DIR = PACKAGE_DIR.parent                       # backend
 REPO_ROOT = BACKEND_DIR.parent                         # freight-radar
 DATA_DIR = REPO_ROOT / "data"
 DEFAULT_DB_PATH = DATA_DIR / "freight_radar.duckdb"
+
+# Where the workflow publishes the static JSON the frontend reads.
+PUBLISH_DIR = REPO_ROOT / "frontend" / "public" / "data"
+
+
+def db_path() -> Path:
+    """DuckDB path, overridable via env (docker volume / tests)."""
+    return Path(os.environ.get("FREIGHT_RADAR_DB", str(DEFAULT_DB_PATH)))
+
+
+def publish_dir() -> Path:
+    """Publish dir, overridable via env (docker volume / tests)."""
+    return Path(os.environ.get("FREIGHT_RADAR_PUBLISH_DIR", str(PUBLISH_DIR)))
 
 # --- ArcGIS backbone -------------------------------------------------------
 ARCGIS_HOST = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services"

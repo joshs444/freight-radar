@@ -190,14 +190,20 @@ def _preview_flags(chokepoints: list[dict], as_of: str) -> list[dict]:
     return flags
 
 
-def export(db_path=DEFAULT_DB_PATH, out_dir: Path = OUT_DIR) -> dict:
+def export(db_path=DEFAULT_DB_PATH, out_dir: Path = OUT_DIR, write_flags: bool = True) -> dict:
+    """Write snapshot.json + lanes.json (+ preview flags.json by default).
+
+    The Temporal pipeline passes ``write_flags=False`` because real STL detection
+    (run_detection) owns flags.json there; the preview flags are only for the
+    standalone Wave-1 path where no detector has run yet.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(db_path))
     try:
         chokepoints = _chokepoints(con)
         ports = _ports(con)
         as_of = max(c["as_of"] for c in chokepoints)
-        flags = _preview_flags(chokepoints, as_of)
+        flags = _preview_flags(chokepoints, as_of) if write_flags else []
     finally:
         con.close()
 
@@ -210,7 +216,8 @@ def export(db_path=DEFAULT_DB_PATH, out_dir: Path = OUT_DIR) -> dict:
     }
     (out_dir / "snapshot.json").write_text(json.dumps(snapshot, separators=(",", ":")))
     (out_dir / "lanes.json").write_text(json.dumps(LANES, separators=(",", ":")))
-    (out_dir / "flags.json").write_text(json.dumps(flags, indent=2))
+    if write_flags:
+        (out_dir / "flags.json").write_text(json.dumps(flags, indent=2))
 
     return {
         "out_dir": str(out_dir),

@@ -10,6 +10,15 @@ dependencies = [
     "pyarrow>=16",
     "tenacity>=9",
     "pyyaml>=6",
+    # detection brain
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "ruptures>=1.1",
+    # durable orchestration + read-only API
+    "temporalio>=1.7",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.30",
 ]
 
 [project.optional-dependencies]

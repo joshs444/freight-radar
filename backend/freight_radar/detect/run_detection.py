@@ -149,14 +149,14 @@ def _upsert_flags(con: duckdb.DuckDBPyConnection, flags: list[Flag]) -> None:
         con.unregister("_flags_src")
 
 
-def _write_json(flags: list[Flag]) -> None:
+def _write_json(flags: list[Flag], path: Path = FLAGS_JSON) -> None:
     flags_sorted = sorted(flags, key=lambda f: f.severity, reverse=True)
     payload = [{k: asdict(f)[k] for k in FLAG_KEYS} for f in flags_sorted]
-    FLAGS_JSON.parent.mkdir(parents=True, exist_ok=True)
-    FLAGS_JSON.write_text(json.dumps(payload, indent=2))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2))
 
 
-def run(db_path=DEFAULT_DB_PATH) -> list[Flag]:
+def run(db_path=DEFAULT_DB_PATH, flags_json: Path | None = None) -> list[Flag]:
     cfg = load_config()
     con = duckdb.connect(str(db_path))
     try:
@@ -164,7 +164,7 @@ def run(db_path=DEFAULT_DB_PATH) -> list[Flag]:
         _upsert_flags(con, flags)
     finally:
         con.close()
-    _write_json(flags)
+    _write_json(flags, flags_json or FLAGS_JSON)
     return flags
 
 
