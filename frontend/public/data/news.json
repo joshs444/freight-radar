@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T11:05:51",
+  "generated_at": "2026-06-04T11:32:54",
   "search_date": "2026-06-04",
   "items": {
     "b74be045769441ea": {
@@ -38,6 +38,12 @@
       "entity": "Hong Kong",
       "items": [
         {
+          "title": "Allianz Trade hires Ricky Hung as Hong Kong head of distribution - (Re)in Asia",
+          "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQOXBDdU1CdElNUlRoQmFLTlpPWTE3cDh3RzVVU3hkWlBxUFpvci1STXZhNUtvZV9zeVA1RGZFYmdJUmd6RjlZREMySWpBcUJmbjRHQmwyTzEtRTFobnpGdHR1cWlQOElxQVJlVXliRkdBUDNtWGlwQ2ZWdGJlRGNEVXI4RUxPOFI5b0Ewc0I4Yw?oc=5",
+          "source": "(Re)in Asia",
+          "published": "2026-06-04"
+        },
+        {
           "title": "Kazakhstan, Hong Kong and Mainland China Sign 42 Agreements to Expand Trade and Investment Cooperation - The Astana Times",
           "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNY015WXZOalRxd2ZRNWdTT0tKYUtRUzAyLTF6UHhyaG5icjAxYmtlTm9lMkttdk9GUjl5ZHFaWFJkQks0RnBFWVNjekczV1lONjBubURqWEwtRkJjb2hNUFhoU0RHSDJzSGdBYTJ0bG1iWDBGMmEtWkx1Wk84QlJMNGJnWWplVGRCR3AzdlIwdlA3X1hEdEtQNnVhUDNNREZfTVJCazUwZ3JhSjFUalVGaHNUemxNeXlvZFg0Q1VjRmg3VXVDMHZ3Nlc2OVM1NkE?oc=5",
           "source": "The Astana Times",
@@ -54,24 +60,18 @@
           "url": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxONlZ2ZVFuUG1GT2VaUWxvN0ppQlgwcERQQ3hmN2JId3ZKZDdUa09kb2xkWktraDYzdXZvMWVsYldyTkM1czFWSWNHRjhZUW1mdHFVdUZiUHQtOERHd3k0Zm11SHpBQThSSHNUYmRYVkNRQlF3NTRGZmlrSlRBRjZxQU81Zk4yS3FDTTgwU0IzRjFYWV9xajQ3R2duVGozVEljeEFYaHA4cEZpTDhfVElvSFpqWVdFM0h5cXo3OVJjRDNYLVp0T1U5MGpoU1dqZThXNkg5NXp6b0h3a0NHR1NJdlZ3NHNQbUgwNnUwcldFOXNjUVlCYWZOYnd2bw?oc=5",
           "source": "South China Morning Post",
           "published": "2026-06-03"
-        },
-        {
-          "title": "Hong Kong Chief Executive Sees Kazakhstan as Central Asia\u2019s Gateway - The Astana Times",
-          "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOckU2VlFEZFM2Ui1OU21xNkF4b0Y2WXdZQTB2VFlzdUNHSEQzeHRqdFMwbnhFNlNYRGp0N0wtUHpLOWdKaW1XM2xtTTlBSjBONkZ1dlZsaHktcUFHNU1ZcWxraVlXbXhUcWdBcm5yMGJfazd4OWZtXzAxdjd6dVY5NGhLYVBwUjRwWFpXRlk2WFQ2ZXpheEFyZldmenpPdVhN?oc=5",
-          "source": "The Astana Times",
-          "published": "2026-06-02"
         }
       ],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 3
+      "outlet_count": 4
     },
     "bb17b4b10357fb5e": {
       "entity": "Kaohsiung",
       "items": [
         {
-          "title": "Latest Port Perimeter Security Upgrade Enhances Access Control at Port of Kaohsiung's Chungtao Harbor - Port Strategy",
-          "url": "https://news.google.com/rss/articles/CBMirgJBVV95cUxQREtXSkJxTmlJcXkyZzhLYWtrQ09CX0RqbS1xMnBwRTVEMkNIMkhLcTJfcVg0ZVJJWnFkTlZlSDFOamZlUXBWU1RSMVR6N0ZIMDhVTURfdGl6VGVSdExBUW5IdzFObTZ5VHhXaXNybElfaDFyS2JlRGk3UEYzRzJNZk1PRV9aV0FHbHo5dVdRYndmTS1HazlmdEgwWktlMExnTFBDZVVtZTRMZHNoaWZkdjdQcXd5eEh0TzBEdXRrX0p4cHlkRm5zU2dnRVExWUNPWkdVaFpIc2tDZmNEUjZ6UXlycFFRVWFRMUV6dzI1MnhlUmRaTC1DSHN1bFZWM1hWa2I4RFBMVDd3QVdsRGEyRFp3MEFHYWRkdHQ0Q1ZVZUdTUzRLWDE1RklNMFJSdw?oc=5",
+          "title": "Perimeter Security Upgrade Project Optimizes Access Controls at Port of Kaohsiung\u2019s Chungtao Commercial Harbor - Port Strategy",
+          "url": "https://news.google.com/rss/articles/CBMiugJBVV95cUxQR3lRLWI2WURIQVVDbDJLTHB2QldpYUUyM1FTWFEwUjBVUWhCZkFWdkI3QnJTdXFZcG5nbTdScEtNbkRtaFQ2bEI2emVDdkk3bEl1V3F2NW9GaUczVTBlUHhDdXZ0SFJDT09uQXVDbDBrT3BxbW5WWHRGSHk1WEdOakhlbXhELWpLY0o4dXYtRjBzTXpTVkFsNjVBVGdEMjd1MWlQUjJPdVh3dnhlZzRRUTNzYTVfcDBPczdXSUV0ZGphZHhNNEduRE5tTjNWUkJKUjBNdnZjN19TbF9LdXlFQ0x3eTJfTVZQdlpoamJidzdzTHBsZVFWTGpqLTFBMmxxTFdvUVRuOV9oSGpmNi1Gczh2QVc5ZTdKYnBWM3R2TW5IREo3VlA4c3F0U0k3S2R4VnN4ZTl4TG9BQQ?oc=5",
           "source": "Port Strategy",
           "published": "2026-06-04"
         },
@@ -146,15 +146,15 @@
           "published": "2026-06-03"
         },
         {
-          "title": "5 nabbed over brawl near flats in Port Klang - MSN",
-          "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxObkYtenJCNXIycHFvTVBPTDNlcWtKeUF1d0I2ZUFCVEVGc1p3STJRakd5ZFhyZE1oRkkyQnh0Vi1nUEc3RGhrS3RXUG42bF9GclpfUWF5V1dBTDR1WEN1dS1vdzVySHNLd0p5Q1ZoalhkOXNLY0c2eFhDOHNDRXZ5N3ZrYjlFSFdWX055S0NjMldZdm0xSnhhRg?oc=5",
-          "source": "MSN",
-          "published": "2026-06-02"
-        },
-        {
           "title": "Loke Urges Port Klang Authority To Enter Top 10 Busiest Port List World Cup Debutant Kit Badges (uaJ42XP4w3) - Mshale",
           "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9VVGtjOTNxZkJZYVVhY3VUcFpUYklEalhZN1ZsWDhwVDdZTG0tWDl0N29WaEFXWVBIbzhoTDNfMXY2eDdHQW5mNGNlQjZNTmFCMEl3UTRhRHprUkU?oc=5",
           "source": "Mshale",
+          "published": "2026-06-01"
+        },
+        {
+          "title": "Port Klang land donor\u2019s legacy lives on in park - The Star",
+          "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQekpiOWt3MzRFamx4NlVUNjdHemhlUUM1bGhjYjM2UGNxQ2ROVEhySmNDWGQxX2FNaTRKUjVUOTU2bjk5RTBIOGUzaE9GamUwZW9rNXhfbkd6VnlQU2tMemxIcUdNMWJmNzRqY1pDUGRQSlctMEJlVW1aZU9VM3UzS3F2ZkhZYU41Q0Q4Y0pFaWdCNnNCRDd4TzQzMWFEd3RIclpN?oc=5",
+          "source": "The Star",
           "published": "2026-06-01"
         }
       ],
@@ -164,10 +164,35 @@
     },
     "bce0e2fdd63be992": {
       "entity": "Kerch Strait",
-      "items": [],
+      "items": [
+        {
+          "title": "Ukrainian drones attacked convoys of Russian fuel tankers on the land corridor to the occupied Crimea (video) - most.ks.ua",
+          "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQOXdFX0FJVnd1SVhqWDRVUEtMLVphSUpiVzA2RWtXWm9OZWxJZEd3alV3RXZ4NHdYdXIzelkySzFnUnE4ZENsM1NZLS1oRWpObTRIZGRJbU80enBrZWJUendla3NRT3BfSHNHalNPQTBRSzhIaXlxdUNJZXNuYTZHR0EzNE5MV0JmZlMtTVc2azRsc3BYWTBPaHBNWnQtbjV5SGlkNHlkM0FtU0UxY3loaGtHMHRHXzFGNnp5T0s1U3pGOG9rXzV1ZnkyQmxEUDhPSG9rcU9aaU55ZmFO?oc=5",
+          "source": "most.ks.ua",
+          "published": "2026-06-02"
+        },
+        {
+          "title": "The Longest Bridges in Europe - WorldAtlas",
+          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9CSVY2YUs4OTRDV3IwYzJyb3lIVGo4akctOU9MTlBHZUp6bzlWZklUcUM1X0I4bWhJVEZpUXd5NTZQLWZzV3BMLXJ0QVVjby11T1FVNTAxQTBCVVQtcHc0UFUtNE9xUEFFbzNzRHMtLWVMb19od1J1M0JReWhCUlk?oc=5",
+          "source": "WorldAtlas",
+          "published": "2026-05-24"
+        },
+        {
+          "title": "Crimean Bridge was closed for almost 11 hours - \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043f\u0440\u0430\u0432\u0434\u0430",
+          "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5YWVVUaFZhN0IzcUpCM3d3NkttR3JfTG8xLUUwSnhEamtjLVQ0NGwzS0VTLVdTYk8xcXZnWnRxOFRKZFZJOUo4SGowTm53emxGaERGSjM5NlhnMmV4ZlhGMFF1aVLSAXBBVV95cUxOQVVmZnNGMExZc2tzVTNoMGR2b3F1NGVWMkxIbWIxVUF5WmhpcDROWGRPMUdreHBXa0ZqVjdjMjFXQlBNTldMQ2xpcU5sWTM2cFBqX0lXc2lrUkpjX1JNQnBNdWZXLS1yTzFueHh0MUln?oc=5",
+          "source": "\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043f\u0440\u0430\u0432\u0434\u0430",
+          "published": "2026-05-16"
+        },
+        {
+          "title": "Ukrainian naval drones hit Russian patrol boats near Kerch Bridge - MSN",
+          "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOeW5QcWZiOER4UHJ6cUhKUVg2QUJleExKejkzc2Jmc0VURmZfZ2xiVHc4WHFEYTg5ay1WUTZ2NzBMTHpvWmJVXzlHVVN0TmVXeXZWR2kwR09hNEwwZ2NjRWVuYW9oVlVSX1RGazBlLVFqbG0wMlFqMFdaSWlXeXRscGUzd2poaVlVbnZCM1g3WGlXLWIybFJyTjVWVTJ2LXpLVVlQMWs0Mjd2VEV2aEJjMHdNa1V3WGlPc01SWHI5YnhSNnYyMS1OcVNmMA?oc=5",
+          "source": "MSN",
+          "published": "2026-05-15"
+        }
+      ],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 0
+      "outlet_count": 4
     },
     "b34e04d7a651a706": {
       "entity": "Taichung",
@@ -250,27 +275,27 @@
           "published": "2026-06-03"
         },
         {
-          "title": "Jinhui Shipping Orders Two New Vessels for Fleet Renewal | 2026 Update - News and Statistics - IndexBox",
-          "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNbkhXSmJrcHVGQWhvdHotRWpja0RpeWJCUWFCTnRBSFBSMkhYWkFSTlltMVcyZlpoQ0NVN3RtXzlXQVhWQ1pPbE9ISVpldjJpeEZSQVM1ZnhWakNKQVJGM2tqUzhVbnJOT2RoZ0kzT3p2a3lZOUVMUV8tNE1XcVRTZkh1Q05ZMDg4b19YSTJ2OXJPRWNtakt2bjdiT0Njdw?oc=5",
-          "source": "IndexBox",
-          "published": "2026-06-03"
-        },
-        {
           "title": "Straits Forum to foster cross-Strait exchanges - China Daily",
           "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1zOExObUdheG0yOHdYbnktcmoyUVJNZVRzSnVzMlplYmRGcEVwXzZfajBRV3VYekJYVzdud2xMaE5aanNoazBMbEhyTzhfOHpSR0loYzBJRHBjb29mamwxcFB2ZDk3RGQtajBVbWFXTXgxbjBpcFNVc3cwTFBlZw?oc=5",
           "source": "China Daily",
           "published": "2026-06-03"
         },
         {
-          "title": "China\u2019s blueprint for bloodless annexation of Kinmen - Taiwan News",
-          "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1vWVpSOUp5YjQzWTQya3BLN2FFRTdWRzRMTHFvVXVmZ1huSVZtbkE4YXR1NWNmUjd3RklseGxQMVg3VTlDU0FoSEdHRXI4SENsblc1Yw?oc=5",
-          "source": "Taiwan News",
-          "published": "2026-06-02"
+          "title": "Network of Partner Cities on New Industrial Revolution launched at BRICS forum in Xiamen - bastillepost.com",
+          "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOX05KSGFvVDVwTVloNW1vNnhXQlA1OU5YVUpiNUJDdVJDNERzak1NTDJkLS1VMFRvSjlMMFNxdnpsZ00ySjVTdXQtcmc2emR3c1V4bnQ2bm5HS19PU3ZEWEZRRlpPRnM3akMwZHNiS0hkY1YxVWRzMW5kcVZ0UEVLeW9ESjRkd1VySEp3Z1ZkaXVkMkRxc0FBcTNKZjR4dHlOZHR6N0lCTi1leU93Rk1jcldBOWp4LUo4eDI5eGxFNlRkSEQ5OUtDLVZuQzkyRlFMd3BCTkZmRQ?oc=5",
+          "source": "bastillepost.com",
+          "published": "2026-05-28"
+        },
+        {
+          "title": "Xiamen Airlines Launches Hangzhou\u2013Manila Flights, Enhancing Philippines Tourism, International Connectivity, and Hospitality Sector Growth Through Chinese Travel and Business Arrivals - Travel And Tour World",
+          "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1ja0kyZVJNemMycUFwM1dmS1BGUGw3X2hCRTJGcURyYnJoNmNvUzF0MUFScUx0bWtPQ3FDOVJzQnl0VW4tSEQ2dXJONWZlQll2NDJvdnpxdU1WaHY5VU4teTVHaVRRcGZpMTJQM2JR?oc=5",
+          "source": "Travel And Tour World",
+          "published": "2026-05-28"
         }
       ],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 3
+      "outlet_count": 4
     }
   }
 }
