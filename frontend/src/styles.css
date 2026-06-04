@@ -136,6 +136,32 @@ html, body, #root {
 }
 .fr-feed-count { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
 .fr-feed-count b { color: var(--amber); }
+/* in-browser CSV upload */
+.fr-upl {
+  margin: 0 16px 10px; padding: 9px 12px; border: 1px dashed var(--line-strong); border-radius: 11px;
+  display: flex; align-items: center; gap: 10px; background: var(--bg); transition: border-color 0.14s, background 0.14s;
+}
+.fr-upl.is-drag { border-color: var(--amber); background: #fbf6ee; }
+.fr-upl.is-on { border-style: solid; border-color: #cfe6d9; background: #f1f8f4; }
+.fr-upl-main { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.fr-upl-title { font-family: var(--display); font-weight: 700; font-size: 12px; color: var(--ink); }
+.fr-upl-sub { font-family: var(--mono); font-size: 9px; color: var(--ink-faint); }
+.fr-upl-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.fr-upl-btn {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: #fff; background: var(--ink);
+  border: none; border-radius: 8px; padding: 7px 12px; cursor: pointer;
+}
+.fr-upl-btn:hover:not(:disabled) { background: #000; }
+.fr-upl-btn:disabled { opacity: 0.5; cursor: default; }
+.fr-upl-link { font-family: var(--mono); font-size: 10px; color: var(--ink-dim); background: none; border: none; cursor: pointer; }
+.fr-upl-link:hover { color: var(--ink); text-decoration: underline; }
+.fr-upl-err { font-family: var(--mono); font-size: 9.5px; color: #c0392b; flex-basis: 100%; }
+.fr-upl-on { font-size: 12px; color: var(--ink-dim); flex: 1; }
+.fr-upl-on b { color: #2c7a52; }
+.fr-upl-priv { font-family: var(--mono); font-size: 8.5px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.03em; }
+.fr-upl-reset { font-family: var(--mono); font-size: 10px; color: var(--amber); background: none; border: none; cursor: pointer; flex: none; }
+.fr-upl-reset:hover { text-decoration: underline; }
+
 /* exposure summary banner */
 .fr-exposure {
   margin: 0 16px 12px; padding: 11px 13px; border-radius: 11px;

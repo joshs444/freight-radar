@@ -13,15 +13,20 @@ export default function App() {
   const [filter, setFilter] = useState('all');
   const [scrubIndex, setScrubIndex] = useState(null);
   const [playing, setPlaying] = useState(false);
+  const [userExposure, setUserExposure] = useState(null);
   const mapApiRef = useRef(null);
 
   const ts = data?.timeseries;
+
+  // uploaded trade data (if any) overrides the sample exposure + per-flag business
+  const flags = userExposure?.flags ?? data?.flags;
+  const exposureSummary = userExposure?.summary ?? data?.exposure;
 
   // --- the monitor universe: chokepoints + flagged ports + top ports ------
   const sets = useMemo(() => {
     if (!data) return { choke: [], portFlags: [], topPorts: [] };
     const flagByPort = {};
-    (data.flags || [])
+    (flags || [])
       .filter((f) => f.lifecycle !== 'resolved')
       .forEach((f) => { flagByPort[f.portid] = f; });
 
@@ -53,7 +58,7 @@ export default function App() {
         metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
       }));
     return { choke, portFlags, topPorts };
-  }, [data]);
+  }, [data, flags]);
 
   // critical first (by severity), then normal by real traffic — not by noisy %
   const byCritThenSeverity = (a, b) =>
@@ -189,7 +194,8 @@ export default function App() {
             filter={filter}
             setFilter={setFilter}
             criticalCount={criticalCount}
-            exposure={data.exposure}
+            exposure={exposureSummary}
+            upload={{ flags: data.flags, applied: userExposure, onApply: setUserExposure, onReset: () => setUserExposure(null) }}
             brief={data.brief}
             disruptions={data.disruptions}
             onPickEntity={pickByPortid}
@@ -205,7 +211,7 @@ export default function App() {
         )}
       </div>
 
-      {data && <Chat data={data} onPickEntity={pickByPortid} />}
+      {data && <Chat data={userExposure ? { ...data, flags, exposure: exposureSummary } : data} onPickEntity={pickByPortid} />}
     </div>
   );
 }

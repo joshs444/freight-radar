@@ -6,6 +6,7 @@ import { Sparkline, SparkHistory } from './Sparkline.jsx';
 import { computeTrend, trendLabel } from '../lib/trend.js';
 import BriefCard from './BriefCard.jsx';
 import HazardsPanel from './HazardsPanel.jsx';
+import Upload from './Upload.jsx';
 
 const CONF_LABEL = { high: 'high', medium: 'derived', low: 'partial', none: 'unrouted' };
 const ALERT_C = { RED: '#c0392b', ORANGE: '#c2611f', GREEN: '#3f7a5a' };
@@ -214,7 +215,7 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, brief, disruptions, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, brief, disruptions, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
@@ -226,9 +227,11 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
 
       {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
 
+      {upload && <Upload {...upload} />}
+
       {exposure && (
         <div className="fr-exposure">
-          <div className="fr-exp-label">Your exposure <span>· sample trade data</span></div>
+          <div className="fr-exp-label">Your exposure <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span></div>
           <div className="fr-exp-row">
             <div><b>{money(exposure.exposed_value_usd)}</b><span>exposed</span></div>
             <div><b>{money((exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)?.expected)}</b><span>cost of disruption</span></div>
