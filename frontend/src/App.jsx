@@ -45,6 +45,12 @@ export default function App() {
       return Math.round(((v - baseline) / baseline) * 1000) / 10;
     };
 
+    // cargo_mix lookup so flagged-port rows (built from flags, not snapshot) can
+    // still show the vessel mix from their snapshot record.
+    const mixByPort = {};
+    (data.snapshot?.chokepoints || []).forEach((c) => { if (c.cargo_mix) mixByPort[c.portid] = c.cargo_mix; });
+    (data.snapshot?.ports || []).forEach((p) => { if (p.cargo_mix) mixByPort[p.portid] = p.cargo_mix; });
+
     const choke = (data.snapshot?.chokepoints || []).map((c) => {
       const flag = flagByPort[c.portid] || null;
       return {
@@ -53,7 +59,8 @@ export default function App() {
         // the noisy latest-vs-28d snapshot value (+124%); normals show the snapshot.
         // while scrubbing, normals show the value at the scrubbed date.
         metric: flag ? flag.pct_change : (scrubDate ? seriesAt(c.portid, c.baseline) : c.pct_change),
-        n_total: c.n_total, baseline: c.baseline,
+        n_total: c.n_total, baseline: c.baseline, cargo_mix: c.cargo_mix,
+        avg_vessel_size_dwt: c.avg_vessel_size_dwt, capacity_total: c.capacity_total,
         flag, severity: flag ? flag.severity : null, critical: !!flag,
         weight: c.n_total || 0,
       };
@@ -64,6 +71,7 @@ export default function App() {
       .map((f) => ({
         id: f.portid, name: f.entity, type: 'port', lat: f.lat, lon: f.lon,
         metric: f.pct_change, flag: f, severity: f.severity, critical: true, weight: 1e9,
+        cargo_mix: mixByPort[f.portid] || null,
       }));
     const topPorts = [...(data.snapshot?.ports || [])]
       .sort((a, b) => b.vessels - a.vessels)
@@ -72,6 +80,7 @@ export default function App() {
       .map((p) => ({
         id: p.portid, name: p.name, type: 'port', lat: p.lat, lon: p.lon,
         metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
+        cargo_mix: p.cargo_mix,
       }));
     return { choke, portFlags, topPorts };
   }, [data, flags, scrubDate, scrubIndex, ts]);
@@ -114,7 +123,8 @@ export default function App() {
       const c = (data.snapshot?.chokepoints || []).find((x) => x.portid === portid);
       const p = c || (data.snapshot?.ports || []).find((x) => x.portid === portid);
       if (p) e = { id: p.portid, name: p.name, type: c ? 'chokepoint' : 'port',
-        lat: p.lat, lon: p.lon, metric: c ? c.pct_change : null, flag: null, critical: false };
+        lat: p.lat, lon: p.lon, metric: c ? c.pct_change : null, flag: null, critical: false,
+        cargo_mix: p.cargo_mix };
     }
     if (e) { setFilter('all'); selectEntity(e); }
   }, [sets, selectEntity, data]);
