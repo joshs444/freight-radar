@@ -27,7 +27,8 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 - **Natural hazards / official events** — IMF PortWatch (**GDACS**) cyclone/flood/earthquake alerts that hit monitored ports, matched by exact port ID, with flag corroboration when contemporaneous.
 - **Business exposure** — point a trade CSV (LOCODEs or port names, region column optional) and each disruption maps to *your* lanes with a banded **Cost-of-Disruption stack** (carrying cost + reroute premium), coverage reporting, and a "show your work" method panel.
 - **Time-scrubber** — replay the trailing 120 days; chokepoint glow dims/brightens by each day's real count and a flag pulses on the actual date it was detected.
-- **Durable loop (verified in a test harness)** — the same fetch → detect → attribute → enrich → publish steps are wrapped in a **Temporal** workflow + Schedule, with durability proven end-to-end on Temporal's time-skipping test server (kill the worker mid-run, it re-drives from the last completed activity). Production currently regenerates the static sidecars via the same `publish_static` pipeline; the Temporal workflow is the always-on orchestration of those identical steps.
+- **Self-refreshing in production** — a scheduled **GitHub Action** (`refresh.yml`, weekly + on-demand) rebuilds the DuckDB from PortWatch, re-runs detection + every enricher, and commits the changed sidecars; that push auto-deploys. So the live site stays current without anyone running anything by hand.
+- **Durable loop (verified in a test harness)** — the same fetch → detect → attribute → enrich → publish steps are wrapped in a **Temporal** workflow + Schedule, with durability proven end-to-end on Temporal's time-skipping test server (kill the worker mid-run, it re-drives from the last completed activity). The scheduled Action above is the always-on production driver of those identical `publish_static` steps.
 
 ---
 
