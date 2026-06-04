@@ -27,14 +27,16 @@
           "from": "Dammam",
           "to": "Rotterdam",
           "item": "Petrochemicals",
-          "value_usd": 41000000
+          "value_usd": 41000000,
+          "routing_confidence": "high"
         },
         {
           "lane_id": "L15",
           "from": "Jebel Ali",
           "to": "Shanghai (Pudong)",
           "item": "Chemicals",
-          "value_usd": 24000000
+          "value_usd": 24000000,
+          "routing_confidence": "high"
         }
       ],
       "lane_count": 2,
@@ -42,11 +44,48 @@
         "Petrochemicals",
         "Chemicals"
       ],
+      "routing_confidence": "high",
       "est_delay_days": {
         "low": 4,
         "expected": 6,
         "high": 8
       },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 142466,
+          "expected": 267123,
+          "high": 427397
+        },
+        "reroute_premium_usd": {
+          "low": 102000,
+          "expected": 255000,
+          "high": 544000
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 244466,
+          "expected": 522123,
+          "high": 971397
+        },
+        "working_capital_tied_up_usd": {
+          "low": 712329,
+          "expected": 1068493,
+          "high": 1424658
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "reroute_premium",
+          "basis": "TEU \u00d7 ~$25/TEU/diversion-day \u00d7 delay"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
       "carrying_cost_of_delay_usd": {
         "low": 142466,
         "expected": 267123,
@@ -56,6 +95,11 @@
         "low": 712329,
         "expected": 1068493,
         "high": 1424658
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 244466,
+        "expected": 522123,
+        "high": 971397
       },
       "carrying_rate_assumed": 0.25
     }
@@ -88,28 +132,32 @@
           "from": "Shanghai (Pudong)",
           "to": "Rotterdam",
           "item": "Electronics",
-          "value_usd": 58000000
+          "value_usd": 58000000,
+          "routing_confidence": "high"
         },
         {
           "lane_id": "L02",
           "from": "Shanghai (Pudong)",
           "to": "Los Angeles",
           "item": "Electronics",
-          "value_usd": 46000000
+          "value_usd": 46000000,
+          "routing_confidence": "low"
         },
         {
           "lane_id": "L15",
           "from": "Jebel Ali",
           "to": "Shanghai (Pudong)",
           "item": "Chemicals",
-          "value_usd": 24000000
+          "value_usd": 24000000,
+          "routing_confidence": "high"
         },
         {
           "lane_id": "L03",
           "from": "Shanghai (Pudong)",
           "to": "New York",
           "item": "Apparel",
-          "value_usd": 21000000
+          "value_usd": 21000000,
+          "routing_confidence": "low"
         }
       ],
       "lane_count": 4,
@@ -118,11 +166,44 @@
         "Chemicals",
         "Apparel"
       ],
+      "routing_confidence": "high",
       "est_delay_days": {
         "low": 2,
         "expected": 3,
         "high": 4
       },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 163288,
+          "expected": 306164,
+          "high": 489863
+        },
+        "reroute_premium_usd": {
+          "low": 0,
+          "expected": 0,
+          "high": 0
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 163288,
+          "expected": 306164,
+          "high": 489863
+        },
+        "working_capital_tied_up_usd": {
+          "low": 816438,
+          "expected": 1224658,
+          "high": 1632877
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
       "carrying_cost_of_delay_usd": {
         "low": 163288,
         "expected": 306164,
@@ -132,6 +213,11 @@
         "low": 816438,
         "expected": 1224658,
         "high": 1632877
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 163288,
+        "expected": 306164,
+        "high": 489863
       },
       "carrying_rate_assumed": 0.25
     }
@@ -164,18 +250,52 @@
           "from": "Rostov-on-Don",
           "to": "Genoa",
           "item": "Grain & Agri",
-          "value_usd": 28000000
+          "value_usd": 28000000,
+          "routing_confidence": "low"
         }
       ],
       "lane_count": 1,
       "top_items": [
         "Grain & Agri"
       ],
+      "routing_confidence": "low",
       "est_delay_days": {
         "low": 3,
         "expected": 4,
         "high": 5
       },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 46027,
+          "expected": 76712,
+          "high": 115068
+        },
+        "reroute_premium_usd": {
+          "low": 0,
+          "expected": 0,
+          "high": 0
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 46027,
+          "expected": 76712,
+          "high": 115068
+        },
+        "working_capital_tied_up_usd": {
+          "low": 230137,
+          "expected": 306849,
+          "high": 383562
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
       "carrying_cost_of_delay_usd": {
         "low": 46027,
         "expected": 76712,
@@ -185,6 +305,11 @@
         "low": 230137,
         "expected": 306849,
         "high": 383562
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 46027,
+        "expected": 76712,
+        "high": 115068
       },
       "carrying_rate_assumed": 0.25
     }
@@ -217,18 +342,52 @@
           "from": "Taichung",
           "to": "Los Angeles",
           "item": "Semiconductors",
-          "value_usd": 72000000
+          "value_usd": 72000000,
+          "routing_confidence": "low"
         }
       ],
       "lane_count": 1,
       "top_items": [
         "Semiconductors"
       ],
+      "routing_confidence": "low",
       "est_delay_days": {
         "low": 1,
         "expected": 2,
         "high": 3
       },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 39452,
+          "expected": 98630,
+          "high": 177534
+        },
+        "reroute_premium_usd": {
+          "low": 0,
+          "expected": 0,
+          "high": 0
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 39452,
+          "expected": 98630,
+          "high": 177534
+        },
+        "working_capital_tied_up_usd": {
+          "low": 197260,
+          "expected": 394521,
+          "high": 591781
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
       "carrying_cost_of_delay_usd": {
         "low": 39452,
         "expected": 98630,
@@ -238,6 +397,11 @@
         "low": 197260,
         "expected": 394521,
         "high": 591781
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 39452,
+        "expected": 98630,
+        "high": 177534
       },
       "carrying_rate_assumed": 0.25
     }
@@ -270,14 +434,16 @@
           "from": "Gdansk",
           "to": "Felixstowe",
           "item": "Machinery",
-          "value_usd": 16000000
+          "value_usd": 16000000,
+          "routing_confidence": "high"
         },
         {
           "lane_id": "L14",
           "from": "Gothenburg",
           "to": "Rotterdam",
           "item": "Paper & Wood",
-          "value_usd": 8000000
+          "value_usd": 8000000,
+          "routing_confidence": "high"
         }
       ],
       "lane_count": 2,
@@ -285,11 +451,48 @@
         "Machinery",
         "Paper & Wood"
       ],
+      "routing_confidence": "high",
       "est_delay_days": {
         "low": 1,
         "expected": 2,
         "high": 3
       },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 13151,
+          "expected": 32877,
+          "high": 59178
+        },
+        "reroute_premium_usd": {
+          "low": 48000,
+          "expected": 160000,
+          "high": 384000
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 61151,
+          "expected": 192877,
+          "high": 443178
+        },
+        "working_capital_tied_up_usd": {
+          "low": 65753,
+          "expected": 131507,
+          "high": 197260
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "reroute_premium",
+          "basis": "TEU \u00d7 ~$25/TEU/diversion-day \u00d7 delay"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
       "carrying_cost_of_delay_usd": {
         "low": 13151,
         "expected": 32877,
@@ -299,6 +502,11 @@
         "low": 65753,
         "expected": 131507,
         "high": 197260
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 61151,
+        "expected": 192877,
+        "high": 443178
       },
       "carrying_rate_assumed": 0.25
     }

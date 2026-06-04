@@ -13,6 +13,13 @@
     "expected": 3126028,
     "high": 4230138
   },
+  "total_cost_of_disruption_usd": {
+    "low": 554384,
+    "expected": 1196506,
+    "high": 2197040
+  },
   "carrying_rate_assumed": 0.25,
-  "active_disruptions_hitting_you": 5
+  "active_disruptions_hitting_you": 5,
+  "lanes_with_known_route": 23,
+  "coverage_pct": 95.8
 }

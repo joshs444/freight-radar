@@ -1,7 +1,7 @@
 {
-  "version": 12,
+  "version": 14,
   "as_of": "2026-05-31",
-  "generated_at": "2026-06-04T07:29:48",
+  "generated_at": "2026-06-04T07:41:48",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
   "flag_count": 5,
   "chokepoints": 28,
@@ -10,12 +10,12 @@
   "layers": {
     "exposure": {
       "present": true,
-      "kb": 0.4
+      "kb": 0.5
     },
     "news": {
       "present": true,
-      "kb": 11.9,
-      "generated_at": "2026-06-04T07:28:30"
+      "kb": 12.0,
+      "generated_at": "2026-06-04T07:40:31"
     },
     "timeseries": {
       "present": true,
@@ -29,7 +29,7 @@
     "market": {
       "present": true,
       "kb": 2.4,
-      "generated_at": "2026-06-04T07:29:48"
+      "generated_at": "2026-06-04T07:41:48"
     },
     "stress": {
       "present": true,

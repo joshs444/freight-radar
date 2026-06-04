@@ -183,6 +183,35 @@ html, body, #root {
   margin-top: 5px; font-family: var(--mono); font-size: 9px; color: var(--ink-faint);
   font-style: italic;
 }
+.fr-biz-conf {
+  font-family: var(--mono); font-size: 8px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.03em; border: 1px solid; border-radius: 4px; padding: 0 4px; margin-left: 6px;
+}
+.fr-biz-conf.c-high { color: #0d7d70; border-color: #bfe0d9; }
+.fr-biz-conf.c-medium { color: #b07b1e; border-color: #f0e2c4; }
+.fr-biz-conf.c-low, .fr-biz-conf.c-none { color: var(--ink-faint); border-color: var(--line); }
+/* cost-of-disruption stack */
+.fr-cost-stack {
+  margin: 8px 0 6px; padding: 8px 10px; background: #fff; border: 1px solid var(--line); border-radius: 8px;
+}
+.fr-cost-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 2px 0; font-size: 12px; color: var(--ink-dim); }
+.fr-cost-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--ink-faint); }
+.fr-cost-val b { color: var(--ink); font-size: 13px; }
+.fr-cost-line.is-total { margin-top: 4px; padding-top: 5px; border-top: 1px solid var(--line); }
+.fr-cost-line.is-total .fr-cost-label { color: #b07b1e; font-weight: 700; }
+.fr-cost-line.is-total .fr-cost-val b { color: #b07b1e; font-size: 14.5px; }
+.fr-biz-work {
+  margin-top: 4px; font-family: var(--mono); font-size: 9.5px; color: var(--ink-dim);
+  background: none; border: none; padding: 0; cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fr-biz-work:hover { color: var(--ink); }
+.fr-biz-method { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
+.fr-biz-mline { font-family: var(--mono); font-size: 9.5px; color: var(--ink-faint); line-height: 1.4; }
+.fr-biz-mline code { color: var(--amber); }
+.fr-exp-cov {
+  margin-top: 7px; font-family: var(--mono); font-size: 8.5px; color: #b07b1e;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
 
 /* market context */
 .fr-market { margin: 10px 0 4px; padding: 10px 12px; border-radius: 9px; background: #f5f8f7; border: 1px solid #dceae6; }
