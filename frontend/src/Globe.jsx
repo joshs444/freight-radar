@@ -39,7 +39,7 @@ const STYLE = {
 
 const sqrtScale = (v, k) => Math.sqrt(Math.max(0, v)) * k;
 
-function buildLayers({ ports, chokepoints, lanes, flags, ships, tripTime, tMax, pulse, selectedId, onSelectFlag }) {
+function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime, tMax, pulse, selectedId, onSelectFlag }) {
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
@@ -98,6 +98,38 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, tripTime, tMax, 
       pickable: true,
     }),
 
+    // active tropical cyclones (live NHC + GDACS) — pulsing storm-blue marker so
+    // the live-storm layer is visible on the map even when no flag is near one
+    new ScatterplotLayer({
+      id: 'storms-ping',
+      data: storms || [],
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 1,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 9 + pulse * 26,
+      radiusMaxPixels: 9 + pulse * 26,
+      stroked: true,
+      filled: false,
+      getLineColor: [47, 93, 153, Math.round((1 - pulse) * 150)],
+      lineWidthMinPixels: 1.6,
+      pickable: false,
+    }),
+    new ScatterplotLayer({
+      id: 'storms',
+      data: storms || [],
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 1,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 5,
+      radiusMaxPixels: 5,
+      stroked: true,
+      filled: true,
+      getFillColor: [47, 93, 153, 90],
+      getLineColor: [47, 93, 153, 255],
+      lineWidthMinPixels: 2,
+      pickable: true,
+    }),
+
     // flags — pulsing severity ring (sonar ping) + a steady ring (click target)
     new ScatterplotLayer({
       id: 'flags-ping',
@@ -134,7 +166,7 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, tripTime, tMax, 
   ];
 }
 
-export default function Globe({ snapshot, lanes, flags, ships, selectedFlag, onSelectFlag, mapApiRef }) {
+export default function Globe({ snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, mapApiRef }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
@@ -142,12 +174,13 @@ export default function Globe({ snapshot, lanes, flags, ships, selectedFlag, onS
   const propsRef = useRef({ flags, selectedFlag, onSelectFlag });
   propsRef.current = { flags, selectedFlag, onSelectFlag };
 
-  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], tMax: 100 });
+  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], storms: [], tMax: 100 });
   dataRef.current = {
     ports: snapshot?.ports ?? [],
     chokepoints: snapshot?.chokepoints ?? [],
     lanes: lanes ?? [],
     ships: ships?.ships ?? [],
+    storms: storms ?? [],
     tMax: ships?.t_max ?? 100,
   };
 
@@ -181,6 +214,10 @@ export default function Globe({ snapshot, lanes, flags, ships, selectedFlag, onS
         }
         if (layer?.id === 'ports') {
           return { html: `<b>${object.name}</b>${object.country ? ', ' + object.country : ''}<br/>${object.vessels.toLocaleString()} vessels/yr`, className: 'fr-tip' };
+        }
+        if (layer?.id === 'storms') {
+          const wind = object.max_wind_kmh ? ` · ${object.max_wind_kmh} km/h` : '';
+          return { html: `🌀 <b>${object.name}</b> (${object.category})<br/>${object.basin}${wind} · live ${object.agency}`, className: 'fr-tip' };
         }
         return null;
       },
