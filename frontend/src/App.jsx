@@ -4,6 +4,7 @@ import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
 import StressGauge from './components/StressGauge.jsx';
 import Chat from './components/Chat.jsx';
+import WorldRibbon from './components/WorldRibbon.jsx';
 import { useData } from './lib/useData.js';
 
 export default function App() {
@@ -145,6 +146,8 @@ export default function App() {
           data as of <b>{asOf}</b>
         </div>
       </header>
+
+      {data?.world?.available && <WorldRibbon world={data.world} />}
 
       <div className="fr-main">
         <section className="fr-stage">

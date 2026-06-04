@@ -12,7 +12,7 @@
 // Pure functions, no React / browser globals, so the grounding test can import this
 // directly under node.
 
-import { money } from './format.js';
+import { money, compact } from './format.js';
 
 // --- formatting (display only — never feeds `facts`) -----------------------
 const pct = (v) => (v == null ? '—' : `${v > 0 ? '+' : ''}${Math.round(v)}%`);
@@ -293,6 +293,25 @@ function listDisrupted(data) {
   return answer({ text, facts, cites: ['flags.json'], kind: 'list' });
 }
 
+function worldAnswer(data) {
+  const w = data?.world;
+  if (!w?.available || !w.metrics?.length) return null;
+  const facts = [];
+  const get = (k) => w.metrics.find((m) => m.key === k);
+  const parts = [];
+  const t = get('transits'), pc = get('port_calls'), dl = get('delivered'), sh = get('shipped');
+  if (t) { facts.push(F(t.value, 'world.json'), F(t.vs7_pct, 'world.json'));
+    parts.push(`**${compact(t.value)}** ships in transit through ${w.chokepoints} chokepoints (${t.vs7_pct > 0 ? '+' : ''}${t.vs7_pct}% vs last week)`); }
+  if (pc) { facts.push(F(pc.value, 'world.json'));
+    parts.push(`**${compact(pc.value)}** port calls across ${w.ports_active} ports`); }
+  if (dl) { facts.push(F(dl.value, 'world.json'));
+    parts.push(`**${compact(dl.value)} t** cargo delivered (imports)`); }
+  if (sh) { facts.push(F(sh.value, 'world.json'));
+    parts.push(`**${compact(sh.value)} t** shipped (exports)`); }
+  const text = `Today across global ocean freight: ${parts.join(', ')}. (PortWatch daily estimates, as of ${w.as_of}.)`;
+  return answer({ text, facts, cites: ['world.json'], kind: 'world' });
+}
+
 const HELP = answer({
   text: "I'm grounded in this dashboard's data — every number I give traces to a source file. "
     + 'Try asking about a chokepoint, the biggest risk, what is improving, your exposure, or the market.',
@@ -310,6 +329,11 @@ export function ask(q, data, prebuiltIndex) {
 
   // greetings / help
   if (/^(hi|hey|hello|help|what can you|who are you)\b/.test(s)) return HELP;
+
+  // world overview ("how many ships are out / delivered today")
+  if (has('how many ship', 'ships out', 'ships are out', 'vessels', 'port call', 'delivered', 'shipped',
+    'cargo', 'how busy', 'world today', 'global activity', 'throughput', 'in transit', 'how many are out'))
+    return worldAnswer(data) || summarize(data);
 
   // market (only if no specific entity intent dominates)
   if (has('brent', 'oil price', 'crude', 'bunker', 'vlsfo', 'henry hub', 'natural gas', 'why is oil', 'fuel'))
@@ -347,9 +371,9 @@ export function ask(q, data, prebuiltIndex) {
 
 export const SUGGESTED = [
   "What's going on?",
+  'How many ships are out today?',
   'What is the biggest risk?',
   'What is improving or worsening?',
   'Tell me about the Strait of Hormuz',
   'Am I exposed?',
-  'Why does oil matter here?',
 ];

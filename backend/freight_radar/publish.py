@@ -22,8 +22,8 @@ from .export_snapshot import LANES, SOURCE, export
 
 # Optional signal sidecars; the manifest reports which are present + fresh so the
 # UI and /api/health can show freshness per layer (honest "what's loaded").
-_SIDECARS = ("exposure", "news", "timeseries", "ships", "market", "stress", "events",
-             "brief", "weather", "dwell", "disruptions")
+_SIDECARS = ("exposure", "news", "timeseries", "ships", "market", "stress", "world",
+             "events", "brief", "weather", "dwell", "disruptions")
 
 
 def _layers(out_dir: Path) -> dict:

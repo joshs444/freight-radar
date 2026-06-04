@@ -23,7 +23,7 @@ export function useData() {
       .then(async ([snapshot, lanes, flags]) => {
         // timeseries + ships + exposure + news + stress/brief/events are optional —
         // features hide if absent (never block the core globe on a missing sidecar).
-        const [timeseries, ships, exposure, news, market, stress, brief, events] = await Promise.all([
+        const [timeseries, ships, exposure, news, market, stress, brief, events, world] = await Promise.all([
           getJson('data/timeseries.json').catch(() => null),
           getJson('data/ships.json').catch(() => null),
           getJson('data/exposure.json').catch(() => null),
@@ -32,9 +32,10 @@ export function useData() {
           getJson('data/stress.json').catch(() => null),
           getJson('data/brief.json').catch(() => null),
           getJson('data/events.json').catch(() => null),
+          getJson('data/world.json').catch(() => null),
         ]);
         if (!alive) return;
-        setState({ loading: false, error: null, data: { snapshot, lanes, flags, timeseries, ships, exposure, news, market, stress, brief, events } });
+        setState({ loading: false, error: null, data: { snapshot, lanes, flags, timeseries, ships, exposure, news, market, stress, brief, events, world } });
       })
       .catch((e) => alive && setState({ loading: false, error: e.message, data: null }));
     return () => {
