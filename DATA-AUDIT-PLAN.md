@@ -2,6 +2,14 @@
 
 _Turns the verified [data audit](#) (16 findings, adversarially re-verified, 0 rejected) into a sequenced, file-level build plan. The headline: the warehouse already holds far more than the app reads — three populated per-cargo-type dimensions go to zero consumers, and detection runs entirely on blended counts. This plan uses what we have first, then adds the new free/keyless sources and hardens the ETL._
 
+## Status — shipped 2026-06-04 (build order A → D → B → C)
+
+- **Phase A — cargo-aware detection — ✅ shipped + live.** A1 per-entity cargo-mix (snapshot `cargo_mix`, the CargoMix card); A2 dominant-cargo-type port detector (`port_cargo_type_drop/_spike` — surfaced Hong Kong/Kaohsiung/Port Klang container drops the blended detector missed); A3 avg-vessel-size chokepoint detector (`chokepoint_vessel_size_shift`, capacity÷count, orthogonal to count — caught Yucatan Channel +34%). Labels honest (avg size ≠ utilization; attribution, never "total steady").
+- **Phase D — ETL hardening — ✅ shipped + prod-verified.** D1 non-retryable join-coverage gate in the Temporal path; D2 silent-column-drop guard in both ingest frames; D3 fetch-completeness (`verify_count`, the formerly-dead `count()`). Verified end-to-end by dispatching `refresh.yml` (full backfill ran the guards with no false-raise). _D4 (optional provenance) not done — left as optional._
+- **Phase B — national-dependence weighting — ✅ shipped + live.** Ingested `share_country_maritime_*` + per-type `vessel_count_*`; port severity now blends national dependence (a sole gateway like Mombasa ≈ 99.8 % outranks an equal-sized peer); flag briefs carry the dependence line; a National-dependence chip renders the import/export share.
+- **Phase C1 — live storm layer — ✅ shipped + live.** `weather.py` (NHC CurrentStorms + GDACS active TCs, NOAA-dup dedup, server-side for CORS) → `weather.json`; storm chip on flags within 500 km. Silent off-season (honest dormant state).
+- **Phase C2 — GDELT attention — ❌ cut.** GDELT's free DOC 2.0 endpoint hard-rate-limits a single IP (429 even 180 s cold after a small burst), and the weekly `refresh.yml` runs from GitHub's *shared* CI IP — so attention would be permanently empty in prod while adding ~33 s of doomed calls per refresh. Shipping a never-populated, pipeline-polluting layer fails the honesty bar, so it was backed out cleanly. Revisit only with a paid/keyed attention source.
+
 ## Guiding principles
 
 1. **Additive, not destructive.** New detectors fire as *new flag kinds* alongside the existing blended detection — never replace `n_total`/`portcalls_total` flags, so existing behavior stays stable while we add resolution.
