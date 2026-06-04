@@ -3,6 +3,7 @@ import Globe from './Globe.jsx';
 import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
 import StressGauge from './components/StressGauge.jsx';
+import StressDetail from './components/StressDetail.jsx';
 import Chat from './components/Chat.jsx';
 import WorldRibbon from './components/WorldRibbon.jsx';
 import SearchBox from './components/SearchBox.jsx';
@@ -17,6 +18,7 @@ export default function App() {
   const [scrubIndex, setScrubIndex] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [userExposure, setUserExposure] = useState(null);
+  const [showStress, setShowStress] = useState(false);
   const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef(null);
 
@@ -193,10 +195,7 @@ export default function App() {
           </div>
         </div>
         {data?.stress?.available && (
-          <StressGauge
-            stress={data.stress}
-            onOpen={() => data.stress.contributors?.[0] && pickByPortid(data.stress.contributors[0].portid)}
-          />
+          <StressGauge stress={data.stress} onOpen={() => setShowStress(true)} />
         )}
         <div className="fr-asof">
           <span className="fr-dot" /> {source}<br />
@@ -270,6 +269,10 @@ export default function App() {
           />
         )}
       </div>
+
+      {showStress && data?.stress && (
+        <StressDetail stress={data.stress} onClose={() => setShowStress(false)} onPickEntity={pickByPortid} />
+      )}
 
       {data && <Chat data={userExposure ? { ...data, flags, exposure: exposureSummary } : data} onPickEntity={pickByPortid} />}
     </div>

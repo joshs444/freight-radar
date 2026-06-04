@@ -33,6 +33,7 @@ const QUESTIONS = [
   'how busy is global freight', 'how many vessels in transit',
   'any weather or storms', 'are there natural hazards', 'any official events near hormuz',
   'were there any cyclones', 'any earthquakes affecting ports',
+  'what is the stress index', 'how is the stress index calculated', 'what does ocean freight stress mean',
   'hello', 'something totally unrelated to freight',
 ];
 

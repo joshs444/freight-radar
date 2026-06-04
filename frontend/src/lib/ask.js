@@ -313,6 +313,25 @@ function worldAnswer(data) {
   return answer({ text, facts, cites: ['world.json'], kind: 'world' });
 }
 
+function stressExplain(data) {
+  const s = data?.stress;
+  if (!s?.available) return null;
+  const facts = [F(s.index, 'stress.json'), F(s.breadth, 'stress.json'), F(s.depth, 'stress.json'),
+    F(s.chokepoints_disrupted, 'stress.json'), F(s.chokepoints_total, 'stress.json')];
+  const top = (s.contributors || [])[0];
+  let driver = '';
+  if (top) {
+    facts.push(F(top.now, 'stress.json'), F(top.normal, 'stress.json'), F(top.pct_vs_normal, 'stress.json'));
+    driver = ` The biggest driver is **${top.name}** (${perDay(top.now)} vs ${perDay(top.normal)} normal, ${pct(top.pct_vs_normal)}).`;
+  }
+  const text = `The Ocean Freight Stress Index is **our own composite 0–100 score** — not an official index — `
+    + `summarising how disrupted ocean freight is versus normal. It blends **breadth ${s.breadth}** `
+    + `(an economic-weighted average across all ${s.chokepoints_total} chokepoints; ${s.chokepoints_disrupted} disrupted now) `
+    + `with **depth ${s.depth}** (the single worst chokepoint, weighted 40% so one strategic-strait crisis isn't averaged away): `
+    + `index = 0.6×breadth + 0.4×depth = **${s.index}** (${s.label}).${driver} Click the gauge for the full breakdown.`;
+  return answer({ text, facts, cites: ['stress.json'], kind: 'stress-explain' });
+}
+
 function hazardAnswer(e, data) {
   const d = data?.disruptions;
   const evs = d?.events || [];
@@ -357,6 +376,11 @@ export function ask(q, data, prebuiltIndex) {
 
   // greetings / help
   if (/^(hi|hey|hello|help|what can you|who are you)\b/.test(s)) return HELP;
+
+  // explain the stress index (what is it / how is it computed / what does it mean)
+  if (s.includes('stress') && has('what is', 'what does', 'how is', 'how do', 'how are', 'explain',
+    'mean', 'calculat', 'compute', 'goes into', 'made up', 'what makes', 'made it up', 'come up with'))
+    return stressExplain(data) || summarize(data);
 
   // natural hazards / official events
   if (has('weather', 'storm', 'cyclone', 'hurricane', 'typhoon', 'earthquake', 'flood', 'hazard',

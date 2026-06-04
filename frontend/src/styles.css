@@ -572,6 +572,65 @@ html, body, #root {
 .fr-stress-wow { font-family: var(--mono); font-size: 12px; font-weight: 700; display: flex; align-items: baseline; gap: 3px; }
 .fr-stress-wow em { font-size: 8px; font-style: normal; color: var(--ink-faint); }
 .fr-stress-spark { display: flex; align-items: center; }
+.fr-stress-info { color: var(--ink-faint); font-weight: 400; letter-spacing: 0; text-transform: none; opacity: 0; transition: opacity 0.14s; }
+.fr-stress:hover .fr-stress-info { opacity: 1; }
+
+/* --- stress index explainer modal --------------------------------------- */
+.fr-sd-backdrop {
+  position: fixed; inset: 0; z-index: 60; background: rgba(27, 34, 48, 0.32);
+  backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; padding: 24px;
+  animation: fadein 0.14s ease;
+}
+@keyframes fadein { from { opacity: 0 } to { opacity: 1 } }
+.fr-sd {
+  position: relative; width: 560px; max-width: 100%; max-height: 88vh; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 16px;
+  padding: 22px 24px; box-shadow: 0 24px 70px rgba(27, 34, 48, 0.32);
+}
+.fr-sd-x { position: absolute; top: 13px; right: 15px; background: none; border: none; font-size: 22px; color: var(--ink-faint); cursor: pointer; line-height: 1; }
+.fr-sd-x:hover { color: var(--ink); }
+.fr-sd-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.fr-sd-kicker { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+.fr-sd-score { font-family: var(--display); font-weight: 800; font-size: 42px; line-height: 1.05; display: flex; align-items: baseline; gap: 8px; }
+.fr-sd-score span { font-family: var(--mono); font-size: 15px; font-weight: 400; color: var(--ink-faint); }
+.fr-sd-score em { font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid; border-radius: 5px; padding: 2px 8px; }
+.fr-sd-wow { font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; }
+.fr-sd-spark { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.fr-sd-spark span { font-family: var(--mono); font-size: 8.5px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+.fr-sd-what { font-size: 13px; color: var(--ink-dim); line-height: 1.6; margin: 16px 0 18px; }
+.fr-sd-what b { color: var(--ink); }
+.fr-sd-grid { display: flex; gap: 12px; }
+.fr-sd-comp { flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px; }
+.fr-sd-comp-h { font-family: var(--mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-dim); display: flex; justify-content: space-between; align-items: baseline; }
+.fr-sd-comp-h b { font-family: var(--display); font-size: 20px; color: var(--ink); }
+.fr-sd-comp p { font-size: 11.5px; color: var(--ink-dim); line-height: 1.5; margin: 7px 0 0; }
+.fr-sd-comp p b { color: var(--ink); }
+.fr-sd-formula { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-dim); margin: 13px 0 4px; }
+.fr-sd-formula b { font-size: 14px; }
+.fr-sd-sec { font-family: var(--display); font-weight: 700; font-size: 13px; margin: 18px 0 9px; color: var(--ink); }
+.fr-sd-contribs { display: flex; flex-direction: column; gap: 6px; }
+.fr-sd-c { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.fr-sd-c:hover { border-color: var(--line-strong); background: var(--hover); }
+.fr-sd-c-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.fr-sd-c-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+.fr-sd-c-num { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); }
+.fr-sd-c-bar { display: block; height: 4px; border-radius: 3px; background: var(--line); margin-top: 6px; overflow: hidden; }
+.fr-sd-c-bar i { display: block; height: 100%; border-radius: 3px; }
+.fr-sd-none { font-size: 12px; color: var(--ink-faint); font-style: italic; padding: 6px 0; }
+.fr-sd-movers { display: flex; flex-wrap: wrap; gap: 16px; margin: 13px 0 0; font-family: var(--mono); font-size: 10.5px; color: var(--ink-dim); }
+.fr-sd-movers b { color: var(--ink); }
+.fr-sd-scale { display: flex; gap: 6px; margin: 18px 0 10px; }
+.fr-sd-scale span { flex: 1; text-align: center; font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 3px; }
+.fr-sd-scale span i { display: block; font-style: normal; font-size: 8px; margin-top: 1px; }
+.fr-sd-scale span.on { color: var(--ink); border-color: var(--line-strong); font-weight: 700; background: var(--surface); }
+.fr-sd-foot { font-family: var(--mono); font-size: 9px; color: var(--ink-faint); line-height: 1.5; font-style: italic; }
+
+@media (max-width: 560px) {
+  .fr-sd { padding: 18px 16px; max-height: 92vh; }
+  .fr-sd-score { font-size: 34px; }
+  .fr-sd-grid { flex-direction: column; }
+  .fr-sd-head .fr-sd-spark { display: none; }
+}
 
 /* --- "this week" brief hero card ---------------------------------------- */
 .fr-brief-card {
