@@ -11,13 +11,13 @@
     "brief_md": "**Strait of Hormuz** has run at **~6 vessels/day** since around **2026-03-01**, **~92% below** its prior norm of **~75/day** \u2014 a level shift sustained for **~91 days**.\n\n_This is a persistent disruption, not a fresh blip. A 28-day rolling baseline has since adapted to the new level, which is why a same-day anomaly detector reads it as 'normal'; it is flagged by comparing today's level to the pre-shift norm._\n\n_Method: sustained level-shift vs pre-disruption norm. Source: IMF PortWatch \u2014 daily granularity, refreshed weekly._",
     "metric": "n_total",
     "value": 5.67,
-    "baseline": 74.9,
+    "baseline": 74.87,
     "pct_change": -92.4,
     "zscore": 0.0,
     "as_of": "2026-03-01",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "sustained level-shift vs pre-disruption norm",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 65000000,
       "exposed_teu": 1700,
@@ -118,11 +118,11 @@
     "value": 18.0,
     "baseline": 85.96,
     "pct_change": -79.1,
-    "zscore": -7.15,
+    "zscore": -7.12,
     "as_of": "2026-05-25",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 149000000,
       "exposed_teu": 12100,
@@ -223,98 +223,6 @@
     }
   },
   {
-    "flag_id": "b1d50dee582d95d2",
-    "kind": "port_activity_drop",
-    "entity": "Ningbo",
-    "portid": "port824",
-    "lat": 29.92076897,
-    "lon": 121.8818408,
-    "severity": 38,
-    "headline": "Ningbo activity 96% below its 28-day norm",
-    "brief_md": "**Ningbo** port calls fell to **2 port calls** on 2026-05-24, **96% below** its 28-day norm of ~52/day (z = -4.9).\n\n_\"Congestion\" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._\n\n_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch \u2014 daily granularity, refreshed weekly._",
-    "metric": "portcalls_total",
-    "value": 2.0,
-    "baseline": 51.93,
-    "pct_change": -96.1,
-    "zscore": -4.91,
-    "as_of": "2026-05-24",
-    "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
-    "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
-    "business": {
-      "exposed_value_usd": 17500000,
-      "exposed_teu": 2900,
-      "exposed_lanes": [
-        {
-          "lane_id": "L04",
-          "from": "Ningbo",
-          "to": "Hamburg",
-          "item": "Furniture",
-          "value_usd": 17500000,
-          "routing_confidence": "high"
-        }
-      ],
-      "lane_count": 1,
-      "top_items": [
-        "Furniture"
-      ],
-      "routing_confidence": "high",
-      "est_delay_days": {
-        "low": 2,
-        "expected": 3,
-        "high": 4
-      },
-      "cost_stack": {
-        "carrying_cost_of_delay_usd": {
-          "low": 19178,
-          "expected": 35959,
-          "high": 57534
-        },
-        "reroute_premium_usd": {
-          "low": 0,
-          "expected": 0,
-          "high": 0
-        },
-        "total_cost_of_disruption_usd": {
-          "low": 19178,
-          "expected": 35959,
-          "high": 57534
-        },
-        "working_capital_tied_up_usd": {
-          "low": 95890,
-          "expected": 143836,
-          "high": 191781
-        }
-      },
-      "method": [
-        {
-          "line": "carrying_cost_of_delay",
-          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
-        },
-        {
-          "line": "working_capital_tied_up",
-          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
-        }
-      ],
-      "carrying_cost_of_delay_usd": {
-        "low": 19178,
-        "expected": 35959,
-        "high": 57534
-      },
-      "working_capital_tied_up_usd": {
-        "low": 95890,
-        "expected": 143836,
-        "high": 191781
-      },
-      "total_cost_of_disruption_usd": {
-        "low": 19178,
-        "expected": 35959,
-        "high": 57534
-      },
-      "carrying_rate_assumed": 0.25
-    }
-  },
-  {
     "flag_id": "bce0e2fdd63be992",
     "kind": "chokepoint_transit_spike",
     "entity": "Kerch Strait",
@@ -328,11 +236,11 @@
     "value": 49.0,
     "baseline": 7.21,
     "pct_change": 579.2,
-    "zscore": 9.55,
+    "zscore": 9.56,
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 28000000,
       "exposed_teu": 0,
@@ -407,6 +315,98 @@
     }
   },
   {
+    "flag_id": "b34e04d7a651a706",
+    "kind": "port_activity_drop",
+    "entity": "Taichung",
+    "portid": "port1252",
+    "lat": 24.25457118,
+    "lon": 120.5049668,
+    "severity": 29,
+    "headline": "Taichung activity 33% below its 28-day norm",
+    "brief_md": "**Taichung** port calls fell to **10 port calls** on 2026-05-28, **33% below** its 28-day norm of ~15/day (z = -6.3).\n\n_\"Congestion\" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._\n\n_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch \u2014 daily granularity, refreshed weekly._",
+    "metric": "portcalls_total",
+    "value": 10.0,
+    "baseline": 15.0,
+    "pct_change": -33.3,
+    "zscore": -6.31,
+    "as_of": "2026-05-28",
+    "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "method": "STL(7,robust) residual + 28d rolling z",
+    "lifecycle": "ongoing",
+    "business": {
+      "exposed_value_usd": 72000000,
+      "exposed_teu": 1400,
+      "exposed_lanes": [
+        {
+          "lane_id": "L05",
+          "from": "Taichung",
+          "to": "Los Angeles",
+          "item": "Semiconductors",
+          "value_usd": 72000000,
+          "routing_confidence": "low"
+        }
+      ],
+      "lane_count": 1,
+      "top_items": [
+        "Semiconductors"
+      ],
+      "routing_confidence": "low",
+      "est_delay_days": {
+        "low": 1,
+        "expected": 2,
+        "high": 3
+      },
+      "cost_stack": {
+        "carrying_cost_of_delay_usd": {
+          "low": 39452,
+          "expected": 98630,
+          "high": 177534
+        },
+        "reroute_premium_usd": {
+          "low": 0,
+          "expected": 0,
+          "high": 0
+        },
+        "total_cost_of_disruption_usd": {
+          "low": 39452,
+          "expected": 98630,
+          "high": 177534
+        },
+        "working_capital_tied_up_usd": {
+          "low": 197260,
+          "expected": 394521,
+          "high": 591781
+        }
+      },
+      "method": [
+        {
+          "line": "carrying_cost_of_delay",
+          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
+        },
+        {
+          "line": "working_capital_tied_up",
+          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
+        }
+      ],
+      "carrying_cost_of_delay_usd": {
+        "low": 39452,
+        "expected": 98630,
+        "high": 177534
+      },
+      "working_capital_tied_up_usd": {
+        "low": 197260,
+        "expected": 394521,
+        "high": 591781
+      },
+      "total_cost_of_disruption_usd": {
+        "low": 39452,
+        "expected": 98630,
+        "high": 177534
+      },
+      "carrying_rate_assumed": 0.25
+    }
+  },
+  {
     "flag_id": "b3729b17446dc9df",
     "kind": "chokepoint_transit_spike",
     "entity": "Oresund Strait",
@@ -420,11 +420,11 @@
     "value": 54.0,
     "baseline": 41.71,
     "pct_change": 29.5,
-    "zscore": 3.63,
+    "zscore": 3.64,
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 24000000,
       "exposed_teu": 3200,
@@ -507,87 +507,6 @@
         "low": 61151,
         "expected": 192877,
         "high": 443178
-      },
-      "carrying_rate_assumed": 0.25
-    }
-  },
-  {
-    "flag_id": "25f4a760f2f91733",
-    "kind": "port_activity_drop",
-    "entity": "Santos",
-    "portid": "port1160",
-    "lat": -23.91706787,
-    "lon": -46.33656353,
-    "severity": 20,
-    "headline": "Santos activity 17% below its 28-day norm",
-    "brief_md": "**Santos** port calls fell to **13 port calls** on 2026-05-20, **17% below** its 28-day norm of ~16/day (z = -3.7).\n\n_\"Congestion\" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._\n\n_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch \u2014 daily granularity, refreshed weekly._",
-    "metric": "portcalls_total",
-    "value": 13.0,
-    "baseline": 15.64,
-    "pct_change": -16.9,
-    "zscore": -3.67,
-    "as_of": "2026-05-20",
-    "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
-    "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
-    "business": {
-      "exposed_value_usd": 0,
-      "exposed_teu": 0,
-      "exposed_lanes": [],
-      "lane_count": 0,
-      "top_items": [],
-      "routing_confidence": "none",
-      "est_delay_days": {
-        "low": 1,
-        "expected": 2,
-        "high": 3
-      },
-      "cost_stack": {
-        "carrying_cost_of_delay_usd": {
-          "low": 0,
-          "expected": 0,
-          "high": 0
-        },
-        "reroute_premium_usd": {
-          "low": 0,
-          "expected": 0,
-          "high": 0
-        },
-        "total_cost_of_disruption_usd": {
-          "low": 0,
-          "expected": 0,
-          "high": 0
-        },
-        "working_capital_tied_up_usd": {
-          "low": 0,
-          "expected": 0,
-          "high": 0
-        }
-      },
-      "method": [
-        {
-          "line": "carrying_cost_of_delay",
-          "basis": "value \u00d7 25%/yr carrying \u00d7 delay/365"
-        },
-        {
-          "line": "working_capital_tied_up",
-          "basis": "value \u00d7 delay/365 (balance-sheet, excluded from P&L total)"
-        }
-      ],
-      "carrying_cost_of_delay_usd": {
-        "low": 0,
-        "expected": 0,
-        "high": 0
-      },
-      "working_capital_tied_up_usd": {
-        "low": 0,
-        "expected": 0,
-        "high": 0
-      },
-      "total_cost_of_disruption_usd": {
-        "low": 0,
-        "expected": 0,
-        "high": 0
       },
       "carrying_rate_assumed": 0.25
     }

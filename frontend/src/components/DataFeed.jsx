@@ -6,6 +6,7 @@ import { Sparkline, SparkHistory } from './Sparkline.jsx';
 import { computeTrend, trendLabel } from '../lib/trend.js';
 import BriefCard from './BriefCard.jsx';
 import HazardsPanel from './HazardsPanel.jsx';
+import GatunPanel from './GatunPanel.jsx';
 import Upload from './Upload.jsx';
 import SearchBox from './SearchBox.jsx';
 import { exportBrief, exportExposureCSV } from '../lib/exporters.js';
@@ -166,7 +167,7 @@ function NewsBlock({ news }) {
   );
 }
 
-function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, watched, onToggleWatch }) {
+function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, watched, onToggleWatch, gatun }) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
@@ -213,6 +214,7 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
               {tl.pct ? ` — ${tl.pct > 0 ? '+' : ''}${tl.pct}% over the last 10 days` : ''}
             </div>
           )}
+          {gatun?.available && gatun.portid === e.id && <GatunPanel gatun={gatun} />}
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && <BusinessImpact b={e.flag.business} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
@@ -227,7 +229,7 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, search, brief, flags, disruptions, scrubDate, scrubIndex, onLive, watched, onToggleWatch, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, search, brief, flags, disruptions, gatun, scrubDate, scrubIndex, onLive, watched, onToggleWatch, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
   const filters = watched?.size ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }] : FILTERS;
   return (
     <aside className="fr-feed">
@@ -281,7 +283,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
         {rows.map((e) => (
           <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates}
             news={e.flag ? news?.[e.flag.flag_id] : null} market={market} scrubIndex={scrubIndex}
-            watched={watched} onToggleWatch={onToggleWatch} />
+            watched={watched} onToggleWatch={onToggleWatch} gatun={gatun} />
         ))}
       </div>
       <div className="fr-feed-foot">

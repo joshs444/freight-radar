@@ -313,6 +313,23 @@ function worldAnswer(data) {
   return answer({ text, facts, cites: ['world.json'], kind: 'world' });
 }
 
+function gatunAnswer(data) {
+  const g = data?.gatun;
+  if (!g?.available) return null;
+  const cut = g.normal_max_draft_ft - g.min_projected_neopanamax_draft_ft;
+  const facts = [F(g.current_level_ft, 'gatun.json'), F(g.pctile_alltime, 'gatun.json'),
+    F(g.min_projected_neopanamax_draft_ft, 'gatun.json')];
+  if (g.change_30d_ft != null) facts.push(F(g.change_30d_ft, 'gatun.json'));
+  const draftLine = cut > 0
+    ? `projected max draft is **${g.min_projected_neopanamax_draft_ft} ft** Neopanamax — a ${cut.toFixed(1)} ft restriction vs the ${g.normal_max_draft_ft} ft norm${g.surcharge_pct_now ? ` (${g.surcharge_pct_now}% surcharge)` : ''}`
+    : `max draft is unrestricted at the full **${g.normal_max_draft_ft} ft**`;
+  const text = `Panama Canal: Gatun Lake is at **${g.current_level_ft} ft** (${g.pctile_alltime}th percentile of records since 1965`
+    + `${g.change_30d_ft != null ? `, ${g.change_30d_ft > 0 ? '+' : ''}${g.change_30d_ft} ft over 30 days` : ''}); ${draftLine}. `
+    + `This is the Panama Canal Authority's own lake/draft data — a leading indicator PortWatch's transit counts can't provide.`;
+  return answer({ text, facts, cites: ['gatun.json'],
+    entity: { portid: g.portid, name: g.name }, kind: 'gatun' });
+}
+
 function stressExplain(data) {
   const s = data?.stress;
   if (!s?.available) return null;
@@ -381,6 +398,10 @@ export function ask(q, data, prebuiltIndex) {
   if (s.includes('stress') && has('what is', 'what does', 'how is', 'how do', 'how are', 'explain',
     'mean', 'calculat', 'compute', 'goes into', 'made up', 'what makes', 'made it up', 'come up with'))
     return stressExplain(data) || summarize(data);
+
+  // Panama Canal Gatun lake level / draft (leading indicator)
+  if (has('panama', 'gatun', 'draft', 'water level', 'lake level', 'neopanamax', 'canal water'))
+    return gatunAnswer(data) || (e ? entityStatus(e, data) : summarize(data));
 
   // natural hazards / official events
   if (has('weather', 'storm', 'cyclone', 'hurricane', 'typhoon', 'earthquake', 'flood', 'hazard',
