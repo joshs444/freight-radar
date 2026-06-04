@@ -23,6 +23,13 @@ _DIM_MAP = {
     "lat": "lat",
     "lon": "lon",
     "vessel_count_total": "vessel_count_total",
+    "vessel_count_container": "vessel_count_container",
+    "vessel_count_dry_bulk": "vessel_count_dry_bulk",
+    "vessel_count_general_cargo": "vessel_count_general_cargo",
+    "vessel_count_RoRo": "vessel_count_roro",  # upstream RoRo -> our snake_case
+    "vessel_count_tanker": "vessel_count_tanker",
+    "share_country_maritime_import": "share_country_maritime_import",
+    "share_country_maritime_export": "share_country_maritime_export",
     "industry_top1": "industry_top1",
     "industry_top2": "industry_top2",
     "industry_top3": "industry_top3",

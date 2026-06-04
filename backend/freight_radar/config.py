@@ -50,7 +50,13 @@ INCREMENTAL_REPULL_DAYS = 14  # PortWatch values are revisable estimates
 MIN_JOIN_COVERAGE = 0.95
 
 # Reference-layer fields we keep (lat/lon are WGS84 decimal degrees in attrs).
+# Field names are case-sensitive ArcGIS attrs — note vessel_count_RoRo's casing and
+# the upper-case ISO3/LOCODE. share_country_maritime_* are 0-100 % national-dependence
+# scores; the per-type vessel_count_* are all-time fleet-base counts. (Phase B)
 DIM_OUT_FIELDS = (
     "portid,fullname,portname,country,ISO3,continent,lat,lon,"
-    "vessel_count_total,industry_top1,industry_top2,industry_top3,LOCODE"
+    "vessel_count_total,vessel_count_container,vessel_count_dry_bulk,"
+    "vessel_count_general_cargo,vessel_count_RoRo,vessel_count_tanker,"
+    "share_country_maritime_import,share_country_maritime_export,"
+    "industry_top1,industry_top2,industry_top3,LOCODE"
 )
