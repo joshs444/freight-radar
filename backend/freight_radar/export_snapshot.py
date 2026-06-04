@@ -32,6 +32,24 @@ from .config import DEFAULT_DB_PATH, REPO_ROOT
 OUT_DIR = REPO_ROOT / "frontend" / "public" / "data"
 SOURCE = "IMF PortWatch — daily granularity, refreshed weekly"
 
+# The 5 leaf vessel types PortWatch breaks every count into. They sum *exactly*
+# to the corresponding `*_total` (container+dry_bulk+general_cargo+roro+tanker),
+# so a cargo-mix built from them is internally consistent with the headline total.
+CARGO_TYPES = ("container", "tanker", "dry_bulk", "general_cargo", "roro")
+
+
+def _cargo_mix(r, prefix: str) -> dict | None:
+    """{type: count} over the 5 leaf vessel types from ``{prefix}{type}`` columns.
+
+    ``prefix`` is ``n_`` for chokepoint transits, ``portcalls_`` for port calls.
+    None when the row carries no breakdown (so the frontend can skip the block).
+    """
+    mix = {}
+    for t in CARGO_TYPES:
+        v = r.get(f"{prefix}{t}")
+        mix[t] = int(v) if v is not None else 0
+    return mix if sum(mix.values()) > 0 else None
+
 # Hardcoded major ocean lanes (great-circle arcs). [lon, lat] endpoints.
 LANES = [
     {"name": "Asia–Europe (Shanghai→Suez)", "from": [121.5, 31.2], "to": [32.44, 30.59], "intensity": 0.95},
@@ -58,6 +76,8 @@ def _chokepoints(con) -> list[dict]:
                    arg_max(n_container, date) AS n_container,
                    arg_max(n_tanker, date) AS n_tanker,
                    arg_max(n_dry_bulk, date) AS n_dry_bulk,
+                   arg_max(n_general_cargo, date) AS n_general_cargo,
+                   arg_max(n_roro, date) AS n_roro,
                    arg_max(capacity_total, date) AS capacity_total
             FROM fct_chokepoint_daily GROUP BY portid
         ),
@@ -72,6 +92,7 @@ def _chokepoints(con) -> list[dict]:
         SELECT d.portid, d.fullname AS name, d.country, d.lat, d.lon,
                d.industry_top1, d.vessel_count_total,
                r.latest_date, r.n_total, r.n_container, r.n_tanker, r.n_dry_bulk,
+               r.n_general_cargo, r.n_roro,
                r.capacity_total, b.base_mean, b.base_std
         FROM dim_chokepoint d
         JOIN recent r USING (portid)
@@ -89,6 +110,11 @@ def _chokepoints(con) -> list[dict]:
         n = float(r["n_total"])
         pct = round((n - base) / base * 100, 1) if base else None
         z = round((n - base) / std, 2) if (base is not None and std) else None
+        cap = r["capacity_total"]
+        # avg cargo size of transiting vessels = total transiting DWT / vessel count.
+        # A fleet-mix figure (bigger/smaller ships), NOT utilisation — capacity is a
+        # flow, not a ceiling. See the A3 detector (chokepoint_vessel_size_shift).
+        avg_size = int(round(cap / n)) if (cap is not None and n > 0) else None
         out.append(
             {
                 "portid": r["portid"],
@@ -101,7 +127,9 @@ def _chokepoints(con) -> list[dict]:
                 "n_container": int(r["n_container"]),
                 "n_tanker": int(r["n_tanker"]),
                 "n_dry_bulk": int(r["n_dry_bulk"]),
-                "capacity_total": int(r["capacity_total"]) if r["capacity_total"] is not None else None,
+                "capacity_total": int(cap) if cap is not None else None,
+                "avg_vessel_size_dwt": avg_size,
+                "cargo_mix": _cargo_mix(r, "n_"),
                 "baseline": round(base, 1) if base else None,
                 "pct_change": pct,
                 "zscore": z,
@@ -116,11 +144,18 @@ def _ports(con) -> list[dict]:
         """
         WITH recent AS (
             SELECT portid, max(date) AS latest_date,
-                   arg_max(portcalls_total, date) AS portcalls
+                   arg_max(portcalls_total, date) AS portcalls,
+                   arg_max(portcalls_container, date) AS portcalls_container,
+                   arg_max(portcalls_tanker, date) AS portcalls_tanker,
+                   arg_max(portcalls_dry_bulk, date) AS portcalls_dry_bulk,
+                   arg_max(portcalls_general_cargo, date) AS portcalls_general_cargo,
+                   arg_max(portcalls_roro, date) AS portcalls_roro
             FROM fct_port_daily GROUP BY portid
         )
         SELECT d.portid, d.portname AS name, d.country, d.lat, d.lon,
-               d.vessel_count_total, r.portcalls
+               d.vessel_count_total, r.portcalls,
+               r.portcalls_container, r.portcalls_tanker, r.portcalls_dry_bulk,
+               r.portcalls_general_cargo, r.portcalls_roro
         FROM dim_port d JOIN recent r USING (portid)
         WHERE d.lat IS NOT NULL AND d.lon IS NOT NULL
         """
@@ -136,6 +171,7 @@ def _ports(con) -> list[dict]:
             "lon": float(r["lon"]),
             "vessels": int(r["vessel_count_total"]) if r["vessel_count_total"] is not None else 0,
             "portcalls": int(r["portcalls"]) if r["portcalls"] is not None else 0,
+            "cargo_mix": _cargo_mix(r, "portcalls_"),
         }
         for _, r in rows.iterrows()
     ]
