@@ -134,6 +134,7 @@ def build_events(raw_events: list[dict], ports: dict, chokes: list[dict], as_of:
             "country": a.get("country"),
             "from": from_d, "to": to_d,
             "lat": lat, "lon": lon,
+            "severity": a.get("severitytext"),  # GDACS human-readable magnitude
             "affected_ports": affected[:8],
             "n_affected_ports": len(affected),
             "near_chokepoints": sorted(near_ch, key=lambda x: x["km"]),

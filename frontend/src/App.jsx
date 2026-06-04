@@ -252,6 +252,7 @@ export default function App() {
             brief={data.brief}
             flags={flags}
             disruptions={data.disruptions}
+            gatun={data.gatun}
             scrubDate={scrubDate}
             scrubIndex={scrubIndex}
             onLive={() => { setPlaying(false); setScrubIndex(null); }}

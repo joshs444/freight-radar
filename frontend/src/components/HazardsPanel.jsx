@@ -38,6 +38,7 @@ export default function HazardsPanel({ disruptions, onPickEntity }) {
                       <> · near <button className="fr-haz-link" onClick={(ev) => { ev.stopPropagation(); onPickEntity?.(choke.portid); }}>{choke.name}</button></>
                     )}
                   </div>
+                  {e.severity && <div className="fr-haz-sev">{e.severity}</div>}
                   {e.affected_ports?.length > 0 && (
                     <div className="fr-haz-ports">{e.affected_ports.slice(0, 4).map((p) => p.name).join(' · ')}</div>
                   )}

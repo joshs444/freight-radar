@@ -93,12 +93,18 @@ def _ports_lookup(ctx: EnrichCtx) -> dict:
     return lookup_run(ctx)
 
 
+def _gatun(ctx: EnrichCtx) -> dict:
+    from .gatun import run as gatun_run
+    return gatun_run(ctx)
+
+
 # (name, run(ctx)->receipt, depends_on_flags). New waves append here.
 # ORDER MATTERS: stress reads timeseries.json; brief reads every sidecar above it.
 ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("exposure", _exposure, True),
     ("news", _news, True),
     ("hazards", _hazards, True),
+    ("gatun", _gatun, False),
     ("timeseries", _timeseries, False),
     ("ports_lookup", _ports_lookup, False),
     ("market", _market, True),

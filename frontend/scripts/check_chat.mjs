@@ -16,7 +16,7 @@ const data = {
   snapshot: load('snapshot.json'), flags: load('flags.json'), lanes: load('lanes.json'),
   timeseries: load('timeseries.json'), exposure: load('exposure.json'), news: load('news.json'),
   market: load('market.json'), stress: load('stress.json'), brief: load('brief.json'), events: load('events.json'),
-  world: load('world.json'), disruptions: load('disruptions.json'),
+  world: load('world.json'), disruptions: load('disruptions.json'), gatun: load('gatun.json'),
 };
 
 // raw text of each sidecar — a grounded fact's value must appear verbatim here
@@ -34,6 +34,7 @@ const QUESTIONS = [
   'any weather or storms', 'are there natural hazards', 'any official events near hormuz',
   'were there any cyclones', 'any earthquakes affecting ports',
   'what is the stress index', 'how is the stress index calculated', 'what does ocean freight stress mean',
+  'how is the panama canal', 'whats the gatun lake level', 'is there a draft restriction at panama',
   'hello', 'something totally unrelated to freight',
 ];
 
