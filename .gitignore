@@ -4,6 +4,7 @@ __pycache__/
 node_modules/
 data/*.duckdb
 data/*.json
+data/state/
 dist/
 .env
 .DS_Store

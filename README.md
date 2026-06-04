@@ -1,8 +1,8 @@
 # Freight Radar
 
-**A clean, filterable monitor of ocean freight: a light 3D globe where maritime chokepoints are sized by real daily activity, beside a live disruptions feed where a durable agent auto-flags congestion spikes, transit collapses, and Cape-of-Good-Hope reroutes — filterable to All / Critical / Chokepoints / Ports.**
+**A clean, filterable monitor of ocean freight: a light 3D globe where maritime chokepoints are sized by real daily activity, beside a live disruptions feed where a statistical detection engine auto-flags congestion spikes, transit collapses, and Cape-of-Good-Hope reroutes — filterable to All / Critical / Chokepoints / Ports. Topped by a Global Ocean Freight Stress Index, a deterministic weekly brief, and a grounded "Ask Freight Radar" chat.**
 
-Every number traces back to source. Nothing is hand-waved.
+Every number traces back to source. Nothing is hand-waved — the stress index decomposes into its parts, the brief's figures are computed in Python (never by a model), and the chat will only state a number it can cite to a source file.
 
 ![Freight Radar — the live globe](docs/hero.png)
 
@@ -20,8 +20,11 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 
 - **Light globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints as crisp amber marks and ~2,065 ports as faint dust, sized by real vessel activity, with great-circle lane arcs.
 - **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1").
+- **Global Ocean Freight Stress Index (0–100)** — one at-a-glance number in the top bar, with a 30-day sparkline and week-over-week momentum. It **blends breadth** (an economic-weighted mean of every chokepoint's deviation from its normal throughput) **with depth** (the single worst chokepoint), so a concentrated crisis at one strategic strait isn't averaged away. Both components are exposed for inspection.
+- **"This week" brief** — a deterministic hero card that assembles 3–6 plain-English, fully-cited bullets from the sidecars at publish time. The figures are string-substituted from real computations; the prose is a template, so no statistic can be hallucinated.
+- **Ask Freight Radar** — a grounded chat that runs **entirely in the browser** over the loaded data (no backend, no API key). It answers "what's going on with Hormuz / what's the biggest risk / am I exposed / why does oil matter" — and **only ever states a number it can trace to a source file** (enforced by a test).
 - **Time-scrubber** — replay the trailing 120 days; chokepoint glow dims/brightens by each day's real count and a flag pulses on the actual date it was detected.
-- **Durable agent** — a Temporal workflow on a Schedule fetches → detects → attributes → publishes, crash-durably, forever.
+- **Durable loop (verified in a test harness)** — the same fetch → detect → attribute → enrich → publish steps are wrapped in a **Temporal** workflow + Schedule, with durability proven end-to-end on Temporal's time-skipping test server (kill the worker mid-run, it re-drives from the last completed activity). Production currently regenerates the static sidecars via the same `publish_static` pipeline; the Temporal workflow is the always-on orchestration of those identical steps.
 
 ---
 
@@ -30,7 +33,9 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 This is the part that matters, and it's enforced in the **UI**, not just the README:
 
 - **Never called "live."** PortWatch is **daily-granularity, refreshed weekly** by the IMF. Every tile shows its source and the data's own `as of <date>`. The value here is the auto-flagging + attribution, not refresh speed.
-- **Numbers are computed in Python, from source.** The briefs are template-first with values string-substituted from real calculations. An optional local-LLM polish layer is gated to *new* flags only and is structurally forbidden from inventing a number.
+- **Numbers are computed in Python, from source — the prose is deterministic-template.** Every brief, every flag, and the weekly digest are templates with values string-substituted from real calculations. **No model is in the number path**, so nothing can be hallucinated. (There is a stub seam for optional local-LLM *wording* polish on new flags, structurally forbidden from touching a figure — but production prose is template-only, and that's the point, not a limitation.)
+- **The chat states nothing it can't cite.** "Ask Freight Radar" runs client-side over the loaded sidecars; each answer records the raw values it used and the source file each came from. A node test (`npm run test:chat`) runs the engine over a battery of questions and **fails if any cited fact isn't found in its source sidecar** — 100+ facts checked, 0 ungrounded.
+- **The stress index is decomposable, not a black box.** Its method string, its `breadth` and `depth` components, and the per-chokepoint contributors all ship in `stress.json`; deviation is measured vs each chokepoint's *normal* (80th-pct of 120 days), so a sustained level-shift the rolling baseline has adapted to still reads as stressed — the same Strait-of-Hormuz lesson the detector learned.
 - **High precision over a busy rail.** A change-point gate (STL residual → rolling z **AND** CUSUM **AND** a `ruptures` PELT breakpoint within 7 days) suppresses one-day blips. On the current data it cuts 13 raw z-detections down to **4 gate-confirmed** anomalies — and shows the rest winding down through an explicit **lifecycle** (`new → ongoing → escalated → resolved`).
 - **The Cape-reroute detector doesn't cry wolf.** It only fires on a real Red-Sea-down / Cape-up divergence. On the current window (Red Sea +6.3%, Cape +0.9%) there is no divergence, so **it honestly does not fire** — and says so.
 - **Garnish is labelled as garnish.** The animated ship trails come from an *optional* AIS sidecar that the flag engine never reads. The legend chip says `live`, `simulated`, or `offline` truthfully; killing the socket changes nothing on the map and no number moves.
@@ -67,7 +72,8 @@ IMF PortWatch (ArcGIS REST)                 aisstream.io (WebSocket)
 | Detection | `statsmodels` STL(7, robust) → rolling z-score, CUSUM, `ruptures` PELT change-point gate; config-driven YAML |
 | Orchestration | **Temporal** (`temporalio`) — one durable workflow, 5 activities, RetryPolicy, a Schedule, a dedup ledger |
 | API | FastAPI read-only (`/snapshot` `/flags` `/lanes` `/manifest` `/health`) with ETags |
-| Frontend | React + Vite, **MapLibre GL v5 globe**, **deck.gl v9** via `MapboxOverlay(interleaved)`, token-free CARTO light basemap; filterable Monitor feed (flags · exposure · market · news · sparklines/trend) |
+| Frontend | React + Vite, **MapLibre GL v5 globe**, **deck.gl v9** via `MapboxOverlay(interleaved)`, token-free CARTO light basemap; filterable Monitor feed (flags · exposure · market · news · sparklines/trend), top-bar **stress gauge**, "this week" **brief** card, and a client-side grounded **chat** |
+| Narrative | Stress index + event ledger + weekly brief computed at publish time (`narrative/`), registered in the same enricher registry as every other sidecar |
 | Deploy | docker-compose (temporal · worker · schedule-init · api · frontend); frontend also runs free/static |
 
 ---
@@ -85,7 +91,7 @@ python -m freight_radar.publish             # detect + snapshot + manifest -> fr
 python -m freight_radar.export_timeseries   # the scrubber's per-day series
 python -m freight_radar.sidecar.ais_consumer --demo   # optional simulated ship trails
 
-pytest -m "not live"     # 17 deterministic tests
+pytest -m "not live"     # 31 deterministic tests (detection, temporal, narrative…)
 pytest -m live           # + the live PortWatch contract tests (network)
 ```
 
@@ -93,8 +99,9 @@ pytest -m live           # + the live PortWatch contract tests (network)
 ```bash
 cd frontend
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # static bundle -> dist/  (deploy anywhere)
+npm run dev          # http://localhost:5173
+npm run build        # static bundle -> dist/  (deploy anywhere)
+npm run test:chat    # honesty test: every chat fact must trace to a source sidecar
 ```
 
 ### Full durable loop (Docker)
@@ -110,9 +117,11 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 
 - **Data plumbing** — 180-day backfill = 4,984 chokepoint + 363,440 port daily rows; `portid`→geometry join 1.00; live contract test green; idempotent re-pull adds 0 rows, 0 PK duplicates.
 - **Detection** — flag numbers spot-checked against the raw DuckDB (Shanghai 18 vs 85.96, Hong Kong 30 vs 41.64…); 11 detector tests incl. *fires on a real collapse, not on weekly seasonality*, *PELT gate suppresses spurious spikes*, *Cape fires on divergence / quiet when parallel*, *holiday suppresses a benign dip*.
-- **Durable loop** — the workflow runs end-to-end on Temporal's in-process test server; a 2nd identical run makes **zero** attribution calls (dedup ledger); RetryPolicy re-drives a transient failure.
-- **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), flags are clickable (fly-to + real brief), and the scrubber replays real history.
-- **17/17** non-live backend tests pass.
+- **Durable loop** — the workflow runs end-to-end on Temporal's in-process time-skipping test server; a 2nd identical run makes **zero** attribution calls (dedup ledger); RetryPolicy re-drives a transient failure. (Production regenerates sidecars via the same `publish_static` steps; the Temporal path is the always-on orchestration of those identical steps.)
+- **Narrative layer** — the stress index reads `calm` on an all-normal system and `high` when a single strategic strait collapses (the depth term isn't averaged away); a sustained level-shift still scores stressed at the latest day; the event ledger diffs appeared/escalated/resolved across runs; and the brief is verified to **never state a number the stress index contradicts** (the stale-flag trap).
+- **Grounded chat** — `npm run test:chat` runs the engine over 20+ questions and asserts **every cited fact exists in its source sidecar** (100+ facts, 0 ungrounded).
+- **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), the stress gauge + "this week" brief render, the chat answers with citations, flags are clickable (fly-to + real brief), and the scrubber replays real history — all with **0 console errors**.
+- **31/31** non-live backend tests pass.
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 
