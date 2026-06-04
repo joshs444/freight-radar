@@ -25,7 +25,8 @@ def _con() -> duckdb.DuckDBPyConnection:
             n_dry_bulk BIGINT, n_general_cargo BIGINT, n_roro BIGINT, capacity_total BIGINT);
         CREATE TABLE dim_port(
             portid VARCHAR, portname VARCHAR, country VARCHAR, lat DOUBLE, lon DOUBLE,
-            vessel_count_total BIGINT);
+            vessel_count_total BIGINT,
+            share_country_maritime_import DOUBLE, share_country_maritime_export DOUBLE);
         CREATE TABLE fct_port_daily(
             portid VARCHAR, date DATE, portcalls_total BIGINT, portcalls_container BIGINT,
             portcalls_tanker BIGINT, portcalls_dry_bulk BIGINT,
@@ -43,8 +44,8 @@ def _con() -> duckdb.DuckDBPyConnection:
           ('chokepoint1','2026-05-31', 21,10,5,3,2,1, 1100000),
           ('chokepoint9','2026-05-31',  0, 0,0,0,0,0,       0);
         INSERT INTO dim_port VALUES
-          ('port1','Shanghai','China',31.2,121.5, 5000),
-          ('port2','Ghost Port','Nowhere',1.0,1.0, 2);
+          ('port1','Shanghai','China',31.2,121.5, 5000, 12.5, 14.0),
+          ('port2','Ghost Port','Nowhere',1.0,1.0, 2, NULL, NULL);
         INSERT INTO fct_port_daily VALUES
           ('port1','2026-05-29', 120, 38,73,1,5,3),
           ('port2','2026-05-29',   0,  0, 0,0,0,0);

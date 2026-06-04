@@ -55,10 +55,45 @@ FLAG_KEYS = (
 )
 
 
-def _econ_weights(vessel_counts: pd.Series) -> dict[str, float]:
-    """Map portid -> 0.6..1.0 from the vessel_count_total percentile rank."""
+NATIONAL_DEP_MIN = 25.0  # only annotate a flag when the port is materially systemic
+
+
+def _econ_weights(
+    vessel_counts: pd.Series, national_share: pd.Series | None = None
+) -> dict[str, float]:
+    """Map portid -> 0.6..1.0 severity weight.
+
+    Base is the vessel_count_total percentile rank (a globally busier waterway weighs
+    more). When ``national_share`` is given (ports — Phase B), it blends in the port's
+    share of its COUNTRY's maritime trade (0-100 %): a sole-gateway port (Mombasa ≈
+    99.8 % of Kenya's trade) is systemically critical even if globally mid-sized, so a
+    disruption there should outrank an equally-busy port that is one of many in its
+    country. National dependence contributes up to 30 % of the variable band.
+    """
     pct = vessel_counts.rank(pct=True)  # 0..1
-    return {pid: 0.6 + 0.4 * float(p) for pid, p in pct.items()}
+    if national_share is None:
+        return {pid: 0.6 + 0.4 * float(p) for pid, p in pct.items()}
+    nat = (national_share.fillna(0.0) / 100.0).clip(0.0, 1.0)
+    return {
+        pid: 0.6 + 0.4 * (0.7 * float(pct[pid]) + 0.3 * float(nat.get(pid, 0.0)))
+        for pid in pct.index
+    }
+
+
+def _national_dependence_note(d: pd.Series, entity: str) -> str:
+    """A cited markdown line for a port that carries a large share of its country's
+    maritime trade — '' when below the threshold. Phase B's systemic-importance signal."""
+    imp = float(d["share_country_maritime_import"]) if pd.notna(d.get("share_country_maritime_import")) else 0.0
+    exp = float(d["share_country_maritime_export"]) if pd.notna(d.get("share_country_maritime_export")) else 0.0
+    if max(imp, exp) < NATIONAL_DEP_MIN:
+        return ""
+    country = str(d["country"]) if pd.notna(d.get("country")) else "its country"
+    sole = "A single-port dependency — " if max(imp, exp) >= 80 else ""
+    return (
+        f"\n\n_**{entity}** handles ~{imp:.0f}% of {country}'s maritime imports and "
+        f"~{exp:.0f}% of its exports (IMF national-dependence share). {sole}disruption "
+        f"here is systemically significant for {country}._"
+    )
 
 
 def _detect_chokepoints(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[Flag]:
@@ -223,7 +258,8 @@ def _chokepoint_size_flag(
 def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[Flag]:
     dims = con.execute(
         """
-        SELECT portid, portname, fullname, lat, lon, vessel_count_total
+        SELECT portid, portname, fullname, country, lat, lon, vessel_count_total,
+               share_country_maritime_import, share_country_maritime_export
         FROM dim_port
         WHERE lat IS NOT NULL AND lon IS NOT NULL
         ORDER BY vessel_count_total DESC
@@ -231,7 +267,10 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
         """,
         [cfg.top_n_ports],
     ).df().set_index("portid")
-    weights = _econ_weights(dims["vessel_count_total"])
+    nat_share = dims[
+        ["share_country_maritime_import", "share_country_maritime_export"]
+    ].max(axis=1)
+    weights = _econ_weights(dims["vessel_count_total"], national_share=nat_share)
     cargo_cols = ", ".join(f"portcalls_{t}" for t in CARGO_TYPES)
     daily = con.execute(
         f"""
@@ -269,15 +308,16 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
             econ_weight=econ_weight,
             unit="port calls",
         )
+        note = _national_dependence_note(d, name)  # Phase B systemic-importance line
         if flag:
-            flags.append(flag)
+            flags.append(replace(flag, brief_md=flag.brief_md + note) if note else flag)
             continue  # one flag per portid (the frontend keys flags by portid)
         # blended total stayed calm — look for a move in the dominant cargo type
         cargo = _dominant_cargo_flag(
             portid, name, grp, cfg, lat=lat, lon=lon, econ_weight=econ_weight
         )
         if cargo:
-            flags.append(cargo)
+            flags.append(replace(cargo, brief_md=cargo.brief_md + note) if note else cargo)
     return flags
 
 

@@ -93,7 +93,9 @@ def _port_db(frames: dict[str, dict[str, np.ndarray]]) -> duckdb.DuckDBPyConnect
     for i, (portid, by_type) in enumerate(frames.items()):
         dims.append({
             "portid": portid, "portname": portid.upper(), "fullname": portid.upper(),
-            "lat": 1.0 + i, "lon": 2.0 + i, "vessel_count_total": 8000 - i * 1000,
+            "country": "Testland", "lat": 1.0 + i, "lon": 2.0 + i,
+            "vessel_count_total": 8000 - i * 1000,
+            "share_country_maritime_import": 5.0, "share_country_maritime_export": 4.0,
         })
         g = _grp(by_type)
         g.insert(0, "portid", portid)

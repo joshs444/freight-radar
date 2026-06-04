@@ -153,7 +153,9 @@ def _ports(con) -> list[dict]:
             FROM fct_port_daily GROUP BY portid
         )
         SELECT d.portid, d.portname AS name, d.country, d.lat, d.lon,
-               d.vessel_count_total, r.portcalls,
+               d.vessel_count_total,
+               d.share_country_maritime_import, d.share_country_maritime_export,
+               r.portcalls,
                r.portcalls_container, r.portcalls_tanker, r.portcalls_dry_bulk,
                r.portcalls_general_cargo, r.portcalls_roro
         FROM dim_port d JOIN recent r USING (portid)
@@ -172,6 +174,12 @@ def _ports(con) -> list[dict]:
             "vessels": int(r["vessel_count_total"]) if r["vessel_count_total"] is not None else 0,
             "portcalls": int(r["portcalls"]) if r["portcalls"] is not None else 0,
             "cargo_mix": _cargo_mix(r, "portcalls_"),
+            # national-dependence: this port's share of its country's maritime trade
+            # (0-100 %, IMF systemic-importance). None when absent. (Phase B)
+            "share_import": round(float(r["share_country_maritime_import"]), 1)
+            if r["share_country_maritime_import"] is not None else None,
+            "share_export": round(float(r["share_country_maritime_export"]), 1)
+            if r["share_country_maritime_export"] is not None else None,
         }
         for _, r in rows.iterrows()
     ]
