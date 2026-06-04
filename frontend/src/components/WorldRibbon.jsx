@@ -6,11 +6,13 @@ import { compact } from '../lib/format.js';
 // delivered / shipped — each with a today-vs-last-week trend and a 30-day sparkline.
 // Real daily sums (world.json). Trend arrows are neutral: more activity isn't
 // "good" or "bad", just up or down.
-function Trend({ pct, dir }) {
+function Trend({ pct, dir, invert }) {
   if (pct == null) return null;
   const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
+  // color reflects good/bad, not just direction: for "disrupted", up is worse.
+  const tone = invert ? (dir === 'up' ? 'down' : dir === 'down' ? 'up' : 'flat') : dir;
   return (
-    <span className={`fr-w-trend ${dir}`}>
+    <span className={`fr-w-trend ${tone}`}>
       {arrow} {pct > 0 ? '+' : ''}{pct}%<em>7d</em>
     </span>
   );
@@ -32,7 +34,7 @@ export default function WorldRibbon({ world }) {
               {compact(m.value)}<span className="fr-w-unit">{m.unit}</span>
             </div>
             <div className="fr-w-trendwrap">
-              <Trend pct={m.vs7_pct} dir={m.trend} />
+              <Trend pct={m.vs7_pct} dir={m.trend} invert={m.invert} />
               <Sparkline values={m.spark} color="#8a93a3" width={54} height={18} />
             </div>
           </div>

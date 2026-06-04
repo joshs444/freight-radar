@@ -137,8 +137,10 @@ def compute(timeseries: dict) -> dict:
     prev_wk = _mean(history[-2 * MOMENTUM_WINDOW:-MOMENTUM_WINDOW])
     wow = round(last_wk - prev_wk, 1)
 
-    # how many of the 28 are disrupted right now
+    # how many of the 28 are disrupted right now + the daily history (for a trend)
     disrupted = [pid for pid in normals if per_choke_s[pid][-1] >= DISRUPTED_AT]
+    disrupted_history = [sum(1 for pid in normals if per_choke_s[pid][t] >= DISRUPTED_AT)
+                         for t in range(n_days)]
 
     # current contributors: who is driving the index today (weight * stress)
     contributors = []
@@ -197,6 +199,7 @@ def compute(timeseries: dict) -> dict:
         "wow_direction": "up" if wow > 0.5 else "down" if wow < -0.5 else "flat",
         "chokepoints_total": len(chokes),
         "chokepoints_disrupted": len(disrupted),
+        "disrupted_history": disrupted_history,
         "history": history,
         "history_dates": dates,
         "spark30": spark,

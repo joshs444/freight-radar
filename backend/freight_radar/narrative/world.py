@@ -122,6 +122,26 @@ def run(ctx) -> dict:
         payload = compute(con)
     finally:
         con.close()
+
+    # append a "chokepoints disrupted" tile from the stress engine (written earlier
+    # in the registry) — same throughput-vs-normal definition as the stress index,
+    # with a real daily trend, NOT a made-up wait time we don't have data for.
+    spath = Path(ctx.out_dir) / "stress.json"
+    if spath.exists():
+        try:
+            s = json.loads(spath.read_text())
+            hist = s.get("disrupted_history") or []
+            dates = s.get("history_dates") or []
+            if hist and s.get("available"):
+                m = _metric("disrupted", "Chokepoints disrupted",
+                            f"of {s.get('chokepoints_total', 28)} · vs normal throughput",
+                            "", hist, dates or [str(i) for i in range(len(hist))])
+                if m:
+                    m["invert"] = True  # more disrupted = worse; flip the trend color
+                    payload["metrics"].append(m)
+        except (json.JSONDecodeError, OSError):
+            pass
+
     payload["generated_at"] = ctx.today
     (Path(ctx.out_dir) / "world.json").write_text(json.dumps(payload, separators=(",", ":")))
     return {"name": "world", "sidecar": "world.json",
