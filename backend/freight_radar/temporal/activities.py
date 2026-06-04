@@ -14,8 +14,9 @@ from datetime import date, datetime, timedelta
 
 import duckdb
 from temporalio import activity
+from temporalio.exceptions import ApplicationError
 
-from ..config import INCREMENTAL_REPULL_DAYS, db_path, publish_dir
+from ..config import INCREMENTAL_REPULL_DAYS, MIN_JOIN_COVERAGE, db_path, publish_dir
 from ..detect import run_detection
 from ..export_snapshot import export
 from ..ingest.dims import load_dims
@@ -32,6 +33,23 @@ CREATE TABLE IF NOT EXISTS meta_attribution (
 """
 
 
+def _assert_join_coverage(choke_cov: float, port_cov: float) -> None:
+    """Fail the activity (non-retryably) if portid->geometry coverage decayed.
+
+    The standalone backfill CLI already gates on this; the durable path only logged
+    it (audit finding), so a structural join break would publish a half-empty globe.
+    A coverage shortfall is a deterministic data-quality fact, not a transient error,
+    so we raise a NON-retryable ApplicationError — retrying the same pull won't fix it.
+    """
+    for name, cov in (("chokepoint", choke_cov), ("port", port_cov)):
+        if cov < MIN_JOIN_COVERAGE:
+            raise ApplicationError(
+                f"{name} join coverage {cov:.3f} < {MIN_JOIN_COVERAGE} — "
+                f"portid->geometry join broke; refusing to publish a partial map",
+                non_retryable=True,
+            )
+
+
 # --- 1. fetch --------------------------------------------------------------
 @activity.defn
 async def fetch_portwatch(days: int = INCREMENTAL_REPULL_DAYS) -> dict:
@@ -45,10 +63,21 @@ async def fetch_portwatch(days: int = INCREMENTAL_REPULL_DAYS) -> dict:
         dims = await load_dims(con, client)
         choke = await load_chokepoint_daily(con, client, start, end)
         ports = await load_port_daily(con, client, start, end)
-    cov = join_coverage(con, "fct_port_daily", "dim_port")
+    choke_cov = join_coverage(con, "fct_chokepoint_daily", "dim_chokepoint")
+    port_cov = join_coverage(con, "fct_port_daily", "dim_port")
     con.close()
-    activity.logger.info("fetch: choke=%s ports=%s cov=%.3f", choke, ports, cov)
-    return {"dims": dims, "chokepoint_rows": choke, "port_rows": ports, "port_join_coverage": round(cov, 4)}
+    activity.logger.info(
+        "fetch: choke=%s ports=%s choke_cov=%.3f port_cov=%.3f",
+        choke, ports, choke_cov, port_cov,
+    )
+    _assert_join_coverage(choke_cov, port_cov)
+    return {
+        "dims": dims,
+        "chokepoint_rows": choke,
+        "port_rows": ports,
+        "chokepoint_join_coverage": round(choke_cov, 4),
+        "port_join_coverage": round(port_cov, 4),
+    }
 
 
 # --- 2. compute + detect ---------------------------------------------------

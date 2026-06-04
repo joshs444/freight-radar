@@ -32,6 +32,16 @@ _DIM_MAP = {
 
 def _to_frame(rows: list[dict]) -> pd.DataFrame:
     df = pd.DataFrame(rows)
+    # Same silent-drop guard as the fact frames: a renamed reference field (e.g.
+    # vessel_count_total, industry_top1) would land all-NULL otherwise. The lat/lon
+    # NULL check below only covers geometry; this covers every mapped field.
+    if not df.empty:
+        missing = [c for c in _DIM_MAP if c not in df.columns]
+        if missing:
+            raise ValueError(
+                f"reference layer: missing mapped columns {missing} "
+                f"— upstream schema drift; refusing to insert all-NULL"
+            )
     df = df[[c for c in _DIM_MAP if c in df.columns]].rename(columns=_DIM_MAP)
     df["lat"] = pd.to_numeric(df["lat"], errors="coerce")
     df["lon"] = pd.to_numeric(df["lon"], errors="coerce")

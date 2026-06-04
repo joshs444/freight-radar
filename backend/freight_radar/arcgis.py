@@ -26,6 +26,22 @@ class ArcGISError(RuntimeError):
     """An esri error envelope, empty body, or otherwise unusable response."""
 
 
+def _assert_fetch_complete(n_rows: int, server_count: int, service: str, where: str) -> None:
+    """Raise if we paged fewer rows than the server says exist for ``where``.
+
+    A silently dropped page (network hiccup mid-pagination, an off-by-one offset)
+    would otherwise shrink the window with no error. ``returnCountOnly`` gives the
+    authoritative total; fewer rows than that is a hard, retryable failure. We only
+    guard the under-count direction — deterministic ObjectId paging never duplicates,
+    and a couple extra rows from a concurrent upstream insert is not a data loss.
+    """
+    if n_rows < server_count:
+        raise ArcGISError(
+            f"incomplete fetch from {service}: paged {n_rows} rows but server "
+            f"reports {server_count} for [{where}] — a page was dropped"
+        )
+
+
 def _date_chunks(start: date, end: date, chunk_days: int) -> list[tuple[date, date]]:
     """Split [start, end] inclusive into <=chunk_days windows."""
     chunks: list[tuple[date, date]] = []
@@ -125,11 +141,16 @@ class ArcGISClient:
         out_fields: str = "*",
         date_col: str = "date",
         chunk_days: int = 20,
+        verify_count: bool = False,
     ) -> list[dict]:
         """Fetch a [start, end] date window, chunked so pages fetch concurrently.
 
         Each chunk pages sequentially; the shared semaphore bounds total in-flight
         requests, so wide port backfills stay fast without hammering the service.
+
+        ``verify_count`` adds one ``returnCountOnly`` call over the whole window and
+        asserts we paged at least that many rows — turning a silently dropped page
+        into a hard (retryable) failure instead of a quietly short window.
         """
         chunks = _date_chunks(start, end, chunk_days)
         tasks = [
@@ -142,4 +163,11 @@ class ArcGISClient:
             for a, b in chunks
         ]
         results = await asyncio.gather(*tasks)
-        return [row for chunk in results for row in chunk]
+        rows = [row for chunk in results for row in chunk]
+        if verify_count:
+            window = (
+                f"{date_col}>=DATE '{start.isoformat()}' "
+                f"AND {date_col}<=DATE '{end.isoformat()}'"
+            )
+            _assert_fetch_complete(len(rows), await self.count(service, window), service, window)
+        return rows
