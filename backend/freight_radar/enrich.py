@@ -88,6 +88,11 @@ def _hazards(ctx: EnrichCtx) -> dict:
     return hazards_run(ctx)
 
 
+def _ports_lookup(ctx: EnrichCtx) -> dict:
+    from .export_ports_lookup import run as lookup_run
+    return lookup_run(ctx)
+
+
 # (name, run(ctx)->receipt, depends_on_flags). New waves append here.
 # ORDER MATTERS: stress reads timeseries.json; brief reads every sidecar above it.
 ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
@@ -95,6 +100,7 @@ ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("news", _news, True),
     ("hazards", _hazards, True),
     ("timeseries", _timeseries, False),
+    ("ports_lookup", _ports_lookup, False),
     ("market", _market, True),
     ("stress", _stress, False),
     ("world", _world, False),
