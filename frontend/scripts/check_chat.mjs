@@ -16,6 +16,7 @@ const data = {
   snapshot: load('snapshot.json'), flags: load('flags.json'), lanes: load('lanes.json'),
   timeseries: load('timeseries.json'), exposure: load('exposure.json'), news: load('news.json'),
   market: load('market.json'), stress: load('stress.json'), brief: load('brief.json'), events: load('events.json'),
+  world: load('world.json'),
 };
 
 // raw text of each sidecar — a grounded fact's value must appear verbatim here
@@ -28,6 +29,8 @@ const QUESTIONS = [
   'am i exposed to hormuz', 'am i exposed to suez', 'what changed this week',
   'why is brent up', 'list all disruptions', 'how many chokepoints are disrupted',
   'how is the taiwan strait', 'tell me about kerch strait', 'what about panama',
+  'how many ships are out today', 'how many port calls', 'how much cargo was delivered',
+  'how busy is global freight', 'how many vessels in transit',
   'hello', 'something totally unrelated to freight',
 ];
 

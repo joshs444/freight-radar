@@ -57,6 +57,36 @@ html, body, #root {
 }
 @keyframes blink { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
 
+/* --- world-today ribbon ------------------------------------------------- */
+.fr-world {
+  flex: none; display: flex; align-items: center; gap: 14px;
+  padding: 8px 22px; background: var(--surface); border-bottom: 1px solid var(--line);
+  overflow-x: auto; z-index: 9;
+}
+.fr-world::-webkit-scrollbar { height: 0; }
+.fr-world-tag {
+  flex: none; font-family: var(--mono); font-size: 9.5px; font-weight: 700; color: var(--ink-dim);
+  text-transform: uppercase; letter-spacing: 0.1em; writing-mode: horizontal-tb;
+}
+.fr-world-tiles { display: flex; gap: 10px; flex: 1; }
+.fr-w-tile {
+  flex: 1 1 0; min-width: 150px; display: flex; align-items: center; gap: 10px;
+  padding: 5px 12px; border-left: 1px solid var(--line);
+}
+.fr-w-tile:first-child { border-left: none; }
+.fr-w-meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.fr-w-label { font-family: var(--display); font-weight: 700; font-size: 11px; color: var(--ink); white-space: nowrap; }
+.fr-w-sub { font-family: var(--mono); font-size: 8px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.02em; white-space: nowrap; }
+.fr-w-val { font-family: var(--display); font-weight: 800; font-size: 19px; color: var(--ink); line-height: 1; margin-left: auto; }
+.fr-w-unit { font-family: var(--mono); font-size: 8.5px; font-weight: 400; color: var(--ink-faint); margin-left: 3px; }
+.fr-w-trendwrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; }
+.fr-w-trend { font-family: var(--mono); font-size: 9.5px; font-weight: 700; display: flex; align-items: baseline; gap: 2px; color: var(--ink-dim); }
+.fr-w-trend.up { color: #0d9488; }
+.fr-w-trend.down { color: #c2611f; }
+.fr-w-trend.flat { color: var(--ink-faint); }
+.fr-w-trend em { font-size: 7.5px; font-style: normal; color: var(--ink-faint); }
+.fr-world-asof { flex: none; font-family: var(--mono); font-size: 9px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+
 /* --- main split --------------------------------------------------------- */
 .fr-main { flex: 1; display: flex; min-height: 0; }
 .fr-stage { flex: 1; position: relative; background: var(--stage); overflow: hidden; }

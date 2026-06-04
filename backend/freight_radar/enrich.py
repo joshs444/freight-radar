@@ -77,6 +77,11 @@ def _brief(ctx: EnrichCtx) -> dict:
     return brief_run(ctx)
 
 
+def _world(ctx: EnrichCtx) -> dict:
+    from .narrative.world import run as world_run
+    return world_run(ctx)
+
+
 # (name, run(ctx)->receipt, depends_on_flags). New waves append here.
 # ORDER MATTERS: stress reads timeseries.json; brief reads every sidecar above it.
 ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
@@ -85,6 +90,7 @@ ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("timeseries", _timeseries, False),
     ("market", _market, True),
     ("stress", _stress, False),
+    ("world", _world, False),
     ("events", _events, True),
     ("brief", _brief, True),
 ]

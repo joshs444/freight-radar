@@ -22,6 +22,9 @@ const base = await page.evaluate(() => ({
   briefHeadline: document.querySelector('.fr-brief-headline')?.textContent?.trim(),
   briefBullets: document.querySelectorAll('.fr-brief-li').length,
   fab: !!document.querySelector('.fr-chat-fab'),
+  worldTiles: document.querySelectorAll('.fr-w-tile').length,
+  worldFirst: document.querySelector('.fr-w-tile .fr-w-val')?.textContent?.trim(),
+  worldTrends: document.querySelectorAll('.fr-w-trend').length,
 }));
 await page.screenshot({ path: '/tmp/fr_narrative.png' });
 
