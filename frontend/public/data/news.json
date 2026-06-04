@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-06-04T09:24:16",
+  "generated_at": "2026-06-04T10:33:59",
   "search_date": "2026-06-04",
   "items": {
     "b74be045769441ea": {
       "entity": "Strait of Hormuz",
       "items": [
         {
-          "title": "Opinion | The Strait of Hormuz Is Getting Less Dire by the Day - The New York Times",
+          "title": "Opinion | The Strait of Hormuz Is Blocked. The World Is Adjusting. - The New York Times",
           "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPeE0wM1NSVUdzMlpwQWpSZWxCOE5PbUt2aWxHZlB5eHVSLWpTVUtyVDhqSktTLUdTNTYwMkFhc0NrZU05bmFRZ09KSEtFNERORXZ5T0MyTFMyYkNGUnBWZndNaTdRNDR5ZUNHQlBOR1VSUHZGSUJLVG1UaDk5VEdFb2VORFJNcXppWnRnXw?oc=5",
           "source": "The New York Times",
           "published": "2026-06-04"
@@ -65,6 +65,102 @@
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
       "outlet_count": 4
+    },
+    "b4d1ce0765b0e3d4": {
+      "entity": "Hong Kong",
+      "items": [
+        {
+          "title": "Kazakhstan, Hong Kong and Mainland China Sign 42 Agreements to Expand Trade and Investment Cooperation - The Astana Times",
+          "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNY015WXZOalRxd2ZRNWdTT0tKYUtRUzAyLTF6UHhyaG5icjAxYmtlTm9lMkttdk9GUjl5ZHFaWFJkQks0RnBFWVNjekczV1lONjBubURqWEwtRkJjb2hNUFhoU0RHSDJzSGdBYTJ0bG1iWDBGMmEtWkx1Wk84QlJMNGJnWWplVGRCR3AzdlIwdlA3X1hEdEtQNnVhUDNNREZfTVJCazUwZ3JhSjFUalVGaHNUemxNeXlvZFg0Q1VjRmg3VXVDMHZ3Nlc2OVM1NkE?oc=5",
+          "source": "The Astana Times",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Kazakhstan-backed firms expected to seek HK listings this year - chinadailyasia.com",
+          "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5ac0dJZUI0NUJHTjRqbjV1TEpjV2x0b2JHdzRBVGFpTThBYmNSZVNxaGxjSVcweUxpbWIzcmVJcTJXV0FXQ3FBam9sazF5TjZCRzRnZDE1RHI?oc=5",
+          "source": "chinadailyasia.com",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Hong Kong vies to win over resource-rich Central Asia as Lee tours region - BusinessWorld - BusinessWorld Online",
+          "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxORjlqWlFEV1ZuYTZyZ1JIYU1VWm9ybUEwTzNmTmdRbjdVQjBsdkFjWlJmMXZtT1RKdExZZkhaRWRNOTRTWjBUaFBVRXpEX2FlQVh2R1FPek13SlNNVFI1Z3RhZlUyZjByT3ZydGZCbldVZVg0MEVrVkV1MjZQZkQwd0d4MktvaTVCQ0RxSFBERnZrUjNScWhPMmRFd2o1TWVtNUo5TXRpaXo3ZTBjUDJvbXFMamFkU25YbGcwLTJxdm4?oc=5",
+          "source": "BusinessWorld - BusinessWorld Online",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Kazakhstan pitches $100bn investment pipeline to Hong Kong - AnewZ",
+          "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPWHBDRnZyMG1ELXY5WFI0NWRSR3h6U0FfRFBNRVVpcGxRQ1oycjZHNm1xb1MzeUVqSnhVbzdnclFfbWVtbWFtZGRMR3BQWHRWV1BMZl9FZEhpMlNJOWgtRDV6NnB2WENlVGhEX1lHc3c2NnpjRXFjYXFlZmw1T3hQcmN4MkZBdGZBSklaQTRySXlTZU9pcFVVNDlKV05LMjQ0eHc?oc=5",
+          "source": "AnewZ",
+          "published": "2026-06-03"
+        }
+      ],
+      "relation": "possibly_related",
+      "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
+      "outlet_count": 4
+    },
+    "bb17b4b10357fb5e": {
+      "entity": "Kaohsiung",
+      "items": [
+        {
+          "title": "Latest Port Perimeter Security Upgrade Enhances Access Control at Port of Kaohsiung's Chungtao Harbor - Port Strategy",
+          "url": "https://news.google.com/rss/articles/CBMirgJBVV95cUxQREtXSkJxTmlJcXkyZzhLYWtrQ09CX0RqbS1xMnBwRTVEMkNIMkhLcTJfcVg0ZVJJWnFkTlZlSDFOamZlUXBWU1RSMVR6N0ZIMDhVTURfdGl6VGVSdExBUW5IdzFObTZ5VHhXaXNybElfaDFyS2JlRGk3UEYzRzJNZk1PRV9aV0FHbHo5dVdRYndmTS1HazlmdEgwWktlMExnTFBDZVVtZTRMZHNoaWZkdjdQcXd5eEh0TzBEdXRrX0p4cHlkRm5zU2dnRVExWUNPWkdVaFpIc2tDZmNEUjZ6UXlycFFRVWFRMUV6dzI1MnhlUmRaTC1DSHN1bFZWM1hWa2I4RFBMVDd3QVdsRGEyRFp3MEFHYWRkdHQ0Q1ZVZUdTUzRLWDE1RklNMFJSdw?oc=5",
+          "source": "Port Strategy",
+          "published": "2026-06-04"
+        },
+        {
+          "title": "US proposes 10% tariffs on countries over forced labor, including Taiwan - Taiwan News",
+          "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9FdWNnRTdFMHNxQ3VrQWozNTdyRHh0ckIxT2luUU5pTVRMSWliN0JyUzRZSjZ3a0RZSXJlbVpYdXpLZWlIZEJqX2ZGcm1vRk1pOXJFXw?oc=5",
+          "source": "Taiwan News",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Military trainer aircraft crashes, killing two pilots - Taipei Times",
+          "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBaUVMwdFd6TmJ6a2hpY0h6MEEzQ3Z1YjJTMEhqcjNydjJQdlhERHJ2eGtIV1lsdFFBSUtrT2pYcktiNXVyei1hajhweG5MQWl4UEpyOFBhOVNCS0Z1UlNDcTVOZHJpSjBMMHVjOGJ1YUFFVTFQZV9vYQ?oc=5",
+          "source": "Taipei Times",
+          "published": "2026-06-02"
+        },
+        {
+          "title": "Two pilots killed as Taiwanese military training aircraft crashes during engine failure drill - Malay Mail",
+          "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxQbFpVeDN6SVZoQWE2WHpMc095R3liZWhYelJYSjVjMnNTeTd2WlZMb1dtR2xSWElZQ0pPZlJ5WDdfRVNxMHFwN0MzS1ZWdkZpYmk0c0c3ZmtvQmw4XzVnNGFtdldlQlVkbnV3RnVxNHU2WG9qWXpPejRicURCU1BURFBJLU5SSEtwcDA3dGh2cXc5WDBXYUdFYmFiSC1vYUw2V2tSUGQyQlphSnVMYXhhQ1lmZjRFNGZqbzZHWlZENmptUWRKT2VoZWN1STJmdWlFaVJwRllSYnUtOVVMT0tYYjV30gHnAUFVX3lxTE1YNVRwaERGcEJuemgzaEdjUkFkZERwOUdKeE1fX1Vacm1SM1hBTFcxVnI4aVFiWFUxWTBkTGJZWXd6YWJINXNHQzZyS0F3NXIxVUI5ckZ3YkVxa2FmclE3aVNJcF9ERDhkNWFCNjA2bWxBclljMjZuTmZfSkliMXZycnRtcktFUVpNVll4TXpSZEw4TUs1dFBQRDktWEtqMzJXenJtS1FrTjIyUGYxYU91d1otYWJNZUtzZ2dNbndIOVFCX0tEanRzSGpxZU9JQ1N6Vk9DZnRVRnhtWXl5SDBUUWF2eU1nMA?oc=5",
+          "source": "Malay Mail",
+          "published": "2026-06-02"
+        }
+      ],
+      "relation": "possibly_related",
+      "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
+      "outlet_count": 4
+    },
+    "6e0f51e8d4f5c49a": {
+      "entity": "Port Klang",
+      "items": [
+        {
+          "title": "West Port, Pulau Indah Factory/Warehouse for Sale in Port Klang, Selangor by MANDDEE WONG - EdgeProp",
+          "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxPMmZRbllvQVlBMDctTVlrelJpRzNWTWFxSngtYkhKTHR1cUxTX3NZZUxuNlhUMVBWNzRCUTVycXpnSWZYc2o1cFJJVU91d0dna01hZUlYVFlob29YRDZtUGdzU2NvdkxRTEh0T1htZG1Xc3VSQmdGU1c1TEFaY2VLdkJscXpuWVFWa2NQVEd1NjZpeFJFOVdlaU1WNU5Bd1NKU0JETF8yWlpqM1F1Mzg0RVFRc09aenZoVjFCR0VJR0RSOVUtWmtRUHMxYmJPb1VRLUtlZlRYc1dxT0JmWFFMMQ?oc=5",
+          "source": "EdgeProp",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Factory/Warehouse for Rent in Klang, Selangor by EDWIN KON - EdgeProp",
+          "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPSHgyT1M1UXVVaHM4Q0EyQ0VHdklZY3RUdWhtM0x0WElXbzNpNU1saHN5QWVzNW50X2FtbWYyQnhFY1BlRnJFZFRwZ1hJNlFPZ0I3ZU14OGo1LWExRnlXZ29uNjhQdUIyNHFHNmx4a2l6ZGN3eG1ZbG5Genp4LUVrZThTTTJEOWRrVTVYQkV5ZTFHM3BIRXUwQVcycWFkS0NMS19SSEdZclhiai1ZWUJTTW05djJ4N0EyaTdfVm1nWGEwdFJOWlRMSjln?oc=5",
+          "source": "EdgeProp",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Loke Urges Port Klang Authority To Enter Top 10 Busiest Port List World Cup Debutant Kit Badges (uaJ42XP4w3) - Mshale",
+          "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9VVGtjOTNxZkJZYVVhY3VUcFpUYklEalhZN1ZsWDhwVDdZTG0tWDl0N29WaEFXWVBIbzhoTDNfMXY2eDdHQW5mNGNlQjZNTmFCMEl3UTRhRHprUkU?oc=5",
+          "source": "Mshale",
+          "published": "2026-06-01"
+        },
+        {
+          "title": "Port Klang land donor\u2019s legacy lives on in park - The Star",
+          "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQekpiOWt3MzRFamx4NlVUNjdHemhlUUM1bGhjYjM2UGNxQ2ROVEhySmNDWGQxX2FNaTRKUjVUOTU2bjk5RTBIOGUzaE9GamUwZW9rNXhfbkd6VnlQU2tMemxIcUdNMWJmNzRqY1pDUGRQSlctMEJlVW1aZU9VM3UzS3F2ZkhZYU41Q0Q4Y0pFaWdCNnNCRDd4TzQzMWFEd3RIclpN?oc=5",
+          "source": "The Star",
+          "published": "2026-06-01"
+        }
+      ],
+      "relation": "possibly_related",
+      "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
+      "outlet_count": 3
     },
     "bce0e2fdd63be992": {
       "entity": "Kerch Strait",
@@ -129,6 +225,45 @@
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
       "outlet_count": 2
+    },
+    "be619c5cfc526bbe": {
+      "entity": "Yucatan Channel",
+      "items": [],
+      "relation": "possibly_related",
+      "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
+      "outlet_count": 0
+    },
+    "5f8dfd5f87bb1c6e": {
+      "entity": "Xiamen",
+      "items": [
+        {
+          "title": "COSCO Shipping Energy Places $953M Order for Four LNG Carriers at Jiangnan Shipyard - News and Statistics - IndexBox",
+          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNbzM4QUItY3BQQWF6YzBDRDEyWmFsZTFXeGRCeDQ1OHpFRk9KYnZubmhSOUFsSmQtQWFZb0JsR3FhSDlJVVFTQldsNDBNTXNpWjdFQkRfSGhWY1pJR3BtU1lTVU1mX3pRWk9RcXJZbWlkYmljQmR5cHViUGc1NUtldnpEalR2MTRYNVNjcERvTlQyQVdibTY0aHNLNThSV2g4S0VPYnFvSkdPWlZvUklnMnRhaw?oc=5",
+          "source": "IndexBox",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Jinhui Shipping Orders Two New Vessels for Fleet Renewal | 2026 Update - News and Statistics - IndexBox",
+          "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNbkhXSmJrcHVGQWhvdHotRWpja0RpeWJCUWFCTnRBSFBSMkhYWkFSTlltMVcyZlpoQ0NVN3RtXzlXQVhWQ1pPbE9ISVpldjJpeEZSQVM1ZnhWakNKQVJGM2tqUzhVbnJOT2RoZ0kzT3p2a3lZOUVMUV8tNE1XcVRTZkh1Q05ZMDg4b19YSTJ2OXJPRWNtakt2bjdiT0Njdw?oc=5",
+          "source": "IndexBox",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "Straits Forum to foster cross-Strait exchanges - China Daily",
+          "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1zOExObUdheG0yOHdYbnktcmoyUVJNZVRzSnVzMlplYmRGcEVwXzZfajBRV3VYekJYVzdud2xMaE5aanNoazBMbEhyTzhfOHpSR0loYzBJRHBjb29mamwxcFB2ZDk3RGQtajBVbWFXTXgxbjBpcFNVc3cwTFBlZw?oc=5",
+          "source": "China Daily",
+          "published": "2026-06-03"
+        },
+        {
+          "title": "China\u2019s blueprint for bloodless annexation of Kinmen - Taiwan News",
+          "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1vWVpSOUp5YjQzWTQya3BLN2FFRTdWRzRMTHFvVXVmZ1huSVZtbkE4YXR1NWNmUjd3RklseGxQMVg3VTlDU0FoSEdHRXI4SENsblc1Yw?oc=5",
+          "source": "Taiwan News",
+          "published": "2026-06-02"
+        }
+      ],
+      "relation": "possibly_related",
+      "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
+      "outlet_count": 3
     },
     "b3729b17446dc9df": {
       "entity": "Oresund Strait",
