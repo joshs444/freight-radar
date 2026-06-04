@@ -6,6 +6,7 @@ import StressGauge from './components/StressGauge.jsx';
 import StressDetail from './components/StressDetail.jsx';
 import Chat from './components/Chat.jsx';
 import WorldRibbon from './components/WorldRibbon.jsx';
+import StormIndicator from './components/StormIndicator.jsx';
 import SearchBox from './components/SearchBox.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import { useData } from './lib/useData.js';
@@ -214,6 +215,10 @@ export default function App() {
         {data?.stress?.available && (
           <StressGauge stress={data.stress} onOpen={() => setShowStress(true)} />
         )}
+        <StormIndicator
+          storms={data?.weather?.storms}
+          onPick={(s) => s?.lon != null && mapApiRef.current?.flyTo(s.lon, s.lat)}
+        />
         <div className="fr-asof">
           <span className="fr-dot" /> {source}<br />
           data as of <b>{asOf}</b>
@@ -230,6 +235,7 @@ export default function App() {
               lanes={data.lanes}
               flags={globeView.flags}
               ships={data.ships}
+              storms={data.weather?.storms}
               selectedFlag={selected?.flag || null}
               onSelectFlag={onSelectFlagFromGlobe}
               mapApiRef={mapApiRef}

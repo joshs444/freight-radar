@@ -87,6 +87,20 @@ html, body, #root {
 .fr-w-trend em { font-size: 7.5px; font-style: normal; color: var(--ink-faint); }
 .fr-world-asof { flex: none; font-family: var(--mono); font-size: 9px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
 
+/* active-cyclone indicator in the top bar (Phase C1) — makes the live storm layer visible */
+.fr-storms-ind { position: relative; flex: none; }
+.fr-storms-btn { font-family: var(--mono); font-size: 10px; color: #2f5d99; background: #eef3fa; border: 1px solid #cfdcef; border-radius: 999px; padding: 5px 11px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+.fr-storms-btn b { font-family: var(--display); font-size: 12px; font-weight: 800; }
+.fr-storms-btn:hover, .fr-storms-btn.on { background: #e2ecf8; border-color: #aac3e6; }
+.fr-storms-pop { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50; min-width: 250px; max-width: 330px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: 0 12px 32px rgba(20,30,50,0.16); padding: 10px; }
+.fr-storms-pop-head { font-family: var(--mono); font-size: 9.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.fr-storms-pop-head span { font-weight: 400; color: var(--ink-faint); text-transform: none; letter-spacing: 0; }
+.fr-storms-row { display: flex; flex-direction: column; gap: 1px; width: 100%; text-align: left; background: none; border: none; border-radius: 8px; padding: 7px 8px; cursor: pointer; }
+.fr-storms-row:hover { background: var(--hover); }
+.fr-storms-name { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--ink); }
+.fr-storms-meta { font-family: var(--mono); font-size: 9px; color: var(--ink-dim); }
+.fr-storms-foot { margin-top: 6px; font-family: var(--mono); font-size: 8.5px; color: var(--ink-faint); font-style: italic; }
+
 /* --- main split --------------------------------------------------------- */
 .fr-main { flex: 1; display: flex; min-height: 0; }
 .fr-stage { flex: 1; position: relative; background: var(--stage); overflow: hidden; }
