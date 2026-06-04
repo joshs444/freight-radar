@@ -136,6 +136,28 @@ html, body, #root {
 }
 .fr-feed-count { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
 .fr-feed-count b { color: var(--amber); }
+/* watchlist star on rows */
+.fr-star {
+  flex: none; font-size: 13px; color: var(--ink-faint); line-height: 1; cursor: pointer;
+  width: 16px; text-align: center; transition: color 0.12s, transform 0.12s;
+}
+.fr-star:hover { color: var(--amber); transform: scale(1.15); }
+.fr-star.on { color: var(--amber); }
+
+/* scrubbing-the-past banner */
+.fr-scrubbing {
+  margin: 0 16px 10px; padding: 7px 12px; border-radius: 9px;
+  background: #fbeeea; border: 1px solid #f1cdc8; display: flex; align-items: center;
+  justify-content: space-between; gap: 8px;
+  font-family: var(--mono); font-size: 10px; color: #b4493b;
+}
+.fr-scrubbing b { color: #8f2f23; }
+.fr-scrubbing button {
+  flex: none; font-family: var(--mono); font-size: 9.5px; font-weight: 700; color: #fff;
+  background: #c0392b; border: none; border-radius: 6px; padding: 4px 9px; cursor: pointer; text-transform: uppercase;
+}
+.fr-scrubbing button:hover { background: #a52f22; }
+
 /* entity search */
 .fr-search { position: relative; margin: 0 16px 10px; }
 .fr-search-ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 14px; pointer-events: none; }
@@ -668,8 +690,27 @@ html, body, #root {
 }
 @media (max-width: 820px) {
   .fr-main { flex-direction: column; }
-  .fr-feed { width: auto; border-left: none; border-top: 1px solid var(--line); height: 45%; }
+  /* feed becomes one scroll container so its richer sections + rows scroll together */
+  .fr-feed { width: auto; border-left: none; border-top: 1px solid var(--line); height: 52%; overflow-y: auto; }
+  .fr-rows { overflow: visible; flex: none; }
   .fr-tag { display: none; }
   .fr-stress { gap: 8px; padding: 5px 10px; }
   .fr-stress-left { display: none; }
+}
+
+@media (max-width: 560px) {
+  .fr-topbar { height: 52px; padding: 0 12px; }
+  .fr-topbar h1 { font-size: 14px; letter-spacing: 0.09em; }
+  .fr-logo { font-size: 20px; }
+  .fr-asof { display: none; }                 /* as-of lives in the ribbon + feed footer */
+  .fr-world { padding: 6px 12px; gap: 8px; }
+  .fr-w-tile { min-width: 124px; padding: 4px 9px; }
+  .fr-feed { height: 58%; }
+  .fr-stage { min-height: 200px; }
+  .fr-chat { left: 10px; right: 10px; bottom: 10px; width: auto; max-width: none; height: 72vh; max-height: 72vh; }
+  .fr-chat-fab { right: 12px; bottom: 12px; }
+  .fr-onb { left: 10px; right: 10px; top: 10px; width: auto; max-width: none; }
+  .fr-scrubber { left: 10px; right: 10px; bottom: 10px; gap: 9px; padding: 6px 10px; }
+  .fr-scrubber .fr-livebtn span:not(.fr-livedot) { display: none; }
+  .fr-legend { left: 10px; bottom: 58px; font-size: 9px; gap: 8px; padding: 5px 9px; }
 }

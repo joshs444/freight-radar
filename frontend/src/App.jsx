@@ -8,6 +8,7 @@ import WorldRibbon from './components/WorldRibbon.jsx';
 import SearchBox from './components/SearchBox.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import { useData } from './lib/useData.js';
+import { useWatchlist, notifyWatched } from './lib/useWatchlist.js';
 
 export default function App() {
   const { loading, error, data } = useData();
@@ -16,6 +17,7 @@ export default function App() {
   const [scrubIndex, setScrubIndex] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [userExposure, setUserExposure] = useState(null);
+  const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef(null);
 
   const ts = data?.timeseries;
@@ -24,13 +26,22 @@ export default function App() {
   const flags = userExposure?.flags ?? data?.flags;
   const exposureSummary = userExposure?.summary ?? data?.exposure;
 
+  // when scrubbing, the feed reflects that past day: only flags that had fired by
+  // then are "active", and chokepoint metrics come from the history at that date.
+  const scrubDate = scrubIndex != null && ts ? ts.dates[scrubIndex] : null;
+
   // --- the monitor universe: chokepoints + flagged ports + top ports ------
   const sets = useMemo(() => {
     if (!data) return { choke: [], portFlags: [], topPorts: [] };
     const flagByPort = {};
     (flags || [])
-      .filter((f) => f.lifecycle !== 'resolved')
+      .filter((f) => f.lifecycle !== 'resolved' && (!scrubDate || f.as_of <= scrubDate))
       .forEach((f) => { flagByPort[f.portid] = f; });
+    const seriesAt = (portid, baseline) => {
+      const v = ts?.series?.[portid]?.values?.[scrubIndex];
+      if (v == null || !baseline) return null;
+      return Math.round(((v - baseline) / baseline) * 1000) / 10;
+    };
 
     const choke = (data.snapshot?.chokepoints || []).map((c) => {
       const flag = flagByPort[c.portid] || null;
@@ -38,7 +49,8 @@ export default function App() {
         id: c.portid, name: c.name, type: 'chokepoint', lat: c.lat, lon: c.lon,
         // flagged rows show the flag's own pct (e.g. Hormuz -92% persistent), not
         // the noisy latest-vs-28d snapshot value (+124%); normals show the snapshot.
-        metric: flag ? flag.pct_change : c.pct_change,
+        // while scrubbing, normals show the value at the scrubbed date.
+        metric: flag ? flag.pct_change : (scrubDate ? seriesAt(c.portid, c.baseline) : c.pct_change),
         n_total: c.n_total, baseline: c.baseline,
         flag, severity: flag ? flag.severity : null, critical: !!flag,
         weight: c.n_total || 0,
@@ -60,7 +72,7 @@ export default function App() {
         metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
       }));
     return { choke, portFlags, topPorts };
-  }, [data, flags]);
+  }, [data, flags, scrubDate, scrubIndex, ts]);
 
   // critical first (by severity), then normal by real traffic — not by noisy %
   const byCritThenSeverity = (a, b) =>
@@ -70,12 +82,16 @@ export default function App() {
   const rows = useMemo(() => {
     const { choke, portFlags, topPorts } = sets;
     let list;
-    if (filter === 'critical') list = [...choke, ...portFlags].filter((e) => e.critical);
+    if (filter === 'watching') list = [...choke, ...portFlags, ...topPorts].filter((e) => watched.has(e.id));
+    else if (filter === 'critical') list = [...choke, ...portFlags].filter((e) => e.critical);
     else if (filter === 'chokepoints') list = choke;
     else if (filter === 'ports') list = [...portFlags, ...topPorts];
     else list = [...choke, ...portFlags];
     return [...list].sort(byCritThenSeverity);
-  }, [sets, filter]);
+  }, [sets, filter, watched]);
+
+  // browser-notify on new/escalated flags for watched entities
+  useEffect(() => { if (data) notifyWatched(watched, flags); }, [data, flags, watched]);
 
   const criticalCount = useMemo(
     () => [...sets.choke, ...sets.portFlags].filter((e) => e.critical).length,
@@ -237,6 +253,11 @@ export default function App() {
             brief={data.brief}
             flags={flags}
             disruptions={data.disruptions}
+            scrubDate={scrubDate}
+            scrubIndex={scrubIndex}
+            onLive={() => { setPlaying(false); setScrubIndex(null); }}
+            watched={watched}
+            onToggleWatch={toggleWatch}
             onPickEntity={pickByPortid}
             series={ts?.series}
             dates={ts?.dates}
