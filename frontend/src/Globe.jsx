@@ -69,16 +69,18 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime
       fadeTrail: true,
     }),
 
-    // ports — faint dark dust (no glow); clean pinpricks on the light globe
+    // ports — faint dark dust (no glow); clean pinpricks on the light globe.
+    // radiusMinPixels >= 1.2 keeps every dot at least a full pixel so they don't
+    // shimmer/blink at low zoom or while the map is moving.
     new ScatterplotLayer({
       id: 'ports',
       data: ports,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: (d) => sqrtScale(d.vessels, 0.32),
+      getRadius: (d) => sqrtScale(d.vessels, 0.34),
       radiusUnits: 'pixels',
-      radiusMinPixels: 0.5,
-      radiusMaxPixels: 2.4,
-      getFillColor: [...PORT, 120],
+      radiusMinPixels: 1.3,
+      radiusMaxPixels: 3,
+      getFillColor: [...PORT, 150],
       pickable: true,
     }),
 
@@ -98,21 +100,19 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime
       pickable: true,
     }),
 
-    // active tropical cyclones (live NHC + GDACS) — pulsing storm-blue marker so
-    // the live-storm layer is visible on the map even when no flag is near one
+    // active tropical cyclones (live NHC + GDACS) — a soft storm-blue halo that
+    // breathes gently + a crisp core dot exactly on position (no harsh expanding ring)
     new ScatterplotLayer({
-      id: 'storms-ping',
+      id: 'storms-halo',
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
       radiusUnits: 'pixels',
-      radiusMinPixels: 9 + pulse * 26,
-      radiusMaxPixels: 9 + pulse * 26,
-      stroked: true,
-      filled: false,
-      getLineColor: [47, 93, 153, Math.round((1 - pulse) * 150)],
-      lineWidthMinPixels: 1.6,
-      pickable: false,
+      radiusMinPixels: 13 + pulse * 4,
+      radiusMaxPixels: 13 + pulse * 4,
+      filled: true,
+      stroked: false,
+      getFillColor: [47, 93, 153, 30],
     }),
     new ScatterplotLayer({
       id: 'storms',
@@ -122,44 +122,45 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime
       radiusUnits: 'pixels',
       radiusMinPixels: 5,
       radiusMaxPixels: 5,
-      stroked: true,
       filled: true,
-      getFillColor: [47, 93, 153, 90],
-      getLineColor: [47, 93, 153, 255],
-      lineWidthMinPixels: 2,
+      stroked: true,
+      getFillColor: [47, 93, 153, 205],
+      getLineColor: [255, 255, 255, 235],
+      lineWidthMinPixels: 1.6,
       pickable: true,
     }),
 
-    // flags — pulsing severity ring (sonar ping) + a steady ring (click target)
+    // flags — a soft severity-tinted glow that breathes gently (signals "active"
+    // without the old expanding sonar ring) + a crisp filled core with a white ring,
+    // centered exactly on the entity so the position reads precisely. The core is the
+    // click/pick target.
     new ScatterplotLayer({
-      id: 'flags-ping',
+      id: 'flags-halo',
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
       radiusUnits: 'pixels',
-      radiusMinPixels: 12 + pulse * 22,
-      radiusMaxPixels: 12 + pulse * 22,
-      stroked: true,
-      filled: false,
-      getLineColor: (d) => severityColor(d.severity, Math.round((1 - pulse) * 150)),
-      lineWidthMinPixels: 2,
-      pickable: false,
+      radiusMinPixels: 15 + pulse * 4,
+      radiusMaxPixels: 15 + pulse * 4,
+      filled: true,
+      stroked: false,
+      getFillColor: (d) => severityColor(d.severity, 26),
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: 1,
+      getRadius: (d) => (d.flag_id === selectedId ? 8 : 6.5),
       radiusUnits: 'pixels',
-      radiusMinPixels: 11,
-      radiusMaxPixels: 11,
-      stroked: true,
+      radiusMinPixels: 6.5,
+      radiusMaxPixels: 8,
       filled: true,
-      getFillColor: (d) => severityColor(d.severity, 60),
-      getLineColor: (d) => severityColor(d.severity, 255),
-      lineWidthMinPixels: 2.4,
-      getLineWidth: (d) => (d.flag_id === selectedId ? 3.6 : 2.4),
-      updateTriggers: { getLineWidth: selectedId },
+      stroked: true,
+      getFillColor: (d) => severityColor(d.severity, 235),
+      getLineColor: [255, 255, 255, 255],
+      lineWidthMinPixels: 2,
+      getLineWidth: (d) => (d.flag_id === selectedId ? 3.2 : 2),
+      updateTriggers: { getLineWidth: selectedId, getRadius: selectedId },
       pickable: true,
       onClick: (info) => info.object && onSelectFlag(info.object),
     }),
@@ -170,7 +171,7 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
-  const stateRef = useRef({ pulse: 0, lastInteract: 0, ready: false });
+  const stateRef = useRef({ pulse: 0, ready: false, engaged: false });
   const propsRef = useRef({ flags, selectedFlag, onSelectFlag });
   propsRef.current = { flags, selectedFlag, onSelectFlag };
 
@@ -202,6 +203,7 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
 
     const overlay = new MapboxOverlay({
       interleaved: true,
+      pickingRadius: 6,   // forgiving hover/click — grab a dot from a few px away
       layers: [],
       getTooltip: ({ object, layer }) => {
         if (!object) return null;
@@ -225,8 +227,10 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     map.addControl(overlay);
     overlayRef.current = overlay;
 
-    const bump = () => (stateRef.current.lastInteract = performance.now());
-    ['mousedown', 'wheel', 'touchstart', 'dragstart'].forEach((e) => map.on(e, bump));
+    // The FIRST user interaction engages the map and permanently kills the intro
+    // auto-rotate — once you're driving, it never drifts on you again.
+    const engage = () => { stateRef.current.engaged = true; };
+    ['mousedown', 'wheel', 'touchstart', 'dragstart', 'keydown'].forEach((e) => map.on(e, engage));
     map.on('load', () => {
       stateRef.current.ready = true;
       map.resize();
@@ -235,7 +239,7 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     if (mapApiRef) {
       mapApiRef.current = {
         flyTo: (lon, lat) => {
-          stateRef.current.lastInteract = performance.now() + 4000;
+          stateRef.current.engaged = true;   // flying to a row also stops the spin
           map.flyTo({ center: [lon, lat], zoom: 3.4, duration: 2400, essential: true });
         },
       };
@@ -246,26 +250,34 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     const AIS_LOOP_MS = 9000;
     const tick = (t) => {
       const st = stateRef.current;
-      st.pulse = (Math.sin((t - t0) / 620) + 1) / 2;
+      st.pulse = (Math.sin((t - t0) / 1100) + 1) / 2;   // calm, slow breathe (~7s)
+      const moving = map.isMoving();
       const tMax = dataRef.current.tMax;
       const tripTime = ((t - t0) % AIS_LOOP_MS) / AIS_LOOP_MS * tMax;
 
-      if (st.ready && t - st.lastInteract > 4200 && !map.isMoving()) {
+      // gentle intro spin — only until the user first engages, then never again
+      if (st.ready && !st.engaged && !moving) {
         const c = map.getCenter();
         map.setCenter([c.lng + 0.04, c.lat]);
       }
 
-      const { flags: fl, selectedFlag: sel, onSelectFlag: sl } = propsRef.current;
-      overlay.setProps({
-        layers: buildLayers({
-          ...dataRef.current,
-          flags: fl ?? [],
-          tripTime,
-          pulse: st.pulse,
-          selectedId: sel?.flag_id ?? null,
-          onSelectFlag: sl,
-        }),
-      });
+      // Only push new deck layers while the camera is idle. During a pan/zoom the
+      // interleaved overlay already redraws the existing layers in lockstep with the
+      // basemap; re-instantiating them mid-gesture is exactly what made the dots and
+      // alert rings blink. Freezing the animation during movement keeps it rock-steady.
+      if (!moving) {
+        const { flags: fl, selectedFlag: sel, onSelectFlag: sl } = propsRef.current;
+        overlay.setProps({
+          layers: buildLayers({
+            ...dataRef.current,
+            flags: fl ?? [],
+            tripTime,
+            pulse: st.pulse,
+            selectedId: sel?.flag_id ?? null,
+            onSelectFlag: sl,
+          }),
+        });
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
