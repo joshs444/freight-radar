@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
 import { AMBER, PORT, LANE, severityColor } from './lib/colors.js';
+import { makeWindLayer } from './lib/windLayer.js';
 
 // Clean, token-free LIGHT basemap (CARTO Positron) draped on the v5 globe.
 // 'light_nolabels' @2x drops the busy place labels + boundary clutter and serves
@@ -20,7 +21,7 @@ const STYLE = {
         'https://d.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png',
       ],
       tileSize: 512,
-      attribution: '© OpenStreetMap © CARTO',
+      attribution: '© OpenStreetMap © CARTO · Wind: NOAA GFS',
     },
   },
   layers: [
@@ -242,6 +243,17 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     map.addControl(overlay);
     overlayRef.current = overlay;
 
+    // Animated global wind lives on its OWN overlaid overlay (interleaved:false) so its
+    // self-animating particle sim never re-triggers the static marker overlay's
+    // !isMoving rebuild gate (and never fights the basemap's per-frame globe redraw).
+    // It draws UNDER the markers, which stay on the interleaved overlay above.
+    const windOverlay = new MapboxOverlay({ interleaved: false, layers: [] });
+    map.addControl(windOverlay);
+    let windCancelled = false;
+    makeWindLayer(import.meta.env.BASE_URL || '/')
+      .then((layer) => { if (layer && !windCancelled) windOverlay.setProps({ layers: [layer] }); })
+      .catch(() => {});
+
     map.on('load', () => map.resize());
 
     // The globe NEVER moves on its own — no auto-rotate, no idle drift. It only moves
@@ -277,6 +289,8 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
 
     return () => {
       cancelAnimationFrame(raf);
+      windCancelled = true;
+      try { windOverlay.setProps({ layers: [] }); map.removeControl(windOverlay); } catch { /* noop */ }
       map.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

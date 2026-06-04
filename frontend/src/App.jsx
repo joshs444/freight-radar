@@ -245,6 +245,7 @@ export default function App() {
             <span><i className="sw amber" /> chokepoint</span>
             <span><i className="sw port" /> port</span>
             <span><i className="sw pulse" /> flagged</span>
+            {data?.wind && <span title={`Animated 10 m wind · ${data.wind.source} · ${data.wind.cycle}`}><i className="sw wind" /> wind</span>}
             {data?.weather?.counts?.active_storms > 0 && <span><i className="sw storm" /> storm</span>}
             {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
               <span title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}>
