@@ -313,6 +313,33 @@ function worldAnswer(data) {
   return answer({ text, facts, cites: ['world.json'], kind: 'world' });
 }
 
+function hazardAnswer(e, data) {
+  const d = data?.disruptions;
+  const evs = d?.events || [];
+  if (!evs.length) {
+    return answer({ text: 'No recent official natural-hazard events affecting monitored ports are on file.',
+      cites: ['disruptions.json'], kind: 'hazard' });
+  }
+  if (e) {
+    const hit = evs.filter((ev) => ev.affected_ports?.some((p) => p.portid === e.portid)
+      || ev.near_chokepoints?.some((c) => c.portid === e.portid));
+    if (hit.length) {
+      const ev = hit[0];
+      return answer({
+        text: `**${e.name}** overlaps **${ev.name}** (${ev.type_label}, ${ev.alertlevel} alert, ${ev.from} → ${ev.to}) — IMF PortWatch / GDACS.`,
+        facts: [F(ev.n_affected_ports, 'disruptions.json')], cites: ['disruptions.json'],
+        entity: { portid: e.portid, name: e.name }, kind: 'hazard' });
+    }
+    return answer({ text: `No recent official natural-hazard event is on file near **${e.name}**.`,
+      cites: ['disruptions.json'], entity: { portid: e.portid, name: e.name }, kind: 'hazard' });
+  }
+  const facts = [F(d.counts?.events, 'disruptions.json'), F(d.counts?.red, 'disruptions.json')];
+  const top = evs.slice(0, 3).map((ev) => `${ev.name} (${ev.type_label}, ${ev.alertlevel}, ${ev.to})`).join('; ');
+  const text = `**${d.counts.events}** recent official hazard event(s) hit monitored ports (${d.counts.red} red): `
+    + `${top}. These are dated GDACS alerts (most recent on file), not necessarily active today.`;
+  return answer({ text, facts, cites: ['disruptions.json'], kind: 'hazard' });
+}
+
 const HELP = answer({
   text: "I'm grounded in this dashboard's data — every number I give traces to a source file. "
     + 'Try asking about a chokepoint, the biggest risk, what is improving, your exposure, or the market.',
@@ -330,6 +357,11 @@ export function ask(q, data, prebuiltIndex) {
 
   // greetings / help
   if (/^(hi|hey|hello|help|what can you|who are you)\b/.test(s)) return HELP;
+
+  // natural hazards / official events
+  if (has('weather', 'storm', 'cyclone', 'hurricane', 'typhoon', 'earthquake', 'flood', 'hazard',
+    'natural disaster', 'official event', 'gdacs', 'volcano', 'tsunami'))
+    return hazardAnswer(e, data) || HELP;
 
   // world overview ("how many ships are out / delivered today")
   if (has('how many ship', 'ships out', 'ships are out', 'vessels', 'port call', 'delivered', 'shipped',

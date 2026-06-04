@@ -83,11 +83,17 @@ def _world(ctx: EnrichCtx) -> dict:
     return world_run(ctx)
 
 
+def _hazards(ctx: EnrichCtx) -> dict:
+    from .hazards import run as hazards_run
+    return hazards_run(ctx)
+
+
 # (name, run(ctx)->receipt, depends_on_flags). New waves append here.
 # ORDER MATTERS: stress reads timeseries.json; brief reads every sidecar above it.
 ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("exposure", _exposure, True),
     ("news", _news, True),
+    ("hazards", _hazards, True),
     ("timeseries", _timeseries, False),
     ("market", _market, True),
     ("stress", _stress, False),

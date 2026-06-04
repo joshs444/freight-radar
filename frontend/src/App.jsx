@@ -191,6 +191,7 @@ export default function App() {
             criticalCount={criticalCount}
             exposure={data.exposure}
             brief={data.brief}
+            disruptions={data.disruptions}
             onPickEntity={pickByPortid}
             series={ts?.series}
             dates={ts?.dates}

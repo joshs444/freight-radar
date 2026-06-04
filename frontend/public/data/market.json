@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-04T07:41:48",
+  "generated_at": "2026-06-04T07:57:59",
   "indicators": {
     "brent": {
-      "value": 95.27,
-      "change_pct": -2.05,
+      "value": 94.66,
+      "change_pct": -2.67,
       "change_basis": "intraday",
       "as_of": "2026-06-04",
       "source": "Stooq",
@@ -13,8 +13,8 @@
       "stale": false
     },
     "wti": {
-      "value": 93.55,
-      "change_pct": -2.3,
+      "value": 92.69,
+      "change_pct": -3.2,
       "change_basis": "intraday",
       "as_of": "2026-06-04",
       "source": "Stooq",
@@ -24,8 +24,8 @@
       "stale": false
     },
     "natgas": {
-      "value": 3.254,
-      "change_pct": 0.25,
+      "value": 3.246,
+      "change_pct": 0.0,
       "change_basis": "intraday",
       "as_of": "2026-06-04",
       "source": "Stooq",
@@ -35,8 +35,8 @@
       "stale": false
     },
     "eurusd": {
-      "value": 1.1641,
-      "change_pct": 0.36,
+      "value": 1.1643,
+      "change_pct": 0.38,
       "change_basis": "intraday",
       "as_of": "2026-06-04",
       "source": "Stooq",
@@ -59,8 +59,8 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 715,
-      "change_pct": -2.05,
+      "value": 710,
+      "change_pct": -2.67,
       "change_basis": "modeled",
       "as_of": "2026-06-04",
       "source": "modeled from Brent (~7.5x)",

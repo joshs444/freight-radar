@@ -22,7 +22,10 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 - **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1").
 - **Global Ocean Freight Stress Index (0–100)** — one at-a-glance number in the top bar, with a 30-day sparkline and week-over-week momentum. It **blends breadth** (an economic-weighted mean of every chokepoint's deviation from its normal throughput) **with depth** (the single worst chokepoint), so a concentrated crisis at one strategic strait isn't averaged away. Both components are exposed for inspection.
 - **"This week" brief** — a deterministic hero card that assembles 3–6 plain-English, fully-cited bullets from the sidecars at publish time. The figures are string-substituted from real computations; the prose is a template, so no statistic can be hallucinated.
-- **Ask Freight Radar** — a grounded chat that runs **entirely in the browser** over the loaded data (no backend, no API key). It answers "what's going on with Hormuz / what's the biggest risk / am I exposed / why does oil matter" — and **only ever states a number it can trace to a source file** (enforced by a test).
+- **Ask Freight Radar** — a grounded chat that runs **entirely in the browser** over the loaded data (no backend, no API key). It answers "what's going on with Hormuz / what's the biggest risk / am I exposed / why does oil matter / how many ships are out today / any storms near a port" — and **only ever states a number it can trace to a source file** (enforced by a test).
+- **World Today ribbon** — a global pulse across the top: ships in transit, port calls, and cargo delivered/shipped per day, each with a today-vs-last-week trend + sparkline. Real daily sums from the DB.
+- **Natural hazards / official events** — IMF PortWatch (**GDACS**) cyclone/flood/earthquake alerts that hit monitored ports, matched by exact port ID, with flag corroboration when contemporaneous.
+- **Business exposure** — point a trade CSV (LOCODEs or port names, region column optional) and each disruption maps to *your* lanes with a banded **Cost-of-Disruption stack** (carrying cost + reroute premium), coverage reporting, and a "show your work" method panel.
 - **Time-scrubber** — replay the trailing 120 days; chokepoint glow dims/brightens by each day's real count and a flag pulses on the actual date it was detected.
 - **Durable loop (verified in a test harness)** — the same fetch → detect → attribute → enrich → publish steps are wrapped in a **Temporal** workflow + Schedule, with durability proven end-to-end on Temporal's time-skipping test server (kill the worker mid-run, it re-drives from the last completed activity). Production currently regenerates the static sidecars via the same `publish_static` pipeline; the Temporal workflow is the always-on orchestration of those identical steps.
 
@@ -38,6 +41,7 @@ This is the part that matters, and it's enforced in the **UI**, not just the REA
 - **The stress index is decomposable, not a black box.** Its method string, its `breadth` and `depth` components, and the per-chokepoint contributors all ship in `stress.json`; deviation is measured vs each chokepoint's *normal* (80th-pct of 120 days), so a sustained level-shift the rolling baseline has adapted to still reads as stressed — the same Strait-of-Hormuz lesson the detector learned.
 - **High precision over a busy rail.** A change-point gate (STL residual → rolling z **AND** CUSUM **AND** a `ruptures` PELT breakpoint within 7 days) suppresses one-day blips. On the current data it cuts 13 raw z-detections down to **4 gate-confirmed** anomalies — and shows the rest winding down through an explicit **lifecycle** (`new → ongoing → escalated → resolved`).
 - **The Cape-reroute detector doesn't cry wolf.** It only fires on a real Red-Sea-down / Cape-up divergence. On the current window (Red Sea +6.3%, Cape +0.9%) there is no divergence, so **it honestly does not fire** — and says so.
+- **Official corroboration, dated — never a false cause.** A natural-hazard layer pulls **IMF PortWatch / GDACS** official events (tropical cyclones, floods, earthquakes) that hit monitored ports (matched by the exact port IDs GDACS lists) or chokepoints (by proximity). A flag is only corroborated by a hazard that is genuinely *contemporaneous* (±30 days). Today's flags are geopolitical/congestion with **no** weather overlap — and the UI says so, showing the hazard events with their own dates rather than implying they're live.
 - **Garnish is labelled as garnish.** The animated ship trails come from an *optional* AIS sidecar that the flag engine never reads. The legend chip says `live`, `simulated`, or `offline` truthfully; killing the socket changes nothing on the map and no number moves.
 - **Holiday-aware.** Benign seasonal dips (Lunar New Year, Christmas, Golden Week) are suppressed so the rail doesn't call a holiday a crisis.
 
@@ -91,7 +95,7 @@ python -m freight_radar.publish             # detect + snapshot + manifest -> fr
 python -m freight_radar.export_timeseries   # the scrubber's per-day series
 python -m freight_radar.sidecar.ais_consumer --demo   # optional simulated ship trails
 
-pytest -m "not live"     # 37 deterministic tests (detection, temporal, narrative…)
+pytest -m "not live"     # 41 deterministic tests (detection, temporal, narrative…)
 pytest -m live           # + the live PortWatch contract tests (network)
 ```
 
@@ -122,7 +126,8 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 - **Grounded chat** — `npm run test:chat` runs the engine over 20+ questions and asserts **every cited fact exists in its source sidecar** (100+ facts, 0 ungrounded).
 - **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), the stress gauge + "this week" brief render, the chat answers with citations, flags are clickable (fly-to + real brief), and the scrubber replays real history — all with **0 console errors**.
 - **Business depth** — a real-world CSV (LOCODEs, alternate spellings, no region column) resolves instead of silently zeroing; coverage is reported ("X of N lanes modeled"); the cost-of-disruption stack's total is exactly carrying + reroute premium (no fabricated lines), with working capital held separate (locked ≠ lost) and a "show your work" method panel.
-- **37/37** non-live backend tests pass.
+- **Hazard corroboration** — synthetic GDACS events prove the matcher: exact port-ID matches + chokepoint proximity, old/non-infra events dropped, and a flag is corroborated **only** by a contemporaneous (±30d) hazard — never a stale one (no false causation).
+- **41/41** non-live backend tests pass.
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 

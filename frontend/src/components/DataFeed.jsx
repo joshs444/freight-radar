@@ -5,8 +5,22 @@ import { Markdown } from '../lib/md.jsx';
 import { Sparkline, SparkHistory } from './Sparkline.jsx';
 import { computeTrend, trendLabel } from '../lib/trend.js';
 import BriefCard from './BriefCard.jsx';
+import HazardsPanel from './HazardsPanel.jsx';
 
 const CONF_LABEL = { high: 'high', medium: 'derived', low: 'partial', none: 'unrouted' };
+const ALERT_C = { RED: '#c0392b', ORANGE: '#c2611f', GREEN: '#3f7a5a' };
+
+function OfficialEvent({ oe }) {
+  if (!oe) return null;
+  return (
+    <div className="fr-oe">
+      <span className="fr-oe-badge" style={{ background: ALERT_C[oe.alertlevel] || '#888' }}>{oe.alertlevel}</span>
+      <span className="fr-oe-text">
+        Official corroboration: <b>{oe.name}</b> ({oe.type_label}, {oe.from} → {oe.to}) — {oe.source}
+      </span>
+    </div>
+  );
+}
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -186,6 +200,7 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
               {tl.pct ? ` — ${tl.pct > 0 ? '+' : ''}${tl.pct}% over the last 10 days` : ''}
             </div>
           )}
+          {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && <BusinessImpact b={e.flag.business} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
           {e.flag && news && <NewsBlock news={news} />}
@@ -199,7 +214,7 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, brief, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, brief, disruptions, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
@@ -208,6 +223,8 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
       </div>
 
       {brief && <BriefCard brief={brief} onPickEntity={onPickEntity} />}
+
+      {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
 
       {exposure && (
         <div className="fr-exposure">
