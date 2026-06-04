@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { severityCss } from '../lib/colors.js';
 import { money } from '../lib/format.js';
 import { Markdown } from '../lib/md.jsx';
 import { Sparkline, SparkHistory } from './Sparkline.jsx';
 import { computeTrend, trendLabel } from '../lib/trend.js';
 import BriefCard from './BriefCard.jsx';
+
+const CONF_LABEL = { high: 'high', medium: 'derived', low: 'partial', none: 'unrouted' };
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -22,31 +25,70 @@ function Metric({ v, alert }) {
   );
 }
 
+function CostLine({ label, band, strong }) {
+  if (!band) return null;
+  return (
+    <div className={`fr-cost-line ${strong ? 'is-total' : ''}`}>
+      <span className="fr-cost-label">{label}</span>
+      <span className="fr-cost-val"><b>{money(band.expected)}</b>
+        <span className="fr-biz-range"> {money(band.low)}–{money(band.high)}</span>
+      </span>
+    </div>
+  );
+}
+
 function BusinessImpact({ b }) {
+  const [showWork, setShowWork] = useState(false);
   if (!b) return null;
   if (!b.lane_count) {
     return <div className="fr-biz"><div className="fr-biz-head">Business impact</div>
       <div className="fr-biz-none">No exposure in your trade data.</div></div>;
   }
   const d = b.est_delay_days || {};
-  const cc = b.carrying_cost_of_delay_usd || {};
-  const wc = b.working_capital_tied_up_usd || {};
+  const cs = b.cost_stack || {};
+  const carrying = cs.carrying_cost_of_delay_usd || b.carrying_cost_of_delay_usd;
+  const reroute = cs.reroute_premium_usd;
+  const total = cs.total_cost_of_disruption_usd || b.total_cost_of_disruption_usd;
+  const wc = cs.working_capital_tied_up_usd || b.working_capital_tied_up_usd || {};
+  const conf = b.routing_confidence;
   return (
     <div className="fr-biz">
-      <div className="fr-biz-head">Business impact <span className="fr-biz-est">estimate</span></div>
+      <div className="fr-biz-head">
+        Business impact <span className="fr-biz-est">estimate</span>
+        {conf && <span className={`fr-biz-conf c-${conf}`}>routing: {CONF_LABEL[conf] || conf}</span>}
+      </div>
       <div className="fr-biz-stat">
         <b>{money(b.exposed_value_usd)}</b> of your trade exposed · {b.lane_count} lane{b.lane_count > 1 ? 's' : ''}
+        {b.exposed_teu ? ` · ${b.exposed_teu.toLocaleString()} TEU` : ''}
       </div>
-      <div className="fr-biz-stat">
-        est. <b>+{d.low}–{d.high}d</b> delay → cost of delay <b>{money(cc.expected)}</b>{' '}
-        <span className="fr-biz-range">({money(cc.low)}–{money(cc.high)})</span>
+      <div className="fr-biz-stat fr-biz-sub">est. <b>+{d.low}–{d.high}d</b> added transit</div>
+
+      <div className="fr-cost-stack">
+        <CostLine label="carrying cost of delay" band={carrying} />
+        {reroute?.expected > 0 && <CostLine label="reroute premium" band={reroute} />}
+        <CostLine label="cost of disruption" band={total} strong />
       </div>
       <div className="fr-biz-stat fr-biz-sub">
-        ≈<b>{money(wc.expected)}</b> working capital tied up (locked, not lost)
+        ≈<b>{money(wc.expected)}</b> working capital tied up (locked, not lost — excluded from total)
       </div>
+
+      {b.method?.length > 0 && (
+        <>
+          <button className="fr-biz-work" onClick={(e) => { e.stopPropagation(); setShowWork((s) => !s); }}>
+            {showWork ? '▾' : '▸'} show your work
+          </button>
+          {showWork && (
+            <div className="fr-biz-method">
+              {b.method.map((m, i) => (
+                <div key={i} className="fr-biz-mline"><code>{m.line}</code> = {m.basis}</div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
       {b.top_items?.length > 0 && <div className="fr-biz-items">{b.top_items.join(' · ')}</div>}
       <div className="fr-biz-note">
-        assumes ~{Math.round((b.carrying_rate_assumed || 0.25) * 100)}%/yr carrying cost · replace with your terms
+        assumes ~{Math.round((b.carrying_rate_assumed || 0.25) * 100)}%/yr carrying cost · sample trade data — replace with your terms
       </div>
     </div>
   );
@@ -169,12 +211,17 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
 
       {exposure && (
         <div className="fr-exposure">
-          <div className="fr-exp-label">Your exposure <span>· your trade data</span></div>
+          <div className="fr-exp-label">Your exposure <span>· sample trade data</span></div>
           <div className="fr-exp-row">
             <div><b>{money(exposure.exposed_value_usd)}</b><span>exposed</span></div>
-            <div><b>{money(exposure.carrying_cost_of_delay_usd?.expected)}</b><span>cost of delay</span></div>
+            <div><b>{money((exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)?.expected)}</b><span>cost of disruption</span></div>
             <div><b>{exposure.active_disruptions_hitting_you}</b><span>hitting you</span></div>
           </div>
+          {exposure.lanes_with_known_route != null && (
+            <div className="fr-exp-cov">
+              {exposure.lanes_with_known_route} of {exposure.total_flows} lanes modeled ({exposure.coverage_pct}%)
+            </div>
+          )}
         </div>
       )}
 

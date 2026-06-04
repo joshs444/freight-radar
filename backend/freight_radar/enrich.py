@@ -38,9 +38,10 @@ class EnrichCtx:
 # --- adapters: wrap each existing enricher to the (ctx)->receipt interface ---
 def _exposure(ctx: EnrichCtx) -> dict:
     from .business.exposure import enrich_from_files
-    s = enrich_from_files(flags_path=ctx.flags_path, out_dir=ctx.out_dir)
+    s = enrich_from_files(flags_path=ctx.flags_path, out_dir=ctx.out_dir, db=ctx.db_path)
     return {"name": "exposure", "sidecar": "exposure.json",
             "exposed_value_usd": s.get("exposed_value_usd"),
+            "coverage_pct": s.get("coverage_pct"),
             "disruptions": s.get("active_disruptions_hitting_you")}
 
 

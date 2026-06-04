@@ -91,7 +91,7 @@ python -m freight_radar.publish             # detect + snapshot + manifest -> fr
 python -m freight_radar.export_timeseries   # the scrubber's per-day series
 python -m freight_radar.sidecar.ais_consumer --demo   # optional simulated ship trails
 
-pytest -m "not live"     # 31 deterministic tests (detection, temporal, narrative…)
+pytest -m "not live"     # 37 deterministic tests (detection, temporal, narrative…)
 pytest -m live           # + the live PortWatch contract tests (network)
 ```
 
@@ -121,7 +121,8 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 - **Narrative layer** — the stress index reads `calm` on an all-normal system and `high` when a single strategic strait collapses (the depth term isn't averaged away); a sustained level-shift still scores stressed at the latest day; the event ledger diffs appeared/escalated/resolved across runs; and the brief is verified to **never state a number the stress index contradicts** (the stale-flag trap).
 - **Grounded chat** — `npm run test:chat` runs the engine over 20+ questions and asserts **every cited fact exists in its source sidecar** (100+ facts, 0 ungrounded).
 - **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), the stress gauge + "this week" brief render, the chat answers with citations, flags are clickable (fly-to + real brief), and the scrubber replays real history — all with **0 console errors**.
-- **31/31** non-live backend tests pass.
+- **Business depth** — a real-world CSV (LOCODEs, alternate spellings, no region column) resolves instead of silently zeroing; coverage is reported ("X of N lanes modeled"); the cost-of-disruption stack's total is exactly carrying + reroute premium (no fabricated lines), with working capital held separate (locked ≠ lost) and a "show your work" method panel.
+- **37/37** non-live backend tests pass.
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 

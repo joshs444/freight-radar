@@ -216,23 +216,24 @@ function exposure(e, data) {
   // entity-specific exposure
   if (e?.flag?.business?.lane_count) {
     const b = e.flag.business;
-    const cc = b.carrying_cost_of_delay_usd || {};
-    const facts = [F(b.exposed_value_usd, 'flags.json'), F(b.lane_count, 'flags.json'), F(cc.expected, 'flags.json')];
+    const tot = b.total_cost_of_disruption_usd || b.carrying_cost_of_delay_usd || {};
+    const facts = [F(b.exposed_value_usd, 'flags.json'), F(b.lane_count, 'flags.json'), F(tot.expected, 'flags.json')];
     const text = `Through **${e.name}**, ${money(b.exposed_value_usd)} of the sample trade book routes across `
-      + `${b.lane_count} lane(s), an estimated ${money(cc.expected)} cost-of-delay `
-      + `(${money(cc.low)}–${money(cc.high)}). Sample data — swap in your own.`;
+      + `${b.lane_count} lane(s), an estimated **${money(tot.expected)}** cost of disruption `
+      + `(${money(tot.low)}–${money(tot.high)}; carrying cost + reroute premium). Sample data — swap in your own.`;
     return answer({ text, facts, cites: ['flags.json'], entity: { portid: e.portid, name: e.name }, kind: 'exposure' });
   }
   if (e && (!e.flag || !e.flag.business?.lane_count)) {
     return answer({ text: `No lanes in the sample trade book route through **${e.name}**.`, cites: ['exposure.json'], kind: 'exposure' });
   }
   if (!ex) return answer({ text: 'No trade dataset is loaded, so exposure is unavailable.', cites: [], kind: 'exposure' });
-  const cc = ex.carrying_cost_of_delay_usd || {};
+  const tot = ex.total_cost_of_disruption_usd || ex.carrying_cost_of_delay_usd || {};
   const facts = [F(ex.exposed_value_usd, 'exposure.json'), F(ex.active_disruptions_hitting_you, 'exposure.json'),
-    F(cc.expected, 'exposure.json')];
-  const text = `Across the sample trade book, **${money(ex.exposed_value_usd)}** routes through disrupted lanes, `
-    + `hit by ${ex.active_disruptions_hitting_you} active disruption(s) — an estimated `
-    + `**${money(cc.expected)}** cost-of-delay (${money(cc.low)}–${money(cc.high)}). Sample data — swap in your own.`;
+    F(tot.expected, 'exposure.json'), F(ex.lanes_with_known_route, 'exposure.json')];
+  const text = `Across the sample trade book (${ex.lanes_with_known_route} of ${ex.total_flows} lanes modeled), `
+    + `**${money(ex.exposed_value_usd)}** routes through disrupted lanes, hit by ${ex.active_disruptions_hitting_you} `
+    + `active disruption(s) — an estimated **${money(tot.expected)}** cost of disruption `
+    + `(${money(tot.low)}–${money(tot.high)}). Sample data — swap in your own.`;
   return answer({ text, facts, cites: ['exposure.json'], kind: 'exposure' });
 }
 
