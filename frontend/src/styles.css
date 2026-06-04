@@ -126,6 +126,7 @@ html, body, #root {
 .sw.amber { background: var(--amber); }
 .sw.port { background: #64748b; }
 .sw.pulse { background: #d64242; animation: pulsedot 1.3s ease-in-out infinite; }
+.sw.storm { background: #2f5d99; box-shadow: 0 0 0 3px rgba(47,93,153,0.22); }
 @keyframes pulsedot { 0%,100% { transform: scale(0.7); opacity: 0.7 } 50% { transform: scale(1.2); opacity: 1 } }
 .fr-ais { padding-left: 4px; border-left: 1px solid var(--line); }
 .fr-ais .sw.ais { background: #aab2c0; }

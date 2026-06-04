@@ -245,9 +245,7 @@ export default function App() {
             <span><i className="sw amber" /> chokepoint</span>
             <span><i className="sw port" /> port</span>
             <span><i className="sw pulse" /> flagged</span>
-            <span className={`fr-ais ais-${data?.ships?.mode || 'offline'}`}>
-              <i className="sw ais" /> AIS · {data?.ships?.mode === 'live' ? 'live' : data?.ships?.mode === 'demo' ? 'simulated' : 'offline'}
-            </span>
+            {data?.weather?.counts?.active_storms > 0 && <span><i className="sw storm" /> storm</span>}
           </div>
           {ts && ts.dates?.length > 1 && (
             <TimeScrubber
