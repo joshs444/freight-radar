@@ -41,12 +41,13 @@ jobs:
         working-directory: backend
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+          pip install -e .[wind]
 
       - name: Rebuild DuckDB from PortWatch + publish all sidecars
         working-directory: backend
         run: |
           python -m freight_radar.backfill
+          python -m freight_radar.wind || echo "wind layer skipped (GFS unavailable)"
           python -m freight_radar.publish
 
       - name: Snapshot real AIS vessel positions near the chokepoints
@@ -63,6 +64,7 @@ jobs:
           git config user.name "freight-radar-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add frontend/public/data/*.json
+          git add -f frontend/public/data/wind.png 2>/dev/null || true
           git add -f backend/data/state/events_state.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No data changes this run."

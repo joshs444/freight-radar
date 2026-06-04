@@ -25,6 +25,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=1"]
+# ambient wind layer (wind.py): GFS GRIB decode + PNG encode. eccodes>=2.43 bundles
+# its binary via eccodeslib, so this pip-installs clean on CI with no apt-get.
+wind = ["cfgrib>=0.9.12", "eccodes>=2.43", "xarray>=2024.0", "Pillow>=10"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
