@@ -2,8 +2,10 @@ name: Refresh data + republish
 
 # Keeps the live site from going stale. On a weekly cadence (matching IMF
 # PortWatch's own refresh) this rebuilds the DuckDB from source, re-runs detection
-# + every enricher, and commits the changed sidecars. That push triggers the Pages
-# deploy, so production self-heals without anyone running anything by hand.
+# + every enricher, commits the changed sidecars, and deploys to Pages — all in one
+# run. It deploys INLINE rather than relying on the commit to trigger deploy.yml,
+# because pushes made with the default GITHUB_TOKEN intentionally don't trigger
+# other workflows (GitHub's loop-prevention). So production self-heals end to end.
 #
 # Free: the repo is public, so Actions minutes are unlimited. Polite to the public
 # PortWatch API: weekly, not hammering. Run it on demand with "Run workflow".
@@ -15,14 +17,19 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: refresh
+  group: pages
   cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,5 +60,22 @@ jobs:
           else
             git commit -m "Auto-refresh data sidecars ($(date -u +%Y-%m-%d))"
             git push
-            echo "Pushed refreshed data — Pages deploy will follow."
+            echo "Pushed refreshed data."
           fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build frontend with the fresh data
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
