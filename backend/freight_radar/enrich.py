@@ -88,6 +88,11 @@ def _hazards(ctx: EnrichCtx) -> dict:
     return hazards_run(ctx)
 
 
+def _weather(ctx: EnrichCtx) -> dict:
+    from .weather import run as weather_run
+    return weather_run(ctx)
+
+
 def _ports_lookup(ctx: EnrichCtx) -> dict:
     from .export_ports_lookup import run as lookup_run
     return lookup_run(ctx)
@@ -104,6 +109,7 @@ ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("exposure", _exposure, True),
     ("news", _news, True),
     ("hazards", _hazards, True),
+    ("weather", _weather, True),       # live NHC+GDACS active storms -> flags' live_storm
     ("gatun", _gatun, False),
     ("timeseries", _timeseries, False),
     ("ports_lookup", _ports_lookup, False),
