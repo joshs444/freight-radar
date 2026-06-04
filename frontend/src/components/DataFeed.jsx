@@ -8,6 +8,7 @@ import BriefCard from './BriefCard.jsx';
 import HazardsPanel from './HazardsPanel.jsx';
 import GatunPanel from './GatunPanel.jsx';
 import CargoMix from './CargoMix.jsx';
+import NationalDependence from './NationalDependence.jsx';
 import Upload from './Upload.jsx';
 import SearchBox from './SearchBox.jsx';
 import { exportBrief, exportExposureCSV } from '../lib/exporters.js';
@@ -217,6 +218,9 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
           )}
           <CargoMix mix={e.cargo_mix} unit={e.type === 'chokepoint' ? 'transits' : 'port calls'}
             avgSize={e.avg_vessel_size_dwt} tonnage={e.capacity_total} />
+          {e.type === 'port' && (
+            <NationalDependence shareImport={e.share_import} shareExport={e.share_export} country={e.country} />
+          )}
           {gatun?.available && gatun.portid === e.id && <GatunPanel gatun={gatun} />}
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && <BusinessImpact b={e.flag.business} />}

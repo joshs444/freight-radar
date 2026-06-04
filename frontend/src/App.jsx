@@ -50,6 +50,9 @@ export default function App() {
     const mixByPort = {};
     (data.snapshot?.chokepoints || []).forEach((c) => { if (c.cargo_mix) mixByPort[c.portid] = c.cargo_mix; });
     (data.snapshot?.ports || []).forEach((p) => { if (p.cargo_mix) mixByPort[p.portid] = p.cargo_mix; });
+    // national-dependence lookup (ports only) for flagged-port rows built from flags
+    const portMetaById = {};
+    (data.snapshot?.ports || []).forEach((p) => { portMetaById[p.portid] = p; });
 
     const choke = (data.snapshot?.chokepoints || []).map((c) => {
       const flag = flagByPort[c.portid] || null;
@@ -72,6 +75,9 @@ export default function App() {
         id: f.portid, name: f.entity, type: 'port', lat: f.lat, lon: f.lon,
         metric: f.pct_change, flag: f, severity: f.severity, critical: true, weight: 1e9,
         cargo_mix: mixByPort[f.portid] || null,
+        share_import: portMetaById[f.portid]?.share_import,
+        share_export: portMetaById[f.portid]?.share_export,
+        country: portMetaById[f.portid]?.country,
       }));
     const topPorts = [...(data.snapshot?.ports || [])]
       .sort((a, b) => b.vessels - a.vessels)
@@ -81,6 +87,7 @@ export default function App() {
         id: p.portid, name: p.name, type: 'port', lat: p.lat, lon: p.lon,
         metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
         cargo_mix: p.cargo_mix,
+        share_import: p.share_import, share_export: p.share_export, country: p.country,
       }));
     return { choke, portFlags, topPorts };
   }, [data, flags, scrubDate, scrubIndex, ts]);
@@ -124,7 +131,7 @@ export default function App() {
       const p = c || (data.snapshot?.ports || []).find((x) => x.portid === portid);
       if (p) e = { id: p.portid, name: p.name, type: c ? 'chokepoint' : 'port',
         lat: p.lat, lon: p.lon, metric: c ? c.pct_change : null, flag: null, critical: false,
-        cargo_mix: p.cargo_mix };
+        cargo_mix: p.cargo_mix, share_import: p.share_import, share_export: p.share_export, country: p.country };
     }
     if (e) { setFilter('all'); selectEntity(e); }
   }, [sets, selectEntity, data]);
