@@ -28,6 +28,24 @@ function OfficialEvent({ oe }) {
   );
 }
 
+function StormChip({ storm }) {
+  if (!storm) return null;
+  const wind = storm.max_wind_kmh ? ` · ${storm.max_wind_kmh} km/h winds` : '';
+  return (
+    <div className="fr-storm">
+      <span className="fr-storm-badge">🌀 {storm.agency}</span>
+      <span className="fr-storm-text">
+        Possibly related: <b>{storm.category} {storm.name}</b> ~{storm.km} km away{wind} · {storm.basin}
+        {storm.url && (
+          <> · <a href={storm.url} target="_blank" rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}>forecast</a></>
+        )}
+        <span className="fr-storm-note">live {storm.source} forecast position — not a confirmed cause</span>
+      </span>
+    </div>
+  );
+}
+
 const FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'critical', label: 'Critical' },
@@ -222,6 +240,7 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
             <NationalDependence shareImport={e.share_import} shareExport={e.share_export} country={e.country} />
           )}
           {gatun?.available && gatun.portid === e.id && <GatunPanel gatun={gatun} />}
+          {e.flag?.live_storm && <StormChip storm={e.flag.live_storm} />}
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && <BusinessImpact b={e.flag.business} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
