@@ -3,6 +3,7 @@ import { money } from '../lib/format.js';
 import { Markdown } from '../lib/md.jsx';
 import { Sparkline, SparkHistory } from './Sparkline.jsx';
 import { computeTrend, trendLabel } from '../lib/trend.js';
+import BriefCard from './BriefCard.jsx';
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -156,13 +157,15 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, series, dates, news, market, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, brief, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
         <span className="fr-feed-title">Monitor</span>
         <span className="fr-feed-count"><b>{criticalCount}</b> critical · {rows.length} shown</span>
       </div>
+
+      {brief && <BriefCard brief={brief} onPickEntity={onPickEntity} />}
 
       {exposure && (
         <div className="fr-exposure">

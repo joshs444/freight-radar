@@ -18,6 +18,11 @@ function inline(text, keyPrefix) {
   return nodes;
 }
 
+// Inline-only render (no paragraph wrapping) — for one-line bullets/labels.
+export function MdInline({ text }) {
+  return <>{inline(String(text || ''), 'il')}</>;
+}
+
 export function Markdown({ text }) {
   const paras = String(text || '').split(/\n\s*\n/);
   return (

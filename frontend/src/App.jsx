@@ -2,6 +2,8 @@ import { useRef, useState, useCallback, useMemo } from 'react';
 import Globe from './Globe.jsx';
 import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
+import StressGauge from './components/StressGauge.jsx';
+import Chat from './components/Chat.jsx';
 import { useData } from './lib/useData.js';
 
 export default function App() {
@@ -77,6 +79,13 @@ export default function App() {
     if (e && e.lat != null && mapApiRef.current) mapApiRef.current.flyTo(e.lon, e.lat);
   }, []);
 
+  // brief bullet / stress gauge → jump to an entity by portid (fly globe + open row)
+  const pickByPortid = useCallback((portid) => {
+    const all = [...sets.choke, ...sets.portFlags, ...sets.topPorts];
+    const e = all.find((x) => x.id === portid);
+    if (e) { setFilter('all'); selectEntity(e); }
+  }, [sets, selectEntity]);
+
   // a flag ring clicked on the globe -> select the matching feed entity
   const onSelectFlagFromGlobe = useCallback((flag) => {
     selectEntity({
@@ -125,6 +134,12 @@ export default function App() {
             <p className="fr-tag">Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.</p>
           </div>
         </div>
+        {data?.stress?.available && (
+          <StressGauge
+            stress={data.stress}
+            onOpen={() => data.stress.contributors?.[0] && pickByPortid(data.stress.contributors[0].portid)}
+          />
+        )}
         <div className="fr-asof">
           <span className="fr-dot" /> {source}<br />
           data as of <b>{asOf}</b>
@@ -172,6 +187,8 @@ export default function App() {
             setFilter={setFilter}
             criticalCount={criticalCount}
             exposure={data.exposure}
+            brief={data.brief}
+            onPickEntity={pickByPortid}
             series={ts?.series}
             dates={ts?.dates}
             news={data.news?.items}
@@ -183,6 +200,8 @@ export default function App() {
           />
         )}
       </div>
+
+      {data && <Chat data={data} onPickEntity={pickByPortid} />}
     </div>
   );
 }

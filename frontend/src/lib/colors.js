@@ -33,3 +33,12 @@ export const severityCss = (s) => {
   const [r, g, b] = severityColor(s);
   return `rgb(${r}, ${g}, ${b})`;
 };
+
+// Stress-index level → color/tint, matching the backend's calm/elevated/high/severe.
+export const STRESS_LEVELS = {
+  calm: { color: '#3f7a5a', tint: '#eef6f1', edge: '#cfe6d9' },
+  elevated: { color: '#b07b1e', tint: '#fbf4e6', edge: '#f0e2c4' },
+  high: { color: '#c2611f', tint: '#fbeee2', edge: '#f1d8bf' },
+  severe: { color: '#c0392b', tint: '#fbecea', edge: '#f1cdc8' },
+};
+export const stressLevel = (label) => STRESS_LEVELS[label] || STRESS_LEVELS.calm;
