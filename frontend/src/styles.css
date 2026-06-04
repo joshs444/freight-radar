@@ -136,6 +136,59 @@ html, body, #root {
 }
 .fr-feed-count { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
 .fr-feed-count b { color: var(--amber); }
+/* entity search */
+.fr-search { position: relative; margin: 0 16px 10px; }
+.fr-search-ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 14px; pointer-events: none; }
+.fr-search-in {
+  width: 100%; font-family: var(--display); font-size: 13px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px 9px 30px; outline: none;
+}
+.fr-search-in:focus { border-color: var(--line-strong); background: var(--surface); }
+.fr-search-pop {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px);
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; overflow: hidden;
+  box-shadow: 0 10px 28px rgba(27, 34, 48, 0.16);
+}
+.fr-search-row {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 12px; cursor: pointer; border: none; background: var(--surface); text-align: left; font-family: var(--display);
+}
+.fr-search-row.hi, .fr-search-row:hover { background: var(--hover); }
+.fr-search-name { font-size: 12.5px; color: var(--ink); }
+.fr-search-tag { font-family: var(--mono); font-size: 9px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 5px; }
+.fr-search-flag { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+
+/* onboarding card */
+.fr-onb {
+  position: absolute; z-index: 7; left: 18px; top: 18px; width: 320px; max-width: calc(100% - 36px);
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 16px 17px;
+  box-shadow: 0 14px 40px rgba(27, 34, 48, 0.18);
+}
+.fr-onb-x { position: absolute; top: 9px; right: 11px; background: none; border: none; font-size: 19px; color: var(--ink-faint); cursor: pointer; line-height: 1; }
+.fr-onb-x:hover { color: var(--ink); }
+.fr-onb-title { font-family: var(--display); font-weight: 800; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 6px; }
+.fr-onb-lede { font-size: 12.5px; color: var(--ink-dim); line-height: 1.55; margin: 0 0 9px; }
+.fr-onb-lede b { color: var(--ink); }
+.fr-onb-list { list-style: none; margin: 0 0 12px; padding: 0; }
+.fr-onb-list li { font-size: 12px; color: var(--ink-dim); line-height: 1.5; padding: 3px 0 3px 14px; position: relative; }
+.fr-onb-list li::before { content: '·'; position: absolute; left: 3px; color: var(--amber); font-weight: 700; }
+.fr-onb-list b { color: var(--ink); }
+.fr-onb-go {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: #fff; background: var(--ink);
+  border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer;
+}
+.fr-onb-go:hover { background: #000; }
+
+/* export affordances */
+.fr-brief-actions { display: flex; align-items: center; gap: 9px; }
+.fr-brief-dl { font-family: var(--mono); font-size: 13px; color: var(--ink-faint); cursor: pointer; }
+.fr-brief-dl:hover { color: var(--ink); }
+.fr-exp-export {
+  float: right; font-family: var(--mono); font-size: 8.5px; color: var(--ink-faint); background: none;
+  border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fr-exp-export:hover { color: var(--amber); }
+
 /* in-browser CSV upload */
 .fr-upl {
   margin: 0 16px 10px; padding: 9px 12px; border: 1px dashed var(--line-strong); border-radius: 11px;

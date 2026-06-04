@@ -10,7 +10,7 @@ const DOT = {
   movers: '#b07b1e', market: '#0d9488', exposure: '#b07b1e',
 };
 
-export default function BriefCard({ brief, onPickEntity }) {
+export default function BriefCard({ brief, onPickEntity, onExport }) {
   const [open, setOpen] = useState(true);
   if (!brief?.bullets?.length) return null;
   const lv = stressLevel(brief.stress_label);
@@ -22,7 +22,11 @@ export default function BriefCard({ brief, onPickEntity }) {
           <span className="fr-brief-kicker" style={{ color: lv.color }}>This week in ocean freight</span>
           <span className="fr-brief-headline">{brief.headline}</span>
         </div>
-        <span className="fr-brief-toggle">{open ? '–' : '+'}</span>
+        <span className="fr-brief-actions">
+          {onExport && <span className="fr-brief-dl" role="button" tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onExport(); }} title="Download brief">↓</span>}
+          <span className="fr-brief-toggle">{open ? '–' : '+'}</span>
+        </span>
       </button>
       {open && (
         <div className="fr-brief-body">
