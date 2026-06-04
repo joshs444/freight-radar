@@ -39,7 +39,7 @@ const STYLE = {
 
 const sqrtScale = (v, k) => Math.sqrt(Math.max(0, v)) * k;
 
-function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime, tMax, pulse, selectedId, onSelectFlag }) {
+function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime, tMax, selectedId, onSelectFlag }) {
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
@@ -100,19 +100,19 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime
       pickable: true,
     }),
 
-    // active tropical cyclones (live NHC + GDACS) — a soft storm-blue halo that
-    // breathes gently + a crisp core dot exactly on position (no harsh expanding ring)
+    // active tropical cyclones (live NHC + GDACS) — a soft static storm-blue halo +
+    // a crisp core dot exactly on position. Fully static so it never ghosts/smears.
     new ScatterplotLayer({
       id: 'storms-halo',
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
       radiusUnits: 'pixels',
-      radiusMinPixels: 13 + pulse * 4,
-      radiusMaxPixels: 13 + pulse * 4,
+      radiusMinPixels: 13,
+      radiusMaxPixels: 13,
       filled: true,
       stroked: false,
-      getFillColor: [47, 93, 153, 30],
+      getFillColor: [47, 93, 153, 34],
     }),
     new ScatterplotLayer({
       id: 'storms',
@@ -124,39 +124,38 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, tripTime
       radiusMaxPixels: 5,
       filled: true,
       stroked: true,
-      getFillColor: [47, 93, 153, 205],
-      getLineColor: [255, 255, 255, 235],
+      getFillColor: [47, 93, 153, 235],
+      getLineColor: [255, 255, 255, 240],
       lineWidthMinPixels: 1.6,
       pickable: true,
     }),
 
-    // flags — a soft severity-tinted glow that breathes gently (signals "active"
-    // without the old expanding sonar ring) + a crisp filled core with a white ring,
-    // centered exactly on the entity so the position reads precisely. The core is the
-    // click/pick target.
+    // flags — a soft static severity-tinted glow + a crisp filled core with a white
+    // ring, centered exactly on the entity. No animation, no expanding ring: the
+    // marker is rock-steady at every zoom and reads its position precisely.
     new ScatterplotLayer({
       id: 'flags-halo',
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
       radiusUnits: 'pixels',
-      radiusMinPixels: 15 + pulse * 4,
-      radiusMaxPixels: 15 + pulse * 4,
+      radiusMinPixels: 15,
+      radiusMaxPixels: 15,
       filled: true,
       stroked: false,
-      getFillColor: (d) => severityColor(d.severity, 26),
+      getFillColor: (d) => severityColor(d.severity, 34),
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: (d) => (d.flag_id === selectedId ? 8 : 6.5),
+      getRadius: (d) => (d.flag_id === selectedId ? 9 : 7),
       radiusUnits: 'pixels',
-      radiusMinPixels: 6.5,
-      radiusMaxPixels: 8,
+      radiusMinPixels: 7,
+      radiusMaxPixels: 9,
       filled: true,
       stroked: true,
-      getFillColor: (d) => severityColor(d.severity, 235),
+      getFillColor: (d) => severityColor(d.severity, 255),
       getLineColor: [255, 255, 255, 255],
       lineWidthMinPixels: 2,
       getLineWidth: (d) => (d.flag_id === selectedId ? 3.2 : 2),
@@ -171,7 +170,6 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
-  const stateRef = useRef({ pulse: 0, ready: false, engaged: false });
   const propsRef = useRef({ flags, selectedFlag, onSelectFlag });
   propsRef.current = { flags, selectedFlag, onSelectFlag };
 
@@ -227,21 +225,14 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     map.addControl(overlay);
     overlayRef.current = overlay;
 
-    // The FIRST user interaction engages the map and permanently kills the intro
-    // auto-rotate — once you're driving, it never drifts on you again.
-    const engage = () => { stateRef.current.engaged = true; };
-    ['mousedown', 'wheel', 'touchstart', 'dragstart', 'keydown'].forEach((e) => map.on(e, engage));
-    map.on('load', () => {
-      stateRef.current.ready = true;
-      map.resize();
-    });
+    map.on('load', () => map.resize());
 
+    // The globe NEVER moves on its own — no auto-rotate, no idle drift. It only moves
+    // when the user drives it, or when a row click flies to an entity (below).
     if (mapApiRef) {
       mapApiRef.current = {
-        flyTo: (lon, lat) => {
-          stateRef.current.engaged = true;   // flying to a row also stops the spin
-          map.flyTo({ center: [lon, lat], zoom: 3.4, duration: 2400, essential: true });
-        },
+        flyTo: (lon, lat) =>
+          map.flyTo({ center: [lon, lat], zoom: 3.4, duration: 2400, essential: true }),
       };
     }
 
@@ -249,30 +240,18 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     const t0 = performance.now();
     const AIS_LOOP_MS = 9000;
     const tick = (t) => {
-      const st = stateRef.current;
-      st.pulse = (Math.sin((t - t0) / 1100) + 1) / 2;   // calm, slow breathe (~7s)
-      const moving = map.isMoving();
-      const tMax = dataRef.current.tMax;
-      const tripTime = ((t - t0) % AIS_LOOP_MS) / AIS_LOOP_MS * tMax;
-
-      // gentle intro spin — only until the user first engages, then never again
-      if (st.ready && !st.engaged && !moving) {
-        const c = map.getCenter();
-        map.setCenter([c.lng + 0.04, c.lat]);
-      }
-
-      // Only push new deck layers while the camera is idle. During a pan/zoom the
-      // interleaved overlay already redraws the existing layers in lockstep with the
-      // basemap; re-instantiating them mid-gesture is exactly what made the dots and
-      // alert rings blink. Freezing the animation during movement keeps it rock-steady.
-      if (!moving) {
+      // Markers are static; only the optional AIS ship-trails animate. Push new deck
+      // props only while the camera is idle — during a pan/zoom the interleaved overlay
+      // redraws the existing layers in lockstep with the basemap, so re-instantiating
+      // them mid-gesture (the old per-frame churn) is what made the dots/alerts blink.
+      if (!map.isMoving()) {
+        const tripTime = ((t - t0) % AIS_LOOP_MS) / AIS_LOOP_MS * dataRef.current.tMax;
         const { flags: fl, selectedFlag: sel, onSelectFlag: sl } = propsRef.current;
         overlay.setProps({
           layers: buildLayers({
             ...dataRef.current,
             flags: fl ?? [],
             tripTime,
-            pulse: st.pulse,
             selectedId: sel?.flag_id ?? null,
             onSelectFlag: sl,
           }),
