@@ -19,7 +19,7 @@ export default function StressGauge({ stress, onOpen }) {
       title={`${stress.method}\nbreadth ${stress.breadth} · depth ${stress.depth} · ${stress.source}`}
     >
       <div className="fr-stress-left">
-        <span className="fr-stress-label">Ocean Freight Stress</span>
+        <span className="fr-stress-label">Ocean Freight Stress <span className="fr-stress-info">ⓘ what's this</span></span>
         <span className="fr-stress-sub">
           {stress.chokepoints_disrupted}/{stress.chokepoints_total} chokepoints disrupted
         </span>
