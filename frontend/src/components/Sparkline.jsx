@@ -1,6 +1,6 @@
 // Clean-line SVG sparklines — tiny inline trend + a detailed history chart.
 
-export function Sparkline({ values, width = 62, height = 20, color = '#9aa6bd', strokeWidth = 1.3 }) {
+export function Sparkline({ values, width = 62, height = 20, color = '#9aa6bd', strokeWidth = 1.3, mark = null }) {
   if (!values || values.length < 2) return <span className="fr-spark-empty" />;
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -9,9 +9,13 @@ export function Sparkline({ values, width = 62, height = 20, color = '#9aa6bd', 
   const x = (i) => (i / (n - 1)) * width;
   const y = (v) => height - ((v - min) / range) * (height - 2) - 1;
   const d = values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+  const mi = mark != null && mark >= 0 && mark < n ? mark : null;
   return (
     <svg className="fr-spark" width={width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
       <path d={d} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinejoin="round" strokeLinecap="round" />
+      {mi != null && (
+        <line x1={x(mi)} x2={x(mi)} y1="0" y2={height} stroke="#d64242" strokeWidth="0.8" strokeDasharray="2 2" />
+      )}
     </svg>
   );
 }

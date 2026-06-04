@@ -166,16 +166,26 @@ function NewsBlock({ news }) {
   );
 }
 
-function Row({ e, active, onSelect, series, dates, news, market }) {
+function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, watched, onToggleWatch }) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
+  const isWatched = watched?.has(e.id);
   return (
     <button
       className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
       onClick={() => onSelect(active ? null : e)}
     >
       <div className="fr-row-main">
+        <span
+          className={`fr-star ${isWatched ? 'on' : ''}`}
+          role="button"
+          tabIndex={0}
+          title={isWatched ? 'Unwatch' : 'Watch — notify on new/escalated flags'}
+          onClick={(ev) => { ev.stopPropagation(); onToggleWatch?.(e.id); }}
+        >
+          {isWatched ? '★' : '☆'}
+        </span>
         {e.critical ? (
           <span className="fr-sev" style={{ color: severityCss(e.severity), borderColor: severityCss(e.severity) }}>
             {e.severity}
@@ -190,7 +200,7 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
             {tl && <span className={`fr-trend ${tl.cls}`}> · {tl.arrow} {tl.label}</span>}
           </span>
         </div>
-        {ser && <Sparkline values={ser.values} color={sparkColor} />}
+        {ser && <Sparkline values={ser.values} color={sparkColor} mark={scrubIndex} />}
         <Metric v={e.metric} alert={e.critical} />
       </div>
       {active && (
@@ -217,13 +227,21 @@ function Row({ e, active, onSelect, series, dates, news, market }) {
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, search, brief, flags, disruptions, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
+export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, search, brief, flags, disruptions, scrubDate, scrubIndex, onLive, watched, onToggleWatch, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
+  const filters = watched?.size ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }] : FILTERS;
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
         <span className="fr-feed-title">Monitor</span>
         <span className="fr-feed-count"><b>{criticalCount}</b> critical · {rows.length} shown</span>
       </div>
+
+      {scrubDate && (
+        <div className="fr-scrubbing">
+          <span>▶ viewing <b>{scrubDate}</b> — feed reflects flags fired by then</span>
+          <button onClick={onLive}>back to live</button>
+        </div>
+      )}
 
       {search && <SearchBox {...search} />}
 
@@ -252,7 +270,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
       )}
 
       <div className="fr-filters">
-        {FILTERS.map((f) => (
+        {filters.map((f) => (
           <button key={f.key} className={`fr-chip ${filter === f.key ? 'on' : ''}`} onClick={() => setFilter(f.key)}>
             {f.label}
           </button>
@@ -262,7 +280,8 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
           <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates}
-            news={e.flag ? news?.[e.flag.flag_id] : null} market={market} />
+            news={e.flag ? news?.[e.flag.flag_id] : null} market={market} scrubIndex={scrubIndex}
+            watched={watched} onToggleWatch={onToggleWatch} />
         ))}
       </div>
       <div className="fr-feed-foot">
