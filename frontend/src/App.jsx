@@ -1,10 +1,12 @@
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import Globe from './Globe.jsx';
 import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
 import StressGauge from './components/StressGauge.jsx';
 import Chat from './components/Chat.jsx';
 import WorldRibbon from './components/WorldRibbon.jsx';
+import SearchBox from './components/SearchBox.jsx';
+import Onboarding from './components/Onboarding.jsx';
 import { useData } from './lib/useData.js';
 
 export default function App() {
@@ -85,12 +87,46 @@ export default function App() {
     if (e && e.lat != null && mapApiRef.current) mapApiRef.current.flyTo(e.lon, e.lat);
   }, []);
 
-  // brief bullet / stress gauge → jump to an entity by portid (fly globe + open row)
+  // brief bullet / stress gauge / search → jump to an entity by portid (fly globe
+  // + open its row). Falls back to the full snapshot so ANY of the 2,065 ports works.
   const pickByPortid = useCallback((portid) => {
     const all = [...sets.choke, ...sets.portFlags, ...sets.topPorts];
-    const e = all.find((x) => x.id === portid);
+    let e = all.find((x) => x.id === portid);
+    if (!e && data) {
+      const c = (data.snapshot?.chokepoints || []).find((x) => x.portid === portid);
+      const p = c || (data.snapshot?.ports || []).find((x) => x.portid === portid);
+      if (p) e = { id: p.portid, name: p.name, type: c ? 'chokepoint' : 'port',
+        lat: p.lat, lon: p.lon, metric: c ? c.pct_change : null, flag: null, critical: false };
+    }
     if (e) { setFilter('all'); selectEntity(e); }
-  }, [sets, selectEntity]);
+  }, [sets, selectEntity, data]);
+
+  const flagByPort = useMemo(() => {
+    const m = {};
+    (flags || []).filter((f) => f.lifecycle !== 'resolved').forEach((f) => { m[f.portid] = f; });
+    return m;
+  }, [flags]);
+
+  // --- deep-link: selected entity + filter + scrub time <-> URL hash --------
+  const appliedHash = useRef(false);
+  useEffect(() => {
+    if (!data || appliedHash.current) return;
+    appliedHash.current = true;
+    const h = new URLSearchParams(window.location.hash.slice(1));
+    const e = h.get('e'); if (e) pickByPortid(e);         // sets filter='all' as a side effect…
+    const f = h.get('f'); if (f) setFilter(f);            // …so restore the filter AFTER
+    const t = h.get('t'); if (t !== null && t !== '') setScrubIndex(Number(t));
+  }, [data, pickByPortid]);
+
+  useEffect(() => {
+    if (!data || !appliedHash.current) return;
+    const p = new URLSearchParams();
+    if (selected?.id) p.set('e', selected.id);
+    if (filter !== 'all') p.set('f', filter);
+    if (scrubIndex != null) p.set('t', String(scrubIndex));
+    const s = p.toString();
+    window.history.replaceState(null, '', s ? `#${s}` : window.location.pathname + window.location.search);
+  }, [data, selected, filter, scrubIndex]);
 
   // a flag ring clicked on the globe -> select the matching feed entity
   const onSelectFlagFromGlobe = useCallback((flag) => {
@@ -186,6 +222,7 @@ export default function App() {
             />
           )}
           {loading && <div className="fr-loading">acquiring signal…</div>}
+          {data && <Onboarding />}
         </section>
 
         {data && (
@@ -195,8 +232,10 @@ export default function App() {
             setFilter={setFilter}
             criticalCount={criticalCount}
             exposure={exposureSummary}
+            search={{ snapshot: data.snapshot, flagByPort, onJump: pickByPortid }}
             upload={{ flags: data.flags, applied: userExposure, onApply: setUserExposure, onReset: () => setUserExposure(null) }}
             brief={data.brief}
+            flags={flags}
             disruptions={data.disruptions}
             onPickEntity={pickByPortid}
             series={ts?.series}
