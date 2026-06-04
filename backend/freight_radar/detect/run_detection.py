@@ -11,19 +11,37 @@ receipt (counts by kind + the top-5 flags with their real numbers).
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import date, datetime
 from pathlib import Path
 
 import duckdb
+import numpy as np
 import pandas as pd
 
 from ..config import DEFAULT_DB_PATH, REPO_ROOT
 from .cape_reroute import detect_cape_reroute
-from .detectors import DetectionConfig, Flag, detect_series, load_config
+from .detectors import (
+    DetectionConfig,
+    Flag,
+    detect_series,
+    load_config,
+    make_flag_id,
+    pct_vs_baseline,
+)
 from .holidays import apply_holiday_suppression
 from .lifecycle import apply_lifecycle
 from .persistent import detect_persistent
+
+# Phase A2: the 5 leaf vessel types (they sum to portcalls_total). The dominant-
+# cargo-type detector runs on the largest-share type so a move in (say) container
+# calls is caught even when the blended total stays flat.
+CARGO_TYPES = ("container", "tanker", "dry_bulk", "general_cargo", "roro")
+CARGO_LABEL = {
+    "container": "container", "tanker": "tanker", "dry_bulk": "dry-bulk",
+    "general_cargo": "general-cargo", "roro": "RoRo",
+}
+MIN_DOMINANT_SHARE = 0.40  # only test a type that genuinely characterises the port
 
 FLAGS_SCHEMA = Path(__file__).resolve().parent / "flags_schema.sql"
 FLAGS_JSON = REPO_ROOT / "frontend" / "public" / "data" / "flags.json"
@@ -49,17 +67,21 @@ def _detect_chokepoints(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) ->
     ).df().set_index("portid")
     weights = _econ_weights(dims["vessel_count_total"])
     daily = con.execute(
-        "SELECT portid, date, n_total FROM fct_chokepoint_daily ORDER BY portid, date"
+        "SELECT portid, date, n_total, capacity_total "
+        "FROM fct_chokepoint_daily ORDER BY portid, date"
     ).df()
 
     flags: list[Flag] = []
     series_by_id: dict[str, pd.Series] = {}
+    cap_by_id: dict[str, pd.Series] = {}
     for portid, grp in daily.groupby("portid"):
         if portid not in dims.index:
             continue
         d = dims.loc[portid]
-        series = pd.Series(grp["n_total"].to_numpy(), index=pd.to_datetime(grp["date"]))
+        idx = pd.to_datetime(grp["date"])
+        series = pd.Series(grp["n_total"].to_numpy(), index=idx)
         series_by_id[portid] = series
+        cap_by_id[portid] = pd.Series(grp["capacity_total"].to_numpy(), index=idx)
         flag = detect_series(
             portid=portid,
             entity=str(d["fullname"]),
@@ -95,7 +117,107 @@ def _detect_chokepoints(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) ->
         )
         if pf:
             flags.append(pf)
+
+    # Phase A3: avg-vessel-size pass for chokepoints the count detectors left calm.
+    # Size (capacity_total / n_total) is orthogonal to the count (audit: corr -0.08 at
+    # Gibraltar), so a shift to bigger/smaller transiting ships is a signal the count
+    # can't see. One flag per portid, so only unflagged chokepoints are scanned.
+    flagged = {f.portid for f in flags}
+    for portid, series in series_by_id.items():
+        if portid in flagged:
+            continue
+        d = dims.loc[portid]
+        sf = _chokepoint_size_flag(
+            portid,
+            str(d["fullname"]),
+            series,
+            cap_by_id[portid],
+            cfg,
+            lat=float(d["lat"]) if pd.notna(d["lat"]) else None,
+            lon=float(d["lon"]) if pd.notna(d["lon"]) else None,
+            econ_weight=weights.get(portid, 1.0),
+        )
+        if sf:
+            flags.append(sf)
     return flags
+
+
+def _chokepoint_size_flag(
+    portid: str,
+    entity: str,
+    n_series: pd.Series,
+    cap_series: pd.Series,
+    cfg: DetectionConfig,
+    *,
+    lat: float | None,
+    lon: float | None,
+    econ_weight: float,
+) -> Flag | None:
+    """Phase A3: a shift in the AVERAGE size of transiting vessels (capacity_total /
+    n_total, in DWT) that the transit-count detectors didn't catch. Returns a
+    ``chokepoint_vessel_size_shift`` Flag or None.
+
+    Honest framing: capacity_total is a *flow* (summed DWT of vessels that transited),
+    so capacity/count is the mean vessel size — NOT capacity utilisation (there is no
+    ceiling to divide by; the audit explicitly forbade an n/capacity %). The brief
+    contrasts the size move against the (calm) transit count at the same day.
+    """
+    df = pd.concat([n_series.rename("n"), cap_series.rename("cap")], axis=1).sort_index()
+    n = df["n"].to_numpy(dtype=float)
+    cap = df["cap"].to_numpy(dtype=float)
+    size = np.divide(cap, n, out=np.full_like(cap, np.nan), where=n > 0)  # NULLIF(n,0)
+    size_series = pd.Series(size, index=df.index).dropna()
+    if len(size_series) < cfg.min_history_days:
+        return None
+
+    base = detect_series(
+        portid=portid,
+        entity=entity,
+        entity_type="chokepoint",
+        metric="avg_vessel_size_dwt",
+        values=size_series,
+        as_of=size_series.index[-1].date(),
+        cfg=cfg,
+        lat=lat,
+        lon=lon,
+        econ_weight=econ_weight,
+        unit="DWT",
+    )
+    if base is None:
+        return None
+
+    # the transit count at the SAME peak day — the orthogonality this detector exists
+    # to expose (count calm, ship size moved).
+    n_clean = n_series.sort_index()
+    pos = int(n_clean.index.get_indexer([pd.Timestamp(base.as_of)])[0])
+    if pos < 0:
+        pos = len(n_clean) - 1
+    _, _, count_pct = pct_vs_baseline(n_clean, cfg.z_window, end=pos)
+
+    direction = "down" if base.pct_change < 0 else "up"
+    rel = "below" if direction == "down" else "above"
+    verb = "fell" if direction == "down" else "rose"
+    sized = "smaller" if direction == "down" else "larger"
+    peak_date = date.fromisoformat(base.as_of)
+    headline = f"{entity} avg vessel size {abs(base.pct_change):.0f}% {rel} norm — {sized} ships"
+    brief = (
+        f"**{entity}** average transiting **vessel size** {verb} to "
+        f"**~{base.value:,.0f} DWT** on {base.as_of}, **{abs(base.pct_change):.0f}% "
+        f"{rel}** its 28-day norm of ~{base.baseline:,.0f} DWT (z = {base.zscore:+.1f}) "
+        f"— {sized} ships on average — while the **transit count** stayed near normal "
+        f"({count_pct:+.0f}%). The count detector can't see this; ship-size is "
+        f"orthogonal to ship-count.\n\n"
+        f"_Average size = transiting capacity (DWT) ÷ vessel count — a fleet-mix shift, "
+        f"**not** capacity utilisation (capacity here is a flow, not a ceiling)._\n\n"
+        f"_Method: {base.method}. Source: {base.source}._"
+    )
+    return replace(
+        base,
+        flag_id=make_flag_id("chokepoint_vessel_size_shift", portid, peak_date),
+        kind="chokepoint_vessel_size_shift",
+        headline=headline,
+        brief_md=brief,
+    )
 
 
 def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[Flag]:
@@ -110,9 +232,10 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
         [cfg.top_n_ports],
     ).df().set_index("portid")
     weights = _econ_weights(dims["vessel_count_total"])
+    cargo_cols = ", ".join(f"portcalls_{t}" for t in CARGO_TYPES)
     daily = con.execute(
-        """
-        SELECT portid, date, portcalls_total
+        f"""
+        SELECT portid, date, portcalls_total, {cargo_cols}
         FROM fct_port_daily
         WHERE portid IN (SELECT portid FROM dim_port
                          WHERE lat IS NOT NULL AND lon IS NOT NULL
@@ -128,6 +251,8 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
             continue
         d = dims.loc[portid]
         name = str(d["portname"]) if pd.notna(d["portname"]) else str(d["fullname"])
+        lat, lon = float(d["lat"]), float(d["lon"])
+        econ_weight = weights.get(portid, 1.0)
         series = pd.Series(
             grp["portcalls_total"].to_numpy(), index=pd.to_datetime(grp["date"])
         )
@@ -139,14 +264,116 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
             values=series,
             as_of=series.index[-1].date(),
             cfg=cfg,
-            lat=float(d["lat"]),
-            lon=float(d["lon"]),
-            econ_weight=weights.get(portid, 1.0),
+            lat=lat,
+            lon=lon,
+            econ_weight=econ_weight,
             unit="port calls",
         )
         if flag:
             flags.append(flag)
+            continue  # one flag per portid (the frontend keys flags by portid)
+        # blended total stayed calm — look for a move in the dominant cargo type
+        cargo = _dominant_cargo_flag(
+            portid, name, grp, cfg, lat=lat, lon=lon, econ_weight=econ_weight
+        )
+        if cargo:
+            flags.append(cargo)
     return flags
+
+
+def _dominant_cargo_flag(
+    portid: str,
+    name: str,
+    grp: pd.DataFrame,
+    cfg: DetectionConfig,
+    *,
+    lat: float,
+    lon: float,
+    econ_weight: float,
+) -> Flag | None:
+    """Phase A2: a move in the port's DOMINANT cargo type that the blended
+    ``portcalls_total`` detector missed (e.g. container calls collapse while the
+    overall total holds flat). Returns a ``port_cargo_type_{drop,spike}`` Flag or None.
+
+    Only the largest-share type (>= ``MIN_DOMINANT_SHARE``) is tested, through the
+    SAME gated ``detect_series`` pipeline as the blended detector — so it adds
+    resolution without opening a new false-positive surface. The brief contrasts the
+    type-specific move against the port's flat overall calls, which is precisely why a
+    blended view misses it. Every number is from the per-type series; nothing invented.
+    """
+    means = {t: float(grp[f"portcalls_{t}"].mean()) for t in CARGO_TYPES}
+    total_mean = sum(means.values())
+    if total_mean <= 0:
+        return None
+    dtype = max(means, key=means.get)
+    share = means[dtype] / total_mean
+    if share < MIN_DOMINANT_SHARE:
+        return None
+
+    idx = pd.to_datetime(grp["date"])
+    series = pd.Series(grp[f"portcalls_{dtype}"].to_numpy(), index=idx)
+    base = detect_series(
+        portid=portid,
+        entity=name,
+        entity_type="port",
+        metric=f"portcalls_{dtype}",
+        values=series,
+        as_of=series.index[-1].date(),
+        cfg=cfg,
+        lat=lat,
+        lon=lon,
+        econ_weight=econ_weight,
+        unit=f"{CARGO_LABEL[dtype]} calls",
+    )
+    if base is None:
+        return None
+
+    # Per-type pct vs each type's OWN 28-day norm at the same peak day — the
+    # attribution a blended view erases. Computed identically to the main detector;
+    # nothing invented. We report the dominant type's move against the next-largest
+    # types (substantial base -> stable pct, no tiny-denominator noise).
+    def _pct_at(col: str) -> float:
+        s = pd.Series(grp[col].to_numpy(), index=idx).sort_index()
+        pos = int(s.index.get_indexer([pd.Timestamp(base.as_of)])[0])
+        if pos < 0:
+            pos = len(s) - 1
+        return pct_vs_baseline(s, cfg.z_window, end=pos)[2]
+
+    others = sorted(
+        ((t, means[t]) for t in CARGO_TYPES if t != dtype),
+        key=lambda kv: kv[1], reverse=True,
+    )
+    contrast = ", ".join(
+        f"{CARGO_LABEL[t]} {_pct_at(f'portcalls_{t}'):+.0f}%" for t, m in others[:2] if m > 0
+    )
+    total_pct = _pct_at("portcalls_total")
+
+    label = CARGO_LABEL[dtype]
+    direction = "drop" if base.pct_change < 0 else "spike"
+    new_kind = f"port_cargo_type_{direction}"
+    rel = "below" if base.pct_change < 0 else "above"
+    verb = "fell" if direction == "drop" else "surged"
+    peak_date = date.fromisoformat(base.as_of)
+    headline = f"{name} {label} calls {abs(base.pct_change):.0f}% {rel} 28-day norm"
+    brief = (
+        f"**{name}** **{label}** port calls {verb} to **{base.value:.0f}/day** on "
+        f"{base.as_of}, **{abs(base.pct_change):.0f}% {rel}** their 28-day norm of "
+        f"~{base.baseline:.0f}/day (z = {base.zscore:+.1f})"
+        + (f" — by type: {contrast}." if contrast else ".")
+        + f"\n\n_{label.capitalize()} is this port's dominant type (~{share * 100:.0f}% "
+        f"of calls). The blended port-calls total didn't trip the detector here "
+        f"(total {total_pct:+.0f}% vs norm); isolating the dominant stream surfaces "
+        f"the move. \"Drop/surge\" is inferred from daily port calls, not vessel "
+        f"dwell-time data._\n\n"
+        f"_Method: {base.method}. Source: {base.source}._"
+    )
+    return replace(
+        base,
+        flag_id=make_flag_id(new_kind, portid, peak_date),
+        kind=new_kind,
+        headline=headline,
+        brief_md=brief,
+    )
 
 
 def _detect_cape_reroute(
