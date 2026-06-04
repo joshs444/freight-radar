@@ -40,7 +40,14 @@ const STYLE = {
 
 const sqrtScale = (v, k) => Math.sqrt(Math.max(0, v)) * k;
 
-function buildLayers({ ports, chokepoints, lanes, flags, storms, selectedId, onSelectFlag }) {
+// live AIS vessel dot color by coarse type (AIS only resolves cargo/tanker/etc.).
+// Generic vessels use teal so they read as ships, distinct from the slate port dust.
+const VESSEL_COLOR = {
+  cargo: [58, 110, 165], tanker: [194, 97, 31], passenger: [120, 106, 154],
+  fishing: [138, 109, 59], vessel: [13, 148, 136],
+};
+
+function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, selectedId, onSelectFlag }) {
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
@@ -66,6 +73,24 @@ function buildLayers({ ports, chokepoints, lanes, flags, storms, selectedId, onS
       radiusMinPixels: 2,
       radiusMaxPixels: 2.6,
       getFillColor: [...PORT, 200],
+      pickable: true,
+    }),
+
+    // live AIS vessels — REAL current positions near the chokepoints (a sample), as
+    // crisp little type-colored dots with a thin white edge. Clear "where ships are",
+    // not the old confusing animated streaks.
+    new ScatterplotLayer({
+      id: 'ships',
+      data: ships || [],
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 2.4,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 2,
+      radiusMaxPixels: 3.2,
+      getFillColor: (d) => VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel,
+      stroked: true,
+      getLineColor: [255, 255, 255, 170],
+      lineWidthMinPixels: 0.5,
       pickable: true,
     }),
 
@@ -161,14 +186,13 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
   const propsRef = useRef({ flags, selectedFlag, onSelectFlag });
   propsRef.current = { flags, selectedFlag, onSelectFlag };
 
-  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], storms: [], tMax: 100 });
+  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], storms: [] });
   dataRef.current = {
     ports: snapshot?.ports ?? [],
     chokepoints: snapshot?.chokepoints ?? [],
     lanes: lanes ?? [],
-    ships: ships?.ships ?? [],
+    ships: ships?.vessels ?? [],   // live AIS current positions near the chokepoints
     storms: storms ?? [],
-    tMax: ships?.t_max ?? 100,
   };
 
   useEffect(() => {
@@ -207,6 +231,10 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
         if (layer?.id === 'storms') {
           const wind = object.max_wind_kmh ? ` · ${object.max_wind_kmh} km/h` : '';
           return { html: `🌀 <b>${object.name}</b> (${object.category})<br/>${object.basin}${wind} · live ${object.agency}`, className: 'fr-tip' };
+        }
+        if (layer?.id === 'ships') {
+          const nm = object.name ? `<b>${object.name}</b>` : `<b>Vessel ${object.mmsi}</b>`;
+          return { html: `${nm}<br/>${object.type} · heading ${object.heading}° · AIS`, className: 'fr-tip' };
         }
         return null;
       },

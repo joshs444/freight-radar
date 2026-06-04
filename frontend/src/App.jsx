@@ -246,6 +246,11 @@ export default function App() {
             <span><i className="sw port" /> port</span>
             <span><i className="sw pulse" /> flagged</span>
             {data?.weather?.counts?.active_storms > 0 && <span><i className="sw storm" /> storm</span>}
+            {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
+              <span title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}>
+                <i className="sw ship" /> {data.ships.count} ships · AIS
+              </span>
+            )}
           </div>
           {ts && ts.dates?.length > 1 && (
             <TimeScrubber
