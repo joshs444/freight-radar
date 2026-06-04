@@ -125,6 +125,114 @@ async def run_live(out_dir: Path = None, key: str = "", write_every: float = 4.0
         print(f"AIS live failed ({exc!r}); wrote offline badge")
 
 
+AIS_URL = "wss://stream.aisstream.io/v0/stream"
+
+
+def _ais_type(code) -> str:
+    """AIS ship-type code -> coarse class (AIS only resolves cargo vs tanker, etc.)."""
+    try:
+        c = int(code)
+    except (TypeError, ValueError):
+        return "vessel"
+    if 70 <= c <= 79:
+        return "cargo"
+    if 80 <= c <= 89:
+        return "tanker"
+    if 60 <= c <= 69:
+        return "passenger"
+    if 30 <= c <= 39:
+        return "fishing"
+    return "vessel"
+
+
+def _chokepoint_bboxes(half: float = 0.7) -> list:
+    """[[SW_lat,SW_lon],[NE_lat,NE_lon]] boxes around the 28 monitored chokepoints
+    (read from the DB). Falls back to the curated HOTSPOTS when no DB is present."""
+    try:
+        import duckdb
+
+        from ..config import db_path
+
+        con = duckdb.connect(str(db_path()), read_only=True)
+        rows = con.execute(
+            "SELECT lat, lon FROM dim_chokepoint WHERE lat IS NOT NULL AND lon IS NOT NULL"
+        ).fetchall()
+        con.close()
+        if rows:
+            return [[[lat - half, lon - half], [lat + half, lon + half]] for lat, lon in rows]
+    except Exception:  # noqa: BLE001 - fall back to hotspots if the DB isn't there
+        pass
+    return [[[clat - 1.5, clon - 1.5], [clat + 1.5, clon + 1.5]] for _, clon, clat, _ in HOTSPOTS]
+
+
+async def snapshot_live(out_dir: Path = None, key: str = "", duration_s: float = 70.0) -> dict:
+    """One-shot REAL AIS: collect a ~duration_s window of position reports near the
+    monitored chokepoints, keep the LATEST position per vessel, write ships.json as
+    current positions (not trails). Any failure degrades to offline. Honest: this is a
+    live sample near the chokepoints, never 'all ships'."""
+    import websockets
+
+    out = out_dir or publish_dir()
+    bboxes = _chokepoint_bboxes()
+    latest: dict[str, dict] = {}
+    static: dict[str, dict] = {}
+
+    async def _collect() -> None:
+        async with websockets.connect(AIS_URL, ping_interval=20, max_size=2 ** 22) as ws:
+            await ws.send(json.dumps({
+                "APIKey": key,
+                "BoundingBoxes": bboxes,
+                "FilterMessageTypes": ["PositionReport", "ShipStaticData"],
+            }))
+            async for raw in ws:
+                msg = json.loads(raw)
+                if msg.get("error") or msg.get("Error"):
+                    raise RuntimeError(f"aisstream error: {msg.get('error') or msg.get('Error')}")
+                mtype = msg.get("MessageType")
+                meta = msg.get("MetaData", {})
+                mmsi = str(meta.get("MMSI") or "")
+                if not mmsi:
+                    continue
+                if mtype == "PositionReport":
+                    pr = msg.get("Message", {}).get("PositionReport", {})
+                    lat, lon = pr.get("Latitude"), pr.get("Longitude")
+                    if lat is None or lon is None:
+                        continue
+                    hdg = pr.get("TrueHeading")
+                    if hdg is None or hdg >= 511:
+                        hdg = pr.get("Cog") or 0
+                    latest[mmsi] = {"lon": round(lon, 4), "lat": round(lat, 4), "heading": round(hdg) % 360}
+                elif mtype == "ShipStaticData":
+                    sd = msg.get("Message", {}).get("ShipStaticData", {})
+                    static[mmsi] = {"name": str(sd.get("Name") or "").strip(), "type": _ais_type(sd.get("Type"))}
+
+    try:
+        await asyncio.wait_for(_collect(), timeout=duration_s)
+    except asyncio.TimeoutError:
+        pass  # expected — we deliberately cap the collection window
+    except Exception as exc:  # noqa: BLE001 - garnish: any failure degrades to offline
+        write_offline(out)
+        print(f"AIS snapshot failed ({exc!r}); wrote offline badge")
+        return {"mode": "offline", "count": 0}
+
+    vessels = [
+        {"mmsi": mmsi, "lon": p["lon"], "lat": p["lat"], "heading": p["heading"],
+         "type": static.get(mmsi, {}).get("type", "vessel"),
+         "name": static.get(mmsi, {}).get("name", "")}
+        for mmsi, p in latest.items()
+    ]
+    payload = {
+        "mode": "live",
+        "note": "Real AIS vessel positions near the monitored chokepoints, sampled at publish (a point-in-time sample, not all ships).",
+        "source": "aisstream.io",
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "count": len(vessels),
+        "vessels": vessels,
+    }
+    _ships_path(out).write_text(json.dumps(payload, separators=(",", ":")))
+    return {"mode": "live", "count": len(vessels)}
+
+
 def _write_live(out: Path, trails: dict[str, list]) -> None:
     ships = []
     for mmsi, pts in trails.items():
@@ -142,11 +250,19 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Freight Radar AIS garnish (optional)")
     ap.add_argument("--demo", action="store_true", help="force simulated tracks")
     ap.add_argument("--offline", action="store_true", help="force empty/offline")
+    ap.add_argument("--snapshot", action="store_true",
+                    help="one-shot REAL position snapshot near the chokepoints (needs key)")
     args = ap.parse_args()
     key = os.environ.get("AISSTREAM_API_KEY", "")
 
     if args.offline:
         print("ships.json: offline", write_offline()["mode"])
+    elif args.snapshot:
+        if not key:
+            print("ships.json: no AISSTREAM_API_KEY -> demo"); generate_demo()
+        else:
+            r = asyncio.run(snapshot_live(key=key))
+            print(f"ships.json: {r['mode']} ({r.get('count', 0)} live vessel positions)")
     elif args.demo or not key:
         n = len(generate_demo()["ships"])
         print(f"ships.json: demo ({n} simulated ships)" + ("" if not args.demo else " [forced]"))

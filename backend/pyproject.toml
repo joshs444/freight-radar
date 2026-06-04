@@ -19,6 +19,8 @@ dependencies = [
     "temporalio>=1.7",
     "fastapi>=0.110",
     "uvicorn[standard]>=0.30",
+    # optional AIS vessel-position snapshot (sidecar/ais_consumer)
+    "websockets>=12",
 ]
 
 [project.optional-dependencies]

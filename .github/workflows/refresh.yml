@@ -49,6 +49,15 @@ jobs:
           python -m freight_radar.backfill
           python -m freight_radar.publish
 
+      - name: Snapshot real AIS vessel positions near the chokepoints
+        working-directory: backend
+        env:
+          AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
+        # ~70s one-shot sample written to ships.json; degrades to demo/offline on any
+        # failure (garnish — never blocks the refresh). Needs the AISSTREAM_API_KEY secret.
+        run: python -m freight_radar.sidecar.ais_consumer --snapshot || echo "AIS snapshot skipped"
+        continue-on-error: true
+
       - name: Commit refreshed sidecars
         run: |
           git config user.name "freight-radar-bot"
