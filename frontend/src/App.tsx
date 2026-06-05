@@ -195,6 +195,14 @@ export default function App() {
 
       {data?.world?.available && <WorldRibbon world={data.world} />}
 
+      {data?.brief?.headline && (
+        <div className="fr-lede" role="status">
+          <span className="fr-lede-dot" />
+          <span className="fr-lede-text">{data.brief.headline}</span>
+          <span className="fr-lede-tag">this week</span>
+        </div>
+      )}
+
       <div className="fr-main">
         <section className="fr-stage" aria-labelledby="fr-stage-label">
           <h2 id="fr-stage-label" className="sr-only">
