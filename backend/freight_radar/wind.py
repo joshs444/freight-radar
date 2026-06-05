@@ -20,6 +20,7 @@ from pathlib import Path
 
 import httpx
 import numpy as np
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 NOMADS = "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl"
 UNSCALE = (-30.0, 30.0)   # m/s range mapped onto 0..255 per channel (calm -> ~128)
@@ -34,6 +35,15 @@ def _cycle_url(d: date, hh: int) -> str:
             f"&var_UGRD=on&var_VGRD=on&lev_10_m_above_ground=on")
 
 
+# Retry only transient TRANSPORT errors (connect/timeout) — NOMADS 503s under load.
+# A 404 (cycle not published yet) is NOT an error here; we just try the next cycle.
+@retry(reraise=True, stop=stop_after_attempt(3),
+       wait=wait_exponential(multiplier=0.5, max=8),
+       retry=retry_if_exception_type(httpx.TransportError))
+def _get(client: httpx.Client, url: str) -> httpx.Response:
+    return client.get(url, timeout=90)
+
+
 def _latest_grib(client: httpx.Client) -> tuple[bytes, str]:
     """Newest available GFS cycle's 10m u/v GRIB — loop newest->oldest until a 200."""
     now = datetime.now(timezone.utc)
@@ -43,7 +53,7 @@ def _latest_grib(client: httpx.Client) -> tuple[bytes, str]:
             if back == 0 and hh > now.hour:
                 continue  # cycle hasn't run yet today
             try:
-                r = client.get(_cycle_url(d, hh), timeout=90)
+                r = _get(client, _cycle_url(d, hh))
             except httpx.HTTPError:
                 continue
             if r.status_code == 200 and len(r.content) > 50_000 and r.content[:4] == b"GRIB":
