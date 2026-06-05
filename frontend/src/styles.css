@@ -396,6 +396,43 @@ body,
 }
 
 /* --- main split --------------------------------------------------------- */
+/* the computed conclusion, promoted onto first paint — a manager who only glances at the
+   globe still reads the takeaway. The amber dot is the one saturated accent in the top band. */
+.fr-lede {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.fr-lede-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 3px rgba(224, 123, 18, 0.16);
+}
+.fr-lede-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fr-lede-tag {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-faint);
+}
 .fr-main {
   flex: 1;
   display: flex;
@@ -2223,10 +2260,10 @@ body,
   font-feature-settings: 'tnum' 1;
 }
 .fr-stress-num {
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 .fr-stress-max {
   font-family: var(--mono);
