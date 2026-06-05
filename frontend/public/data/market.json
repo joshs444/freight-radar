@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-04T11:34:13",
+  "generated_at": "2026-06-05T01:14:04",
   "indicators": {
     "brent": {
-      "value": 94.88,
-      "change_pct": -2.45,
+      "value": 94.91,
+      "change_pct": -0.43,
       "change_basis": "intraday",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=cb.f",
       "name": "Brent crude",
@@ -13,10 +13,10 @@
       "stale": false
     },
     "wti": {
-      "value": 92.76,
-      "change_pct": -3.12,
+      "value": 92.71,
+      "change_pct": -0.14,
       "change_basis": "intraday",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=cl.f",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": false
     },
     "natgas": {
-      "value": 3.358,
-      "change_pct": 3.45,
+      "value": 3.345,
+      "change_pct": -0.21,
       "change_basis": "intraday",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=ng.f",
       "name": "Henry Hub gas",
@@ -35,10 +35,10 @@
       "stale": false
     },
     "eurusd": {
-      "value": 1.1624,
-      "change_pct": 0.22,
+      "value": 1.1613,
+      "change_pct": -0.0,
       "change_basis": "intraday",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=eurusd",
       "name": "EUR/USD",
@@ -46,10 +46,10 @@
       "stale": false
     },
     "usdcny": {
-      "value": 6.7748,
-      "change_pct": -0.02,
+      "value": 6.7788,
+      "change_pct": 0.03,
       "change_basis": "intraday",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "Stooq",
       "source_url": "https://stooq.com/q/?s=usdcny",
       "name": "USD/CNY",
@@ -60,9 +60,9 @@
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
       "value": 712,
-      "change_pct": -2.45,
+      "change_pct": -0.43,
       "change_basis": "modeled",
-      "as_of": "2026-06-04",
+      "as_of": "2026-06-05",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
