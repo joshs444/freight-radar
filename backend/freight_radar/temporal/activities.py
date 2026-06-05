@@ -20,9 +20,10 @@ from ..config import INCREMENTAL_REPULL_DAYS, MIN_JOIN_COVERAGE, db_path, publis
 from ..detect import run_detection
 from ..export_snapshot import export
 from ..ingest.dims import load_dims
-from ..ingest.portwatch import load_chokepoint_daily, load_port_daily
+from ..ingest.portwatch import stage_chokepoint_daily, stage_port_daily
 from ..publish import write_manifest
 from ..storage.db import connect as db_connect, join_coverage
+from ..wap import PublishBlocked, promote
 
 _LEDGER_SQL = """
 CREATE TABLE IF NOT EXISTS meta_attribution (
@@ -50,33 +51,56 @@ def _assert_join_coverage(choke_cov: float, port_cov: float) -> None:
             )
 
 
-# --- 1. fetch --------------------------------------------------------------
+# --- 1. fetch (Write-Audit-Publish) ----------------------------------------
 @activity.defn
 async def fetch_portwatch(days: int = INCREMENTAL_REPULL_DAYS) -> dict:
-    """Trailing re-pull of the PortWatch backbone (values are revisable)."""
+    """Trailing re-pull of the PortWatch backbone (values are revisable).
+
+    Write-Audit-Publish: the pull lands in ``stg_*`` staging, the DQ suite audits
+    it there, and only a clean audit atomically swaps it into the prod ``fct_*``
+    tables. A DQ error (e.g. join-coverage decay) blocks the swap and raises a
+    NON-retryable ApplicationError — the prod facts are left unchanged. Retrying
+    the same bad pull won't fix a data-quality fact, hence non-retryable.
+    """
     from ..arcgis import ArcGISClient
 
     con = db_connect(db_path())
-    end = date.today()
-    start = end - timedelta(days=days)
-    async with ArcGISClient() as client:
-        dims = await load_dims(con, client)
-        choke = await load_chokepoint_daily(con, client, start, end)
-        ports = await load_port_daily(con, client, start, end)
-    choke_cov = join_coverage(con, "fct_chokepoint_daily", "dim_chokepoint")
-    port_cov = join_coverage(con, "fct_port_daily", "dim_port")
-    con.close()
+    try:
+        # clear any leftover staging from a prior blocked run before the write.
+        con.execute("DELETE FROM stg_chokepoint_daily")
+        con.execute("DELETE FROM stg_port_daily")
+        end = date.today()
+        start = end - timedelta(days=days)
+        async with ArcGISClient() as client:
+            dims = await load_dims(con, client)
+            await stage_chokepoint_daily(con, client, start, end)
+            await stage_port_daily(con, client, start, end)
+        try:
+            choke_pub = promote(con, "stg_chokepoint_daily")
+            port_pub = promote(con, "stg_port_daily")
+        except PublishBlocked as exc:
+            # a DQ audit failure is a deterministic data-quality fact, not transient.
+            raise ApplicationError(str(exc), non_retryable=True) from exc
+        choke_cov = join_coverage(con, "fct_chokepoint_daily", "dim_chokepoint")
+        port_cov = join_coverage(con, "fct_port_daily", "dim_port")
+    finally:
+        con.close()
     activity.logger.info(
-        "fetch: choke=%s ports=%s choke_cov=%.3f port_cov=%.3f",
-        choke, ports, choke_cov, port_cov,
+        "fetch(WAP): choke=%s ports=%s choke_cov=%.3f port_cov=%.3f run=%s",
+        choke_pub["rows_promoted"], port_pub["rows_promoted"], choke_cov, port_cov,
+        choke_pub["lineage_run_id"],
     )
-    _assert_join_coverage(choke_cov, port_cov)
     return {
         "dims": dims,
-        "chokepoint_rows": choke,
-        "port_rows": ports,
+        "chokepoint_rows": choke_pub["rows_promoted"],
+        "port_rows": port_pub["rows_promoted"],
         "chokepoint_join_coverage": round(choke_cov, 4),
         "port_join_coverage": round(port_cov, 4),
+        "lineage": {
+            "chokepoint_run_id": choke_pub["lineage_run_id"],
+            "port_run_id": port_pub["lineage_run_id"],
+            "verdict": "pass",
+        },
     }
 
 

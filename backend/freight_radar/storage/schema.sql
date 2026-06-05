@@ -106,6 +106,62 @@ CREATE TABLE IF NOT EXISTS fct_port_daily (
 );
 
 -- ---------------------------------------------------------------------------
+-- Write-Audit-Publish staging. Fresh PortWatch pulls land HERE first; only a
+-- clean data-quality audit (wap.py) promotes them into the fct_* tables above
+-- inside a single transaction. Same columns/keys as the prod facts — a staging
+-- row is just an un-audited prod row. Kept empty between runs (truncated on the
+-- successful swap), so it never serves traffic.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS stg_chokepoint_daily (
+    portid                  VARCHAR,
+    date                    DATE,
+    portname                VARCHAR,
+    n_container             BIGINT,
+    n_dry_bulk              BIGINT,
+    n_general_cargo         BIGINT,
+    n_roro                  BIGINT,
+    n_tanker                BIGINT,
+    n_cargo                 BIGINT,
+    n_total                 BIGINT,
+    capacity_container      BIGINT,
+    capacity_dry_bulk       BIGINT,
+    capacity_general_cargo  BIGINT,
+    capacity_roro           BIGINT,
+    capacity_tanker         BIGINT,
+    capacity_cargo          BIGINT,
+    capacity_total          BIGINT,
+    PRIMARY KEY (portid, date)
+);
+
+CREATE TABLE IF NOT EXISTS stg_port_daily (
+    portid                    VARCHAR,
+    date                      DATE,
+    portname                  VARCHAR,
+    portcalls_container       BIGINT,
+    portcalls_dry_bulk        BIGINT,
+    portcalls_general_cargo   BIGINT,
+    portcalls_roro            BIGINT,
+    portcalls_tanker          BIGINT,
+    portcalls_cargo           BIGINT,
+    portcalls_total           BIGINT,
+    import_container          BIGINT,
+    import_dry_bulk           BIGINT,
+    import_general_cargo      BIGINT,
+    import_roro               BIGINT,
+    import_tanker             BIGINT,
+    import_cargo              BIGINT,
+    import_total              BIGINT,
+    export_container          BIGINT,
+    export_dry_bulk           BIGINT,
+    export_general_cargo      BIGINT,
+    export_roro               BIGINT,
+    export_tanker             BIGINT,
+    export_cargo              BIGINT,
+    export_total              BIGINT,
+    PRIMARY KEY (portid, date)
+);
+
+-- ---------------------------------------------------------------------------
 -- Operational metadata (provenance + source health for honest UI tiles).
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS meta_ingest_runs (
@@ -124,4 +180,17 @@ CREATE TABLE IF NOT EXISTS meta_source_status (
     max_data_date  DATE,                  -- the data's own freshness, shown in UI
     status         VARCHAR,               -- 'ok' | 'stale' | 'error'
     note           VARCHAR
+);
+
+-- One row per Write-Audit-Publish promotion: the lineage trail. ``lineage_run_id``
+-- is deterministic (derived from the staged data's max date + row counts), so the
+-- same data re-published yields the same id, and a published map can be traced back
+-- to the exact audit that cleared it.
+CREATE TABLE IF NOT EXISTS meta_publish_runs (
+    lineage_run_id VARCHAR,
+    promoted_at    TIMESTAMP,
+    verdict        VARCHAR,        -- 'pass' | 'fail'
+    checks_run     BIGINT,
+    rows_promoted  BIGINT,
+    detail         VARCHAR         -- JSON: per-check {name, ok, severity, message}
 );

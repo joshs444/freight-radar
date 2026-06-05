@@ -24,13 +24,14 @@ from .config import (
     MIN_JOIN_COVERAGE,
 )
 from .ingest.dims import load_dims
-from .ingest.portwatch import load_chokepoint_daily, load_port_daily
+from .ingest.portwatch import stage_chokepoint_daily, stage_port_daily
 from .storage.db import (
     connect,
     join_coverage,
     record_ingest_run,
     update_source_status,
 )
+from .wap import promote
 
 
 async def run_backfill(
@@ -42,17 +43,32 @@ async def run_backfill(
     run_id = f"{datetime.now():%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:8]}"
     t0 = datetime.now()
 
+    # WAP write: clear any leftover staging from a prior blocked run, then land
+    # fresh pulls into stg_*; nothing reaches the prod fct_* until the audit clears.
+    con.execute("DELETE FROM stg_chokepoint_daily")
+    con.execute("DELETE FROM stg_port_daily")
+
     async with ArcGISClient() as client:
         dim_counts = await load_dims(con, client)
         print(f"  dims: {dim_counts}")
 
-        choke_rows = await load_chokepoint_daily(con, client, start, end)
-        print(f"  fct_chokepoint_daily: +{choke_rows} rows")
+        choke_staged = await stage_chokepoint_daily(con, client, start, end)
+        print(f"  stg_chokepoint_daily: +{choke_staged} rows")
 
-        port_rows = 0
         if with_ports:
-            port_rows = await load_port_daily(con, client, start, end)
-            print(f"  fct_port_daily: +{port_rows} rows")
+            port_staged = await stage_port_daily(con, client, start, end)
+            print(f"  stg_port_daily: +{port_staged} rows")
+
+    # WAP audit + publish: atomic swap stg_* -> fct_*, blocks on bad data.
+    choke_pub = promote(con, "stg_chokepoint_daily")
+    choke_rows = choke_pub["rows_promoted"]
+    print(f"  fct_chokepoint_daily: published {choke_rows} rows (verdict={choke_pub['verdict']})")
+
+    port_rows = 0
+    if with_ports:
+        port_pub = promote(con, "stg_port_daily")
+        port_rows = port_pub["rows_promoted"]
+        print(f"  fct_port_daily: published {port_rows} rows (verdict={port_pub['verdict']})")
 
     # --- receipts -----------------------------------------------------------
     choke_max = con.execute("SELECT max(date) FROM fct_chokepoint_daily").fetchone()[0]
