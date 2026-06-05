@@ -38,9 +38,17 @@ jobs:
           npm run lint
           npm run typecheck
           npm run format:check
+      - name: Grounding + parity gate (never deploy an ungrounded number)
+        working-directory: frontend
+        run: |
+          npm run test:chat
+          npm run test:parity
       - name: Build
         working-directory: frontend
         run: npm run build
+      - name: Bundle budget (keep heavy map chunks off the boot path)
+        working-directory: frontend
+        run: npm run test:bundle
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

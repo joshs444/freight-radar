@@ -4,6 +4,11 @@
 
 [**▶ Live demo**](https://joshs444.github.io/freight-radar/) · [**How it stays honest** ↓](#how-it-stays-honest)
 
+[![CI](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml)
+[![Deploy](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml)
+[![chat grounding enforced](https://img.shields.io/badge/chat-grounding%20enforced%20in%20CI-2f5d99)](frontend/scripts/check_chat.mjs)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 ![Freight Radar — the globe](docs/hero.png)
 
 Every number traces back to source. Nothing is hand-waved — the stress index decomposes into its parts, the brief's figures are computed in Python (never by a model), and the chat will only state a number it can cite to a source file.
