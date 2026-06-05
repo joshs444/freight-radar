@@ -86,7 +86,7 @@ IMF PortWatch (ArcGIS REST)                 aisstream.io (WebSocket)
 | Detection | `statsmodels` STL(7, robust) → rolling z-score, CUSUM, `ruptures` PELT change-point gate; config-driven YAML. Runs on blended counts **plus** per-cargo-type dominant streams and an orthogonal avg-vessel-size (DWT/vessel) axis; port severity blends national-dependence share |
 | Orchestration | **Temporal** (`temporalio`) — one durable workflow, 5 activities, RetryPolicy, a Schedule, a dedup ledger |
 | API | FastAPI read-only (`/snapshot` `/flags` `/lanes` `/manifest` `/health`) with ETags |
-| Frontend | React + Vite, **MapLibre GL v5 globe**, **deck.gl v9** via `MapboxOverlay(interleaved)`, token-free CARTO light basemap; filterable Monitor feed (flags · exposure · market · news · sparklines/trend), top-bar **stress gauge**, "this week" **brief** card, and a client-side grounded **chat** |
+| Frontend | **React + Vite + TypeScript** (strict; a typed `src/types.ts` mirrors the Python sidecar contract), **MapLibre GL v5 globe**, **deck.gl v9** via `MapboxOverlay(interleaved)`, token-free CARTO light basemap; filterable Monitor feed (flags · exposure · market · news · sparklines/trend), top-bar **stress gauge**, "this week" **brief** card, and a client-side grounded **chat** |
 | Narrative | Stress index + event ledger + weekly brief computed at publish time (`narrative/`), registered in the same enricher registry as every other sidecar |
 | Deploy | docker-compose (temporal · worker · schedule-init · api · frontend); frontend also runs free/static |
 

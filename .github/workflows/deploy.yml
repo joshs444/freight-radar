@@ -32,10 +32,11 @@ jobs:
       - name: Install
         working-directory: frontend
         run: npm ci
-      - name: Lint + format check
+      - name: Lint + typecheck + format check
         working-directory: frontend
         run: |
           npm run lint
+          npm run typecheck
           npm run format:check
       - name: Build
         working-directory: frontend
