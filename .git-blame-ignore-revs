@@ -1,0 +1,6 @@
+# Revisions to skip in `git blame` (bulk reformatting, no authorship meaning).
+# GitHub honors this file automatically. Locally, enable it once with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Phase 1: one-time Prettier format pass across frontend/src
+0c03d1956b3663b7e2d84e5a7bb0cf0635babfe0
