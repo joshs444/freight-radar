@@ -12,7 +12,6 @@ const Globe = lazy(() => import('./Globe.jsx'));
 const Chat = lazy(() => import('./components/Chat.jsx'));
 const StressDetail = lazy(() => import('./components/StressDetail.jsx'));
 import StormIndicator from './components/StormIndicator.jsx';
-import SearchBox from './components/SearchBox.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import { useData } from './lib/useData.js';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.js';

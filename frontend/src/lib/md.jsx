@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Minimal markdown: **bold**, _italic_, blank-line paragraphs. No deps.
 function inline(text, keyPrefix) {
   const nodes = [];
