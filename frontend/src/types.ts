@@ -219,6 +219,10 @@ export interface Ships {
   vessels: Vessel[];
 }
 
+// toggleable globe overlays (the LayerPanel + the buildLayers visibility gate)
+export type LayerId = 'flags' | 'chokepoints' | 'ports' | 'ships' | 'storms' | 'lanes' | 'wind';
+export type LayerVisibility = Record<LayerId, boolean>;
+
 // ---- exposure.json ---------------------------------------------------------
 
 export interface ExposureSummary {
