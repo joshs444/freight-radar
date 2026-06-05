@@ -20,10 +20,18 @@ interface LayerPanelProps {
   onToggle: (id: LayerId) => void;
   counts: Partial<Record<LayerId, number>>;
   ships: Ships | null;
+  shipCoverage?: number;
   hasWind: boolean;
 }
 
-export default function LayerPanel({ layers, onToggle, counts, ships, hasWind }: LayerPanelProps) {
+export default function LayerPanel({
+  layers,
+  onToggle,
+  counts,
+  ships,
+  shipCoverage,
+  hasWind,
+}: LayerPanelProps) {
   const portsN = counts.ports ?? 0;
   const rows = ROWS.filter((r) => {
     if (r.id === 'wind') return hasWind;
@@ -62,8 +70,11 @@ export default function LayerPanel({ layers, onToggle, counts, ships, hasWind }:
       })}
       {(ships?.count ?? 0) > 0 && (
         <p className="fr-layers-note">
-          Vessels = a point-in-time AIS sample near the 28 chokepoints — not all ships, not the{' '}
-          {portsN.toLocaleString()} ports.
+          Vessels = a point-in-time AIS sample
+          {shipCoverage
+            ? ` near ${shipCoverage} of the 28 chokepoints right now`
+            : ' near the 28 chokepoints'}{' '}
+          — not all ships, not the {portsN.toLocaleString()} ports.
         </p>
       )}
     </div>
