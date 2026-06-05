@@ -67,6 +67,15 @@ export default function App() {
   const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef<MapApi | null>(null);
 
+  // cross-highlight: a hovered feed row and/or a multi-field search light their marks on
+  // the globe (a cyan ring). The Globe gets the union of both.
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [searchHits, setSearchHits] = useState<string[]>([]);
+  const highlightIds = useMemo(
+    () => (hoveredId ? [...new Set([hoveredId, ...searchHits])] : searchHits),
+    [hoveredId, searchHits]
+  );
+
   const ts = data?.timeseries;
 
   // uploaded trade data (if any) overrides the sample exposure + per-flag business
@@ -246,6 +255,7 @@ export default function App() {
                   mapApiRef={mapApiRef}
                   windOn={hist.mode ? false : layers.wind}
                   layers={layers}
+                  highlightIds={hist.mode ? [] : highlightIds}
                 />
               </Suspense>
             </ErrorBoundary>
@@ -323,7 +333,13 @@ export default function App() {
             setFilter={setFilter}
             criticalCount={criticalCount}
             exposure={exposureSummary}
-            search={{ snapshot: data.snapshot, flagByPort, onJump: pickByPortid }}
+            search={{
+              snapshot: data.snapshot,
+              flagByPort,
+              onJump: pickByPortid,
+              onResults: setSearchHits,
+            }}
+            onHover={setHoveredId}
             upload={{
               flags: data.flags,
               applied: userExposure,

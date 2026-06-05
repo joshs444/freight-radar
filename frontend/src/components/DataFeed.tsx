@@ -328,6 +328,7 @@ interface RowProps {
   watched: Set<string> | null | undefined;
   onToggleWatch: ((id: string) => void) | null | undefined;
   gatun: Gatun | null | undefined;
+  onHover?: (id: string | null) => void;
 }
 
 function Row({
@@ -342,13 +343,18 @@ function Row({
   watched,
   onToggleWatch,
   gatun,
+  onHover,
 }: RowProps) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
   const isWatched = watched?.has(e.id);
   return (
-    <div className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}>
+    <div
+      className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
+      onMouseEnter={() => onHover?.(e.id)}
+      onMouseLeave={() => onHover?.(null)}
+    >
       <div className="fr-row-main">
         <button
           type="button"
@@ -446,6 +452,7 @@ interface SearchBoxFeedProps {
   snapshot: Snapshot | null;
   flagByPort: Record<string, Flag> | null | undefined;
   onJump: (portid: string) => void;
+  onResults?: (ids: string[]) => void;
 }
 
 interface UploadFeedProps {
@@ -479,6 +486,7 @@ interface DataFeedProps {
   market: MarketType | null | undefined;
   selected: MonitorEntity | null | undefined;
   onSelect: (e: MonitorEntity | null) => void;
+  onHover?: (id: string | null) => void;
   asOf: string;
   source: string;
 }
@@ -507,6 +515,7 @@ export default function DataFeed({
   market,
   selected,
   onSelect,
+  onHover,
   asOf,
   source,
 }: DataFeedProps) {
@@ -610,13 +619,19 @@ export default function DataFeed({
           </div>
         )}
 
-        {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
+        {rows.length === 0 &&
+          (filter === 'critical' ? (
+            <div className="fr-empty fr-allclear">✓ All clear — no critical flags right now.</div>
+          ) : (
+            <div className="fr-empty">Nothing to show in this filter.</div>
+          ))}
         {rows.map((e) => (
           <Row
             key={e.id}
             e={e}
             active={selected?.id === e.id}
             onSelect={onSelect}
+            onHover={onHover}
             series={series}
             dates={dates}
             news={e.flag ? news?.[e.flag.flag_id] : null}

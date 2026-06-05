@@ -98,7 +98,11 @@ interface LayerInputs {
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
+  highlightIds: string[];
 }
+
+// a vivid cyan, used ONLY for the search/hover highlight ring so it never reads as data
+const HIGHLIGHT: readonly number[] = [6, 182, 212];
 
 function buildLayers({
   ports,
@@ -110,7 +114,13 @@ function buildLayers({
   selectedId,
   onSelectFlag,
   layers,
+  highlightIds,
 }: LayerInputs) {
+  // resolve the highlighted portids (from row-hover / search) to positions
+  const posOf = new Map<string, [number, number]>();
+  chokepoints.forEach((c) => posOf.set(c.portid, [c.lon, c.lat]));
+  ports.forEach((p) => posOf.set(p.portid, [p.lon, p.lat]));
+  const hits = highlightIds.map((id) => posOf.get(id)).filter(Boolean) as [number, number][];
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
@@ -276,6 +286,26 @@ function buildLayers({
       pickable: true,
       onClick: (info) => info.object && onSelectFlag(info.object),
     }),
+
+    // search / hover highlight — a vivid cyan ring over the matched entities, on top of
+    // everything, so "highlight different things" + "search for different things" land
+    // visibly on the globe. Pixel-fixed + depth-out (MARKER_PARAMETERS) like the markers.
+    new ScatterplotLayer({
+      id: 'highlight',
+      visible: hits.length > 0,
+      parameters: MARKER_PARAMETERS,
+      data: hits,
+      getPosition: (d) => d,
+      getRadius: 9,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 9,
+      radiusMaxPixels: 9,
+      filled: false,
+      stroked: true,
+      getLineColor: rgba(HIGHLIGHT, 255),
+      lineWidthUnits: 'pixels',
+      getLineWidth: 2.5,
+    }),
   ];
 }
 
@@ -290,6 +320,7 @@ interface GlobeProps {
   mapApiRef: MutableRefObject<MapApi | null>;
   windOn: boolean;
   layers: LayerVisibility;
+  highlightIds: string[];
 }
 
 export default function Globe({
@@ -303,6 +334,7 @@ export default function Globe({
   mapApiRef,
   windOn,
   layers,
+  highlightIds,
 }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -453,9 +485,10 @@ export default function Globe({
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
         layers,
+        highlightIds,
       }),
     });
-  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, layers]);
+  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, layers, highlightIds]);
 
   return (
     <div

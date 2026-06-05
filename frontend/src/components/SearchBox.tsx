@@ -6,17 +6,20 @@ interface SearchEntity {
   name: string;
   type: 'chokepoint' | 'port';
   flagged: boolean;
+  country: string;
 }
 
 interface SearchBoxProps {
   snapshot: Snapshot | null;
   flagByPort: Record<string, Flag> | null | undefined;
   onJump: (portid: string) => void;
+  onResults?: (ids: string[]) => void;
 }
 
-// Find one of ~2,065 ports (or a chokepoint) by name and jump to it. Type-ahead
-// over the loaded snapshot; flagged/critical entities float to the top.
-export default function SearchBox({ snapshot, flagByPort, onJump }: SearchBoxProps) {
+// Search the ~2,065 ports + chokepoints by NAME, COUNTRY, or status, and LIGHT every match
+// on the globe (a cyan ring) — not just jump to one. Typed tokens: `country:japan`,
+// `is:critical`; bare terms match name + country. Type-ahead dropdown for the top hits.
+export default function SearchBox({ snapshot, flagByPort, onJump, onResults }: SearchBoxProps) {
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
@@ -29,29 +32,52 @@ export default function SearchBox({ snapshot, flagByPort, onJump }: SearchBoxPro
       name: c.name,
       type: 'chokepoint',
       flagged: !!flagByPort?.[c.portid],
+      country: '',
     }));
     const pt: SearchEntity[] = (snapshot.ports || []).map((p) => ({
       portid: p.portid,
       name: p.name,
       type: 'port',
       flagged: !!flagByPort?.[p.portid],
+      country: p.country || '',
     }));
     return [...ch, ...pt];
   }, [snapshot, flagByPort]);
 
-  const results = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (s.length < 2) return [];
-    const hits = entities.filter((e) => e.name?.toLowerCase().includes(s));
+  // every entity matching the typed query (name/country + tokens). The full set is lit on
+  // the globe; the dropdown shows the top few. Tokens: `country:japan`, `is:critical`.
+  const allHits = useMemo(() => {
+    const raw = q.trim().toLowerCase();
+    if (raw.length < 2) return [];
+    let wantFlagged = false;
+    let countryTok = '';
+    const bare: string[] = [];
+    for (const t of raw.split(/\s+/)) {
+      if (t === 'is:critical' || t === 'is:flagged') wantFlagged = true;
+      else if (t.startsWith('country:')) countryTok = t.slice(8);
+      else bare.push(t);
+    }
+    const bareStr = bare.join(' ').trim();
+    const hits = entities.filter((e) => {
+      if (wantFlagged && !e.flagged) return false;
+      if (countryTok && !e.country.toLowerCase().includes(countryTok)) return false;
+      if (bareStr && !`${e.name} ${e.country}`.toLowerCase().includes(bareStr)) return false;
+      return true;
+    });
     hits.sort(
       (a, b) =>
         Number(b.flagged) - Number(a.flagged) ||
         (Number(a.type === 'chokepoint') - Number(b.type === 'chokepoint')) * -1 ||
-        a.name.toLowerCase().indexOf(s) - b.name.toLowerCase().indexOf(s) ||
         a.name.localeCompare(b.name)
     );
-    return hits.slice(0, 8);
+    return hits;
   }, [q, entities]);
+  const results = useMemo(() => allHits.slice(0, 8), [allHits]);
+
+  // light every match on the globe as you type; clear when the query is emptied
+  useEffect(() => {
+    onResults?.(allHits.map((e) => e.portid));
+  }, [allHits, onResults]);
 
   useEffect(() => {
     setHi(0);
@@ -69,6 +95,12 @@ export default function SearchBox({ snapshot, flagByPort, onJump }: SearchBoxPro
     onJump(e.portid);
     setQ('');
     setOpen(false);
+    onResults?.([]);
+  };
+  const clear = () => {
+    setQ('');
+    setOpen(false);
+    onResults?.([]);
   };
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') {
@@ -95,8 +127,16 @@ export default function SearchBox({ snapshot, flagByPort, onJump }: SearchBoxPro
         onFocus={() => setOpen(true)}
         onKeyDown={onKey}
       />
-      {open && results.length > 0 && (
+      {q && (
+        <button className="fr-search-clear" onClick={clear} aria-label="Clear search">
+          ×
+        </button>
+      )}
+      {open && allHits.length > 0 && (
         <div className="fr-search-pop">
+          <div className="fr-search-count">
+            {allHits.length} match{allHits.length === 1 ? '' : 'es'} · lit on the map
+          </div>
           {results.map((e, i) => (
             <button
               key={e.portid}
