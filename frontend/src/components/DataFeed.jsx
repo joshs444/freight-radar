@@ -229,15 +229,12 @@ function NewsBlock({ news }) {
       </div>
       {news.items?.length ? (
         news.items.map((a, i) => (
-          <span
+          <a
             key={i}
             className="fr-news-item"
-            role="link"
-            tabIndex={0}
-            onClick={(ev) => {
-              ev.stopPropagation();
-              window.open(a.url, '_blank', 'noopener');
-            }}
+            href={a.url}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <span className="fr-news-title">{a.title}</span>
             <span className="fr-news-meta">
@@ -245,7 +242,7 @@ function NewsBlock({ news }) {
               {a.source && a.published ? ' · ' : ''}
               {a.published}
             </span>
-          </span>
+          </a>
         ))
       ) : (
         <div className="fr-news-none">No qualifying recent coverage found.</div>
@@ -272,48 +269,51 @@ function Row({
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
   const isWatched = watched?.has(e.id);
   return (
-    <button
-      className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
-      onClick={() => onSelect(active ? null : e)}
-    >
+    <div className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}>
       <div className="fr-row-main">
-        <span
+        <button
+          type="button"
           className={`fr-star ${isWatched ? 'on' : ''}`}
-          role="button"
-          tabIndex={0}
-          title={isWatched ? 'Unwatch' : 'Watch — notify on new/escalated flags'}
-          onClick={(ev) => {
-            ev.stopPropagation();
-            onToggleWatch?.(e.id);
-          }}
+          aria-pressed={isWatched}
+          aria-label={
+            isWatched ? `Unwatch ${e.name}` : `Watch ${e.name} — notify on new or escalated flags`
+          }
+          onClick={() => onToggleWatch?.(e.id)}
         >
           {isWatched ? '★' : '☆'}
-        </span>
-        {e.critical ? (
-          <span
-            className="fr-sev"
-            style={{ color: severityCss(e.severity), borderColor: severityCss(e.severity) }}
-          >
-            {e.severity}
-          </span>
-        ) : (
-          <span className="fr-rowdot" />
-        )}
-        <div className="fr-row-titles">
-          <span className="fr-row-name">{e.name}</span>
-          <span className="fr-row-sub">
-            {e.type}
-            {e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
-            {tl && (
-              <span className={`fr-trend ${tl.cls}`}>
-                {' '}
-                · {tl.arrow} {tl.label}
-              </span>
-            )}
-          </span>
-        </div>
-        {ser && <Sparkline values={ser.values} color={sparkColor} mark={scrubIndex} />}
-        <Metric v={e.metric} alert={e.critical} />
+        </button>
+        <button
+          type="button"
+          className="fr-row-head"
+          aria-expanded={active}
+          onClick={() => onSelect(active ? null : e)}
+        >
+          {e.critical ? (
+            <span
+              className="fr-sev"
+              style={{ color: severityCss(e.severity), borderColor: severityCss(e.severity) }}
+            >
+              {e.severity}
+            </span>
+          ) : (
+            <span className="fr-rowdot" />
+          )}
+          <div className="fr-row-titles">
+            <span className="fr-row-name">{e.name}</span>
+            <span className="fr-row-sub">
+              {e.type}
+              {e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
+              {tl && (
+                <span className={`fr-trend ${tl.cls}`}>
+                  {' '}
+                  · {tl.arrow} {tl.label}
+                </span>
+              )}
+            </span>
+          </div>
+          {ser && <Sparkline values={ser.values} color={sparkColor} mark={scrubIndex} />}
+          <Metric v={e.metric} alert={e.critical} />
+        </button>
       </div>
       {active && (
         <div className="fr-row-brief">
@@ -359,7 +359,7 @@ function Row({
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 }
 
@@ -394,7 +394,7 @@ export default function DataFeed({
     ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }]
     : FILTERS;
   return (
-    <aside className="fr-feed">
+    <aside className="fr-feed" id="fr-monitor" tabIndex={-1} aria-label="Monitor feed">
       <div className="fr-feed-head">
         <span className="fr-feed-title">Monitor</span>
         <span className="fr-feed-count">
@@ -431,9 +431,11 @@ export default function DataFeed({
             Your exposure{' '}
             <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span>
             <button
+              type="button"
               className="fr-exp-export"
               onClick={() => exportExposureCSV(flags)}
               title="Download exposure as CSV"
+              aria-label="Download your exposure as CSV"
             >
               ↓ csv
             </button>

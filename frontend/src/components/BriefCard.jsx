@@ -21,54 +21,68 @@ export default function BriefCard({ brief, onPickEntity, onExport }) {
 
   return (
     <section className="fr-brief-card" style={{ borderColor: lv.edge }}>
-      <button
-        className="fr-brief-top"
-        onClick={() => setOpen((o) => !o)}
-        style={{ background: lv.tint }}
-      >
-        <div className="fr-brief-titles">
-          <span className="fr-brief-kicker" style={{ color: lv.color }}>
-            This week in ocean freight
-          </span>
-          <span className="fr-brief-headline">{brief.headline}</span>
-        </div>
-        <span className="fr-brief-actions">
-          {onExport && (
-            <span
-              className="fr-brief-dl"
-              role="button"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                onExport();
-              }}
-              title="Download brief"
-            >
-              ↓
+      <div className="fr-brief-top" style={{ background: lv.tint }}>
+        <button
+          type="button"
+          className="fr-brief-toggle-btn"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-label={open ? 'Collapse the weekly brief' : 'Expand the weekly brief'}
+        >
+          <div className="fr-brief-titles">
+            <span className="fr-brief-kicker" style={{ color: lv.color }}>
+              This week in ocean freight
             </span>
-          )}
-          <span className="fr-brief-toggle">{open ? '–' : '+'}</span>
-        </span>
-      </button>
+            <span className="fr-brief-headline">{brief.headline}</span>
+          </div>
+          <span className="fr-brief-toggle" aria-hidden="true">
+            {open ? '–' : '+'}
+          </span>
+        </button>
+        {onExport && (
+          <button
+            type="button"
+            className="fr-brief-dl"
+            onClick={onExport}
+            aria-label="Download the weekly brief"
+          >
+            ↓
+          </button>
+        )}
+      </div>
       {open && (
         <div className="fr-brief-body">
           <ul className="fr-brief-list">
-            {brief.bullets.map((b, i) => (
-              <li
-                key={i}
-                className={`fr-brief-li ${b.portid && onPickEntity ? 'is-link' : ''}`}
-                onClick={() => b.portid && onPickEntity?.(b.portid)}
-              >
-                <i
-                  className="fr-brief-dot"
-                  style={{ background: DOT[b.kind] || 'var(--ink-faint)' }}
-                />
-                <span className="fr-brief-text">
-                  <MdInline text={b.text} />
-                </span>
-                {b.note && <span className="fr-brief-note">{b.note}</span>}
-              </li>
-            ))}
+            {brief.bullets.map((b, i) => {
+              const linkable = b.portid && onPickEntity;
+              const inner = (
+                <>
+                  <i
+                    className="fr-brief-dot"
+                    style={{ background: DOT[b.kind] || 'var(--ink-faint)' }}
+                  />
+                  <span className="fr-brief-text">
+                    <MdInline text={b.text} />
+                  </span>
+                  {b.note && <span className="fr-brief-note">{b.note}</span>}
+                </>
+              );
+              return (
+                <li key={i} className="fr-brief-li">
+                  {linkable ? (
+                    <button
+                      type="button"
+                      className="fr-brief-li-inner is-link"
+                      onClick={() => onPickEntity(b.portid)}
+                    >
+                      {inner}
+                    </button>
+                  ) : (
+                    <div className="fr-brief-li-inner">{inner}</div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           <div className="fr-brief-foot">
             <span>{brief.source}</span>

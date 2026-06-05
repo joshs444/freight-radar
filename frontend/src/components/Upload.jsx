@@ -77,6 +77,8 @@ export default function Upload({ flags, applied, onApply, onReset }) {
   }
 
   return (
+    // Drag-and-drop is a pointer-only enhancement; the keyboard-accessible path is the
+    // native "Upload CSV" button below (which opens the file picker).
     <div
       className={`fr-upl ${drag ? 'is-drag' : ''}`}
       onDragOver={(e) => {
