@@ -37,14 +37,18 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-          cache: pip
-          cache-dependency-path: backend/pyproject.toml
 
-      - name: Install backend
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend (uv, hash-pinned from uv.lock)
         working-directory: backend
         run: |
-          python -m pip install --upgrade pip
-          pip install -e .[wind]
+          uv sync --extra wind
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Rebuild DuckDB from PortWatch + publish all sidecars
         working-directory: backend
