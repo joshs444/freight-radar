@@ -18,7 +18,8 @@ import { useData } from './lib/useData.ts';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.ts';
 import { useMonitorModel } from './lib/useMonitorModel.ts';
 import { useHistory } from './lib/useHistory.ts';
-import type { MonitorEntity, MapApi, Flag, GlobeFlag } from './types.ts';
+import type { MonitorEntity, MapApi, Flag, GlobeFlag, LayerId, LayerVisibility } from './types.ts';
+import LayerPanel from './components/LayerPanel.tsx';
 import type { AppliedExposure } from './components/Upload.tsx';
 
 export default function App() {
@@ -31,21 +32,36 @@ export default function App() {
   const [showStress, setShowStress] = useState(false);
   // ambient wind layer: on by default, but a toggle (the legend chip) lets you mute it
   // since it can read as busy; the choice is remembered.
-  const [windOn, setWindOn] = useState(() => {
+  // which globe overlays are visible — a real layer-control map (the LayerPanel), migrating
+  // the old single fr_wind_off flag. Persisted so the choice sticks.
+  const [layers, setLayers] = useState<LayerVisibility>(() => {
+    const def: LayerVisibility = {
+      flags: true,
+      chokepoints: true,
+      ports: true,
+      ships: true,
+      storms: true,
+      lanes: true,
+      wind: true,
+    };
     try {
-      return localStorage.getItem('fr_wind_off') !== '1';
+      const saved = localStorage.getItem('fr_layers');
+      if (saved) return { ...def, ...(JSON.parse(saved) as Partial<LayerVisibility>) };
+      if (localStorage.getItem('fr_wind_off') === '1') def.wind = false; // migrate old flag
     } catch {
-      return true;
+      /* ignore */
     }
+    return def;
   });
-  const toggleWind = useCallback(() => {
-    setWindOn((on) => {
+  const toggleLayer = useCallback((id: LayerId) => {
+    setLayers((m) => {
+      const next = { ...m, [id]: !m[id] };
       try {
-        localStorage.setItem('fr_wind_off', on ? '1' : '0');
+        localStorage.setItem('fr_layers', JSON.stringify(next));
       } catch {
         /* ignore */
       }
-      return !on;
+      return next;
     });
   }, []);
   const { watched, toggle: toggleWatch } = useWatchlist();
@@ -228,7 +244,8 @@ export default function App() {
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
-                  windOn={hist.mode ? false : windOn}
+                  windOn={hist.mode ? false : layers.wind}
+                  layers={layers}
                 />
               </Suspense>
             </ErrorBoundary>
@@ -238,49 +255,21 @@ export default function App() {
               ▸ History · play 2019→now
             </button>
           )}
-          {!hist.mode && (
-            <div className="fr-legend">
-              <span>
-                <i className="sw amber" /> chokepoint
-              </span>
-              <span>
-                <i className="sw port" /> port
-              </span>
-              <span>
-                <i className="sw pulse" /> flagged
-              </span>
-              <span
-                className="fr-legend-size"
-                title="Chokepoint dot size scales with vessels/day (√-scaled)"
-              >
-                <i className="sw amber sw-sm" />
-                <i className="sw amber sw-lg" /> vessels/day
-              </span>
-              {data?.wind && (
-                <button
-                  type="button"
-                  className={`fr-legend-toggle ${windOn ? 'on' : 'off'}`}
-                  onClick={toggleWind}
-                  aria-pressed={windOn}
-                  title={`${windOn ? 'Hide' : 'Show'} the animated wind · ${data.wind.source} · ${data.wind.cycle}`}
-                >
-                  <i className="sw wind" /> wind{windOn ? '' : ' (off)'}
-                </button>
-              )}
-              {(data?.weather?.counts?.active_storms ?? 0) > 0 && (
-                <span className="fr-legend-size" title="Storm halo size scales with max wind speed">
-                  <i className="sw storm sw-sm" />
-                  <i className="sw storm sw-lg" /> storm · wind
-                </span>
-              )}
-              {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
-                <span
-                  title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}
-                >
-                  <i className="sw ship" /> {data.ships.count} ships · AIS
-                </span>
-              )}
-            </div>
+          {!hist.mode && data && (
+            <LayerPanel
+              layers={layers}
+              onToggle={toggleLayer}
+              counts={{
+                flags: flags.length,
+                chokepoints: data.snapshot?.chokepoints?.length ?? 0,
+                ports: data.snapshot?.ports?.length ?? 0,
+                ships: data.ships?.count ?? 0,
+                storms: data.weather?.counts?.active_storms ?? 0,
+                lanes: data.lanes?.length ?? 0,
+              }}
+              ships={data.ships ?? null}
+              hasWind={!!data.wind}
+            />
           )}
           {hist.mode && hist.event && (
             <div className="fr-hist-caption" role="status">

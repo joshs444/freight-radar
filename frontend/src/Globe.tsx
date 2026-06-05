@@ -17,6 +17,7 @@ import type {
   GlobeSnapshot,
   GlobeChokepoint,
   GlobeFlag,
+  LayerVisibility,
 } from './types.ts';
 
 // deck.gl wants fixed-length RGBA tuples; our color constants are 3-element, so append
@@ -96,6 +97,7 @@ interface LayerInputs {
   storms: Storm[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
+  layers: LayerVisibility;
 }
 
 function buildLayers({
@@ -107,11 +109,13 @@ function buildLayers({
   storms,
   selectedId,
   onSelectFlag,
+  layers,
 }: LayerInputs) {
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
       id: 'lanes',
+      visible: layers.lanes,
       data: lanes,
       getSourcePosition: (d) => d.from,
       getTargetPosition: (d) => d.to,
@@ -127,6 +131,7 @@ function buildLayers({
     // "there" instead of shimmering dust.
     new ScatterplotLayer({
       id: 'ports',
+      visible: layers.ports,
       parameters: MARKER_PARAMETERS,
       data: ports,
       getPosition: (d) => [d.lon, d.lat],
@@ -148,6 +153,7 @@ function buildLayers({
     // static slate ports, even when zoomed out where they cluster at the chokepoints…
     new ScatterplotLayer({
       id: 'ships-glow',
+      visible: layers.ships,
       parameters: MARKER_PARAMETERS,
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
@@ -160,6 +166,7 @@ function buildLayers({
     // …with a crisp bright core + white edge on top.
     new ScatterplotLayer({
       id: 'ships',
+      visible: layers.ships,
       parameters: MARKER_PARAMETERS,
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
@@ -177,6 +184,7 @@ function buildLayers({
     // chokepoints — solid amber circles with a clean white ring
     new ScatterplotLayer({
       id: 'choke',
+      visible: layers.chokepoints,
       parameters: MARKER_PARAMETERS,
       data: chokepoints,
       getPosition: (d) => [d.lon, d.lat],
@@ -196,6 +204,7 @@ function buildLayers({
     // halo alpha is high enough to read clearly as weather against the ocean.
     new ScatterplotLayer({
       id: 'storms-halo',
+      visible: layers.storms,
       parameters: MARKER_PARAMETERS,
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
@@ -211,6 +220,7 @@ function buildLayers({
     }),
     new ScatterplotLayer({
       id: 'storms',
+      visible: layers.storms,
       parameters: MARKER_PARAMETERS,
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
@@ -231,6 +241,7 @@ function buildLayers({
     // marker is rock-steady at every zoom and reads its position precisely.
     new ScatterplotLayer({
       id: 'flags-halo',
+      visible: layers.flags,
       parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
@@ -244,6 +255,7 @@ function buildLayers({
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
+      visible: layers.flags,
       parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
@@ -274,6 +286,7 @@ interface GlobeProps {
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
   windOn: boolean;
+  layers: LayerVisibility;
 }
 
 export default function Globe({
@@ -286,6 +299,7 @@ export default function Globe({
   onSelectFlag,
   mapApiRef,
   windOn,
+  layers,
 }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -435,9 +449,10 @@ export default function Globe({
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
+        layers,
       }),
     });
-  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag]);
+  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, layers]);
 
   return (
     <div
