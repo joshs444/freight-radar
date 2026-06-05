@@ -59,7 +59,7 @@ This is the part that matters, and it's enforced in the **UI**, not just the REA
 - **Garnish is labelled as garnish.** The AIS vessel dots and the GFS wind are *optional* sidecars the flag engine never reads — labelled as a real AIS *sample near the chokepoints* (not "all ships") and "GFS wind, updated weekly" (never real-time). Both degrade to absent on any fetch failure; no number on the page moves.
 - **Holiday-aware.** Benign seasonal dips (Lunar New Year, Christmas, Golden Week) are suppressed so the rail doesn't call a holiday a crisis.
 - **Avg vessel size is a fleet-mix signal, not "utilization."** Transiting capacity (DWT) ÷ vessel count is the mean ship size — capacity here is a *flow*, not a ceiling, so there is no honest denominator for a "utilization %." The data audit explicitly refused to build one; the cargo-attribution briefs stay precise too (they report which type moved against the others, never a false "total steady").
-- **Refused to ship what couldn't be done honestly.** A news-attention trend (GDELT) was designed, built, and tested — then **cut**. Its free endpoint rate-limits a single IP so aggressively (HTTP 429 even cold) that the weekly CI, which runs from GitHub's *shared* IP, would publish an empty layer every run while burning ~30s of doomed calls. A permanently-empty, pipeline-polluting feature fails the same bar as a fabricated one, so it is not in the build. The reasoning is written down in [`DATA-AUDIT-PLAN.md`](DATA-AUDIT-PLAN.md).
+- **Refused to ship what couldn't be done honestly.** A news-attention trend (GDELT) was designed, built, and tested — then **cut**. Its free endpoint rate-limits a single IP so aggressively (HTTP 429 even cold) that the weekly CI, which runs from GitHub's *shared* IP, would publish an empty layer every run while burning ~30s of doomed calls. A permanently-empty, pipeline-polluting feature fails the same bar as a fabricated one, so it is not in the build. The reasoning is written down in [`DATA-AUDIT-PLAN.md`](docs/plans/DATA-AUDIT-PLAN.md).
 - **The ETL fails loud, not silent.** A renamed upstream column (which would land all-`NULL`), a dropped pagination page, or a decayed `portid`→geometry join now **raises** — non-retryably in the durable path — instead of quietly publishing a half-empty map. Each guard closes a gap an audit found could pass unnoticed.
 
 ---
@@ -68,15 +68,32 @@ This is the part that matters, and it's enforced in the **UI**, not just the REA
 
 The app reads from **local DuckDB tables only** — never from any upstream directly.
 
-```
-IMF PortWatch (ArcGIS REST)                 aisstream.io (WebSocket)
-        │  reliable backbone                        │  optional garnish
-        ▼                                           ▼
-   ingest + detect ──► DuckDB ──► publish ──► static JSON ──► React globe
-        │              (the only        (snapshot / flags /        ▲
-        │               source of        timeseries / manifest)    │
-   Temporal workflow    truth)                                FastAPI (live path)
-   on a Schedule
+```mermaid
+flowchart LR
+    subgraph T1["Tier 1 — reliable backbone (load-bearing)"]
+        PW["IMF PortWatch<br/>(ArcGIS REST)"]
+    end
+    subgraph T2["Tier 2 — live garnish (non-load-bearing)"]
+        AIS["aisstream.io<br/>(WebSocket)"]
+        GFS["NOAA GFS<br/>wind"]
+    end
+
+    PW --> ING["ingest + detect"]
+    ING --> DB[("DuckDB<br/>the only source of truth")]
+    DB --> PUB["publish"]
+    PUB --> JSON["static JSON<br/>(snapshot · flags · timeseries · manifest)"]
+    JSON --> UI["React globe"]
+
+    AIS -. write-only sidecar .-> JSON
+    GFS -. write-only sidecar .-> JSON
+
+    SCHED["Temporal workflow<br/>on a Schedule"] -. drives .-> ING
+    API["FastAPI (optional live path)"] -. serves same JSON .-> UI
+
+    classDef tier1 fill:#2f5d99,stroke:#1b3a63,color:#fff;
+    classDef tier2 fill:#e8eef6,stroke:#9bb3d1,color:#1b3a63;
+    class PW tier1;
+    class AIS,GFS tier2;
 ```
 
 - **Tier 1 — reliable backbone (load-bearing):** IMF PortWatch. All flags + severity are computed off this tier.
@@ -152,4 +169,4 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 
-See [`PLAN.md`](PLAN.md) for the full wave-by-wave build plan and the verified data contracts.
+See [`docs/plans/`](docs/plans/) for the full wave-by-wave build plans and verified data contracts, and [`docs/adr/`](docs/adr/) for the architecture decision records. The active plan is [`BEST-IN-CLASS-PLAN.md`](BEST-IN-CLASS-PLAN.md).
