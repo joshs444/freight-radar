@@ -24,7 +24,7 @@ export default function Onboarding() {
 
   return (
     <div className="fr-onb">
-      <button className="fr-onb-x" onClick={dismiss} aria-label="dismiss">
+      <button className="fr-onb-x" onClick={dismiss} aria-label="Dismiss the welcome message">
         ×
       </button>
       <div className="fr-onb-title">Welcome to Freight Radar</div>

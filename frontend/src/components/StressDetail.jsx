@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { stressLevel } from '../lib/colors.js';
 import { Sparkline } from './Sparkline.jsx';
 
@@ -13,6 +14,17 @@ const SCALE = [
 ];
 
 export default function StressDetail({ stress, onClose, onPickEntity }) {
+  const dialogRef = useRef(null);
+
+  // Modal a11y: close on Escape, and move focus into the dialog on open so keyboard
+  // users land inside it (and a screen reader announces the dialog).
+  useEffect(() => {
+    const onKey = (ev) => ev.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    dialogRef.current?.focus();
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   if (!stress?.available) return null;
   const lv = stressLevel(stress.label);
   const wow = stress.wow_delta || 0;
@@ -22,15 +34,28 @@ export default function StressDetail({ stress, onClose, onPickEntity }) {
   const maxC = Math.max(...contribs.map((c) => c.contribution), 0.01);
 
   return (
-    <div className="fr-sd-backdrop" onClick={onClose}>
-      <div className="fr-sd" onClick={(e) => e.stopPropagation()} role="dialog">
-        <button className="fr-sd-x" onClick={onClose} aria-label="close">
+    // Backdrop click-to-close is a pointer affordance; the keyboard equivalents are
+    // Escape (handler above) and the focusable × button, so a keyboard listener here
+    // would be redundant.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div className="fr-sd-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div
+        className="fr-sd"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fr-sd-title"
+        tabIndex={-1}
+        ref={dialogRef}
+      >
+        <button className="fr-sd-x" onClick={onClose} aria-label="Close the stress index explainer">
           ×
         </button>
 
         <div className="fr-sd-head">
           <div>
-            <div className="fr-sd-kicker">Ocean Freight Stress Index</div>
+            <div className="fr-sd-kicker" id="fr-sd-title">
+              Ocean Freight Stress Index
+            </div>
             <div className="fr-sd-score" style={{ color: lv.color }}>
               {stress.index}
               <span>/100</span>

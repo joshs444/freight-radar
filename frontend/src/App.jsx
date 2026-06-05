@@ -295,6 +295,9 @@ export default function App() {
 
   return (
     <div className="fr-app">
+      <a className="fr-skip" href="#fr-monitor">
+        Skip to the monitor feed
+      </a>
       <header className="fr-topbar">
         <div className="fr-brand">
           <span className="fr-logo" aria-hidden>
@@ -324,7 +327,12 @@ export default function App() {
       {data?.world?.available && <WorldRibbon world={data.world} />}
 
       <div className="fr-main">
-        <section className="fr-stage">
+        <section className="fr-stage" aria-labelledby="fr-stage-label">
+          <h2 id="fr-stage-label" className="sr-only">
+            Interactive globe of ocean-freight chokepoints, ports, sampled vessel positions and
+            wind. It is a visual aid — the Monitor feed has the same data and is fully
+            keyboard-navigable.
+          </h2>
           {data && (
             <ErrorBoundary
               fallback={

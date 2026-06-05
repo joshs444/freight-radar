@@ -339,5 +339,12 @@ export default function Globe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerRef} className="fr-globe" />;
+  return (
+    <div
+      ref={containerRef}
+      className="fr-globe"
+      role="img"
+      aria-label="Globe showing ocean-freight chokepoints, ports, sampled live vessel positions, active storms and animated wind"
+    />
+  );
 }

@@ -30,12 +30,6 @@ export default [
       'react/prop-types': 'off', // types come from the Phase 4 TypeScript migration
       'react/no-unescaped-entities': 'off', // apostrophes in prose are valid + readable
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      // Click handlers on non-interactive elements: these are Phase 2's semantic-a11y
-      // worklist (convert to native <button>). Staged as warnings so the Phase 1 gate
-      // is green; Phase 2 fixes them and promotes these back to errors.
-      'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn',
-      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
     },
   },
   prettier,
