@@ -56,6 +56,7 @@ jobs:
           python -m freight_radar.backfill
           python -m freight_radar.wind || echo "wind layer skipped (GFS unavailable)"
           python -m freight_radar.publish
+          python -m freight_radar.history || echo "history skipped (PortWatch unavailable)"
 
       - name: Snapshot real AIS vessel positions near the chokepoints
         working-directory: backend
