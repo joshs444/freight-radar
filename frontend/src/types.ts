@@ -508,6 +508,40 @@ export interface Wind {
   bounds: [number, number, number, number];
 }
 
+// ---- history.json (the 2019→now "play through history" view) ---------------
+
+export interface HistoryEvent {
+  id: string;
+  title: string;
+  date: string;
+  from?: string;
+  to?: string;
+  blurb: string;
+  source: string;
+  url: string;
+}
+
+export interface HistoryChokepoint {
+  portid: string;
+  name: string;
+  lat: number;
+  lon: number;
+  normal: number;
+  values: number[];
+}
+
+export interface History {
+  generated_at: string;
+  resolution: string;
+  range: { start: string; end: string };
+  dates: string[];
+  stress: number[];
+  chokepoints: HistoryChokepoint[];
+  events: HistoryEvent[];
+  method: string;
+  source: string;
+}
+
 // ---- the full payload useData() resolves -----------------------------------
 
 export interface AppData {
