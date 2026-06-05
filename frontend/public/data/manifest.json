@@ -1,12 +1,29 @@
 {
-  "version": 26,
+  "version": 27,
   "as_of": "2026-05-31",
-  "generated_at": "2026-06-05T03:41:53+00:00",
+  "generated_at": "2026-06-05T17:51:52+00:00",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
   "flag_count": 9,
   "chokepoints": 28,
   "ports": 2065,
   "lanes": 10,
+  "lineage": {
+    "verdict": "pass",
+    "runs": [
+      {
+        "lineage_run_id": "stg_chokepoint_daily-2026-05-31-r4928",
+        "verdict": "pass",
+        "rows_promoted": 4928,
+        "checks_run": 4
+      },
+      {
+        "lineage_run_id": "stg_port_daily-2026-05-29-r359310",
+        "verdict": "pass",
+        "rows_promoted": 359310,
+        "checks_run": 4
+      }
+    ]
+  },
   "layers": {
     "exposure": {
       "present": true,
@@ -14,8 +31,8 @@
     },
     "news": {
       "present": true,
-      "kb": 19.2,
-      "generated_at": "2026-06-05T03:40:28+00:00"
+      "kb": 17.4,
+      "generated_at": "2026-06-05T17:49:30+00:00"
     },
     "timeseries": {
       "present": true,
@@ -27,13 +44,13 @@
     },
     "ships": {
       "present": true,
-      "kb": 9.1,
-      "generated_at": "2026-06-05T01:15:16"
+      "kb": 10.2,
+      "generated_at": "2026-06-05T03:43:04+00:00"
     },
     "market": {
       "present": true,
-      "kb": 2.4,
-      "generated_at": "2026-06-05T03:41:53+00:00"
+      "kb": 2.5,
+      "generated_at": "2026-06-05T17:51:52+00:00"
     },
     "stress": {
       "present": true,
@@ -47,12 +64,12 @@
     },
     "events": {
       "present": true,
-      "kb": 8.9,
+      "kb": 10.6,
       "generated_at": "2026-06-05"
     },
     "brief": {
       "present": true,
-      "kb": 1.4,
+      "kb": 1.5,
       "generated_at": "2026-06-05"
     },
     "disruptions": {

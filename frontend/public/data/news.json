@@ -1,10 +1,16 @@
 {
-  "generated_at": "2026-06-05T03:40:28+00:00",
+  "generated_at": "2026-06-05T17:49:30+00:00",
   "search_date": "2026-06-05",
   "items": {
     "b74be045769441ea": {
       "entity": "Strait of Hormuz",
       "items": [
+        {
+          "title": "How the Strait of Hormuz standoff flipped the energy security debate - CNBC",
+          "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPaWN1Y3lQVDlnN3MtMGlwME1GNVM4Yk5qZTVTQUNGQjgwRE80ZFR2dG9BeHV0NHRNOXh3QmJLNGRZOGVTeTA1MEstaVpBLWpYYU9qU25xUWJPajVZZldXZkZwM1lMWWR1cXdMU0RIX3p2TEY1OW1LYkU2Z2JxRW9PSnZhbkktRE1h0gGOAUFVX3lxTE10bXQ3RUJnTEVqa3V6c1ptQThDOHZZUzZrcHMtTmlhM01NX1ZpZER0dzA2bVM3eXBIUFoxV1VFSzJlR3JsaXpHWDluTkJtaWJYd1dtRUxUVXhQbWtOSDdGOHhONFZuSVB2Tk1yYXBNWGJPX1BFR25BWWItOEYwZEN6azBKV2h3U3J4dk1JdFE?oc=5",
+          "source": "CNBC",
+          "published": "2026-06-05"
+        },
         {
           "title": "Opinion | The Strait of Hormuz Is Blocked. The World Is Adjusting. - The New York Times",
           "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPeE0wM1NSVUdzMlpwQWpSZWxCOE5PbUt2aWxHZlB5eHVSLWpTVUtyVDhqSktTLUdTNTYwMkFhc0NrZU05bmFRZ09KSEtFNERORXZ5T0MyTFMyYkNGUnBWZndNaTdRNDR5ZUNHQlBOR1VSUHZGSUJLVG1UaDk5VEdFb2VORFJNcXppWnRnXw?oc=5",
@@ -18,16 +24,10 @@
           "published": "2026-06-04"
         },
         {
-          "title": "94 days of paralysis: The Strait of Hormuz remains choked off - CNN",
-          "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1BUk8xQlU5REVla2txdDM2SXh2SXl5WmhnT0xMMmNIS3VWdkZtRzdvLXJaRENybm93d1BIWlY0ck1kY0dwVFFoLWlrbkRQYkptV1ZPREdjaHBDd2hjZi1Odjg2Vkp4UHdROFZQcE1QTklOaEFralcySQ?oc=5",
-          "source": "CNN",
-          "published": "2026-06-02"
-        },
-        {
-          "title": "Iran has mined 'large segments' of Hormuz Strait, Secretary of State Rubio says - CNBC",
-          "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOdm10Q240WjQ5S2Z3RlJnRGlKbGhYUmxGZTgtY19pYk8wdmtWdzEtYjRiVUs0UWprNGhuMW51X0VvbUhLbXl6U0pJNTdZZzZhMWNuV1EwTUtiNFZmd2FKeWdlRi10VEFFZkpuNVF4WTlZVzF1U2FhZkpnT3NmVThfZ0Vn0gGHAUFVX3lxTE1jbTg0YTJaUlgxZlhaYVJpSERaUzNHaTU4VzR2YkYzN0pxUUZqRnpFYi1uMTFGRmdlVnNKMHpJd0drMVZhRTBQOGtwdmRNbVMxSnRoVWt2Y0g1WkV3VUYzZlZpajY1MEF2MVM2ekxnc25adVc5eG9BMlVRMkE1R3EzVnFhcF9TYw?oc=5",
-          "source": "CNBC",
-          "published": "2026-06-02"
+          "title": "Tracking ship traffic through the Strait of Hormuz. Updated regularly. - NBC News",
+          "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNNkdJWTU0VkQwQ1ZGMTlhS2ZoY0ExeXo4X25UX1k2NnFwdXgybTFtNEtoNlVMSHRlUFExVVZIX1FFelBMMk9jZkEzWmprZEktcTByZUJVcWsxVVE1WG92QjZ3dkhjX25DNFlqS3ZTRXFLSUVjRWpGNHhtdmtlMVdJWEFFZXJoM1RYU2JLS2F5emRFX0w2cVlmRWFZOGlzUQ?oc=5",
+          "source": "NBC News",
+          "published": "2026-06-03"
         }
       ],
       "relation": "possibly_related",
@@ -36,62 +36,37 @@
     },
     "bb17b4b10357fb5e": {
       "entity": "Kaohsiung",
-      "items": [
-        {
-          "title": "Latest Perimeter Security Upgrade Project Optimizes Access Controls at Port of Kaohsiung\u2019s Chungtao Commercial Harbor - Port Strategy",
-          "url": "https://news.google.com/rss/articles/CBMiwwJBVV95cUxNbHVNNHhPTXdkODJSSEJKWm1MMENFLXJNMHlwQzM0cnl2T2xnT0JJaG1qN052TUNDMUlNYkttMXlialJzS3pfYUJQUG9RRzNHWDI2U1hTWU81eGM4eV9ha1I2cmllSzJtMXhIZFNYMUVkYkQ4cDdxN2NSeTE4QjJyVDlYR1NvaWF3OThXRUlLM3hha3VIMVZYWHpjdDFmZXk1S19fZ043aVRhRTdqTWN6anBHNG9oRTV5dHV1NmJMbFlCZGVlU2Y1czNyOWlkQTN5Nk90Z19DRUZ4d1dHQmNyNXdlWXZoekxVSlkwNVRESm5UZGtSZDVFOVZRem1XQW9WdWdBcE1UVjNtYzJTNnUwenBhZ3BlZ2RRNTdJX0NXLVplQld2TllEeFFNYUI1SFI2Y05LRkRxN1lOU2VmaWFldk9wZw?oc=5",
-          "source": "Port Strategy",
-          "published": "2026-06-04"
-        },
-        {
-          "title": "US proposes 10% tariffs on countries over forced labor, including Taiwan - Taiwan News",
-          "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9FdWNnRTdFMHNxQ3VrQWozNTdyRHh0ckIxT2luUU5pTVRMSWliN0JyUzRZSjZ3a0RZSXJlbVpYdXpLZWlIZEJqX2ZGcm1vRk1pOXJFXw?oc=5",
-          "source": "Taiwan News",
-          "published": "2026-06-03"
-        },
-        {
-          "title": "Two pilots killed as Taiwanese military training aircraft crashes during engine failure drill - Malay Mail",
-          "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxQbFpVeDN6SVZoQWE2WHpMc095R3liZWhYelJYSjVjMnNTeTd2WlZMb1dtR2xSWElZQ0pPZlJ5WDdfRVNxMHFwN0MzS1ZWdkZpYmk0c0c3ZmtvQmw4XzVnNGFtdldlQlVkbnV3RnVxNHU2WG9qWXpPejRicURCU1BURFBJLU5SSEtwcDA3dGh2cXc5WDBXYUdFYmFiSC1vYUw2V2tSUGQyQlphSnVMYXhhQ1lmZjRFNGZqbzZHWlZENmptUWRKT2VoZWN1STJmdWlFaVJwRllSYnUtOVVMT0tYYjV30gHnAUFVX3lxTE1YNVRwaERGcEJuemgzaEdjUkFkZERwOUdKeE1fX1Vacm1SM1hBTFcxVnI4aVFiWFUxWTBkTGJZWXd6YWJINXNHQzZyS0F3NXIxVUI5ckZ3YkVxa2FmclE3aVNJcF9ERDhkNWFCNjA2bWxBclljMjZuTmZfSkliMXZycnRtcktFUVpNVll4TXpSZEw4TUs1dFBQRDktWEtqMzJXenJtS1FrTjIyUGYxYU91d1otYWJNZUtzZ2dNbndIOVFCX0tEanRzSGpxZU9JQ1N6Vk9DZnRVRnhtWXl5SDBUUWF2eU1nMA?oc=5",
-          "source": "Malay Mail",
-          "published": "2026-06-02"
-        },
-        {
-          "title": "Taiwan says 2 dead in military training plane crash - The Straits Times",
-          "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPMkR1ZVBHXzF6SVNEcHhRcEQxUl9MUTNFX2dwTzRuQmxpa0IzRGNSSy1Sc3JrVGg3NEdGX3pacENlSHRKT2dpN1VuZFMzd3RMNUlVb3B3TmxQek4xWXVwOElYc1lHTm9NbzU2SEt4NFVNN0MzV0hNSE5HMmM0bXJIQ0llams3XzBaLUt0aWdPekhCLTVuOFF1NGFFTQ?oc=5",
-          "source": "The Straits Times",
-          "published": "2026-06-02"
-        }
-      ],
+      "items": [],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 4
+      "outlet_count": 0
     },
     "bce0e2fdd63be992": {
       "entity": "Kerch Strait",
       "items": [
         {
+          "title": "The Crimean Bridge is heavily guarded. Ukraine struck its maritime security layer in the Kerch Strait. - Euromaidan Press",
+          "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNcFpJck80UDh5d1J5VTBqeGUteFc1Z3ZUUDFXWGxvN1ZwenptdExwTlVScS1rZmtLWHd3T2lCMkF3d21lOEdOUlU5RWpHeGl4YmRBSDE2bTJEUkRQQzhHYkZHaXRlZnJ2NHdpZW5Mb0RFeG1LZG95ZWtwblFXVElVYXp0WG9INzJzMHFCY21fdE5jc1Fjb3k4Wno4TVpaTDJCSW9DSndvZTg3Uzk4R2c?oc=5",
+          "source": "Euromaidan Press",
+          "published": "2026-06-05"
+        },
+        {
+          "title": "Ukrainian Navy confirmed defeat of Russian ship in Kerch Strait: it was guarding Crimean Bridge area - \u0426\u0435\u043d\u0437\u043e\u0440.\u041d\u0415\u0422",
+          "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNRklrX3dlOWJRcjRRdHJMc1ZVbE9FVmxLMm5PZXVaTmJmQWpsZWhZS2hCcnptbjFSM2l6aVQyYkg2MG4wUjBiWUJhS0cwSUxMYS1mQWduMEFnVDU4dmN0NkZrQ0FjTEI0RjRnY1ota1FUZFVRRmtJYUNnQnlHWnZ4N3ktbm1zLXBWVzk2RzJyZ094SnAydDROWVZBakl1X0FxTkhWN2VB?oc=5",
+          "source": "\u0426\u0435\u043d\u0437\u043e\u0440.\u041d\u0415\u0422",
+          "published": "2026-06-05"
+        },
+        {
+          "title": "The Ukrainian Navy has confirmed that a Russian ship was struck near the Crimean Bridge - UA.NEWS",
+          "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNWUpiVkc5UmdYcVNGUXJWazYzS1ppek01eXdzRW9Xb1hpZ1hOOVFiaFFuc2Q0eFFJRlZwbUNDZm1VVkdPajVneExUa0lmbTRvME1vdlV0TmRRNE9EOUMyVFptODJrY2dCbTQ1eS1acVVHYnNXdDJmeGgwRVNHM2tIVmJnSk84N0M5V0RWa0RpeDVlSjZNOWU0OUJGWlo3OHRndjJJdFpjOUZDdw?oc=5",
+          "source": "UA.NEWS",
+          "published": "2026-06-05"
+        },
+        {
           "title": "The Longest Bridges in Europe - WorldAtlas",
           "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9CSVY2YUs4OTRDV3IwYzJyb3lIVGo4akctOU9MTlBHZUp6bzlWZklUcUM1X0I4bWhJVEZpUXd5NTZQLWZzV3BMLXJ0QVVjby11T1FVNTAxQTBCVVQtcHc0UFUtNE9xUEFFbzNzRHMtLWVMb19od1J1M0JReWhCUlk?oc=5",
           "source": "WorldAtlas",
           "published": "2026-05-24"
-        },
-        {
-          "title": "Crimean Bridge was closed for almost 11 hours - \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043f\u0440\u0430\u0432\u0434\u0430",
-          "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5YWVVUaFZhN0IzcUpCM3d3NkttR3JfTG8xLUUwSnhEamtjLVQ0NGwzS0VTLVdTYk8xcXZnWnRxOFRKZFZJOUo4SGowTm53emxGaERGSjM5NlhnMmV4ZlhGMFF1aVLSAXBBVV95cUxOQVVmZnNGMExZc2tzVTNoMGR2b3F1NGVWMkxIbWIxVUF5WmhpcDROWGRPMUdreHBXa0ZqVjdjMjFXQlBNTldMQ2xpcU5sWTM2cFBqX0lXc2lrUkpjX1JNQnBNdWZXLS1yTzFueHh0MUln?oc=5",
-          "source": "\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043f\u0440\u0430\u0432\u0434\u0430",
-          "published": "2026-05-16"
-        },
-        {
-          "title": "Ukrainian naval drones hit Russian patrol boats near Kerch Bridge - MSN",
-          "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOeW5QcWZiOER4UHJ6cUhKUVg2QUJleExKejkzc2Jmc0VURmZfZ2xiVHc4WHFEYTg5ay1WUTZ2NzBMTHpvWmJVXzlHVVN0TmVXeXZWR2kwR09hNEwwZ2NjRWVuYW9oVlVSX1RGazBlLVFqbG0wMlFqMFdaSWlXeXRscGUzd2poaVlVbnZCM1g3WGlXLWIybFJyTjVWVTJ2LXpLVVlQMWs0Mjd2VEV2aEJjMHdNa1V3WGlPc01SWHI5YnhSNnYyMS1OcVNmMA?oc=5",
-          "source": "MSN",
-          "published": "2026-05-15"
-        },
-        {
-          "title": "Russia passes effective life sentence against 61-year-old Crimean for a video of zero interest - khpg.org",
-          "url": "https://news.google.com/rss/articles/CBMiREFVX3lxTE1XR3gtVFo5SXdwdlJOd18taGpyVEVUZEJpRWpJZWVUS3lRUXR2ZWhaSjRwS2xZemxjTERyM3UxM1I1ckQw?oc=5",
-          "source": "khpg.org",
-          "published": "2026-05-14"
         }
       ],
       "relation": "possibly_related",
@@ -102,28 +77,28 @@
       "entity": "Ningbo",
       "items": [
         {
+          "title": "Carrier services update (23 May - 5 June) - Kuehne+Nagel",
+          "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNYUM2Z1RHUmR5YlhFVHVTbW82ZG5UakNsU3B0MDZTYk5MY29HQXdvMDBabmgtU2ZkMG8zT2lXX2FsN01YQkowQlZCQndGNUhHc2VZc09nLURTbS1NcUZmX1VfNEtmMGNzNDdnTWtxTHVoTF84VTdHd2lXYUNPdUJCdXVrUFE4Y0J3dTJMdkR2UQ?oc=5",
+          "source": "Kuehne+Nagel",
+          "published": "2026-06-05"
+        },
+        {
           "title": "Ningbo Containerized Freight Index Weekly Commentary Freight Rates Posted Consecutive Gains on - \u4fe1\u5fb7\u6d77\u4e8b\u7f51",
           "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBjUGdfSlJnVlhnNTRMcmJIT3NaRVBENkxhY1hnbXEzV2M3SE9ta1pnS2ZQaXRMaDFOLU1FbmF5QXhEUGFKMS1XMmJneWFTdEdFdE9ybzFjSjhsS0VNNHpFZUJB?oc=5",
           "source": "\u4fe1\u5fb7\u6d77\u4e8b\u7f51",
           "published": "2026-06-05"
         },
         {
+          "title": "COSCO Shipping Energy Places $953M Order for Four LNG Carriers at Jiangnan Shipyard - News and Statistics - IndexBox",
+          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNbzM4QUItY3BQQWF6YzBDRDEyWmFsZTFXeGRCeDQ1OHpFRk9KYnZubmhSOUFsSmQtQWFZb0JsR3FhSDlJVVFTQldsNDBNTXNpWjdFQkRfSGhWY1pJR3BtU1lTVU1mX3pRWk9RcXJZbWlkYmljQmR5cHViUGc1NUtldnpEalR2MTRYNVNjcERvTlQyQVdibTY0aHNLNThSV2g4S0VPYnFvSkdPWlZvUklnMnRhaw?oc=5",
+          "source": "IndexBox",
+          "published": "2026-06-03"
+        },
+        {
           "title": "Ningbo Ocean teams with Wuchang for feeder newbuilding project - TradeWinds News",
           "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPY3JIREtwSE16M0RGaVh3NUxEMEhHUTVQM0U3OHExa3kxTTVhU2xKMlp4Q056WXY4ZEE2NnBTdmJWbEswYW1NUGxhQmk0MDlUV1ZJOHNOTmRyc2FSZzdKSFVuWWVyb2doOERnVUZNOUxkem5xMkpPblZ3ZlNZTVVMQk1iV2NuNEctWkxfLUw4TndwUUJ3b2Q3VjNJRjlqb3lhc3ZmeURBeVF5WHp3QmstNUpJdXNZSFE?oc=5",
           "source": "TradeWinds News",
           "published": "2026-06-02"
-        },
-        {
-          "title": "Chinese Port of Ningbo-Zhoushan Achieves Milestone with First Green Methanol STS Supply Operation - Puente de Mando",
-          "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5YMzg0RlktWnV4cjJJLWp6ZDdPSmcwbkMyUExxZ1dtd3VBUjVsRF9zMXVtcFgyWE9BTDJpT1NFNVM3UG1Fb0hyRy1ZS0lwRG9wUkZlOUFCMC1UQzRtZ1lMZVQxNzJoNVh0RVJ2VTFIQ0hQVlJNZGhGLXVnTQ?oc=5",
-          "source": "Puente de Mando",
-          "published": "2026-06-02"
-        },
-        {
-          "title": "RAINLING at Ningbo Exhibition 2026 Draws Global Interest - openPR.com",
-          "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQVlRfWl9RVjBqOTdCMHBIc1VtYjNjc2NCR1RCNXJqcFJUbGgxeFhKZHpfZGZjV2ZXUmp1Y2VyeWtFcGUweTZteWxtbUFZWGQtZnJCRnFCNzJpaEtsTjB5djNiOC1tNmh5cElqVHBsUWV6OVlkVGtCUHE3UzhJMGN5OFhSdTB1T3gtMTFFeHY3YWJ1aEwteTZr?oc=5",
-          "source": "openPR.com",
-          "published": "2026-06-01"
         }
       ],
       "relation": "possibly_related",
@@ -166,6 +141,18 @@
       "entity": "Xiamen",
       "items": [
         {
+          "title": "Quad\u2019s proposed port project in Fiji risks being \u2018another empty promise\u2019 - South China Morning Post",
+          "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQTG5pVjc5eTUxQTJHdU5NYVU2NlBhQnVyQm00dkx4dW94Vk81RUcwUGZXeGJJb1NHRE53SXFyZWdZcGdYLWpUVnFoRVJyZHBaWTdUNHlFMWUxX3hnV3VoeUZZMmx1b0czODVwQzZlSmE0TDJ6RjRVbHh4ZHVfOVFxd1FOdEUtMC1UMjktbHVWcDJrLW5zSkFlZ0IxWGJ2dXdkMXFERXVCeEF6RG45Ums0ZFZISDNqc0lHYk5YNWxReFRZQdIBwgFBVV95cUxQTG5pVjc5eTUxQTJHdU5NYVU2NlBhQnVyQm00dkx4dW94Vk81RUcwUGZXeGJJb1NHRE53SXFyZWdZcGdYLWpUVnFoRVJyZHBaWTdUNHlFMWUxX3hnV3VoeUZZMmx1b0czODVwQzZlSmE0TDJ6RjRVbHh4ZHVfOVFxd1FOdEUtMC1UMjktbHVWcDJrLW5zSkFlZ0IxWGJ2dXdkMXFERXVCeEF6RG45Ums0ZFZISDNqc0lHYk5YNWxReFRZQQ?oc=5",
+          "source": "South China Morning Post",
+          "published": "2026-06-05"
+        },
+        {
+          "title": "Carrier services update (23 May - 5 June) - Kuehne+Nagel",
+          "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNYUM2Z1RHUmR5YlhFVHVTbW82ZG5UakNsU3B0MDZTYk5MY29HQXdvMDBabmgtU2ZkMG8zT2lXX2FsN01YQkowQlZCQndGNUhHc2VZc09nLURTbS1NcUZmX1VfNEtmMGNzNDdnTWtxTHVoTF84VTdHd2lXYUNPdUJCdXVrUFE4Y0J3dTJMdkR2UQ?oc=5",
+          "source": "Kuehne+Nagel",
+          "published": "2026-06-05"
+        },
+        {
           "title": "Two carriers expand Philippines-China 737 freighter routes - Cargo Facts",
           "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQS21aWXFuT1pjMUtoQ1NETUZGU1p1T2g1Wlo1enZqWnNBSkYzME4zRk1TdklDeGhiTnNKM25xaEo3UWxSem1YQy1vUXo4QTMtSmRfd1pWc3UzZ3dlbTlfaVlhZ084dE5PYnBKc2NfOGRjUjBPTmFZTWVCeExqeHllOFlpV29tRTNlMXo3dDlPRHhwVVpCOFpaRWRmb1FoUmM?oc=5",
           "source": "Cargo Facts",
@@ -176,23 +163,11 @@
           "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQbW5ENmxQVXlNOXNHUk50MFBLTDNnNGx5c0hSM24zb0gzQ3FCUm1FMjNoMHpiUlRmTzg4cHdSdWZmalJ6Zk1NRVYwNEY2c1F3cHR0c1BKLUhjQ0xIaWZ3cFVlYUUzNkptNGU5SXVrakZxOTlILUhkODZUbzFSQWxzWE9iU1ZXanJiWUdaTExWSEVjLWRoZjI3RV9EQ2RKNXBwLWdIZlcwNnQ4bWRzcGNCYV9RcU5QcjhGd1Nn?oc=5",
           "source": "IndexBox",
           "published": "2026-06-04"
-        },
-        {
-          "title": "COSCO Shipping Energy Places $953M Order for Four LNG Carriers at Jiangnan Shipyard - News and Statistics - IndexBox",
-          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNbzM4QUItY3BQQWF6YzBDRDEyWmFsZTFXeGRCeDQ1OHpFRk9KYnZubmhSOUFsSmQtQWFZb0JsR3FhSDlJVVFTQldsNDBNTXNpWjdFQkRfSGhWY1pJR3BtU1lTVU1mX3pRWk9RcXJZbWlkYmljQmR5cHViUGc1NUtldnpEalR2MTRYNVNjcERvTlQyQVdibTY0aHNLNThSV2g4S0VPYnFvSkdPWlZvUklnMnRhaw?oc=5",
-          "source": "IndexBox",
-          "published": "2026-06-03"
-        },
-        {
-          "title": "Straits Forum to foster cross-Strait exchanges - China Daily",
-          "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1zOExObUdheG0yOHdYbnktcmoyUVJNZVRzSnVzMlplYmRGcEVwXzZfajBRV3VYekJYVzdud2xMaE5aanNoazBMbEhyTzhfOHpSR0loYzBJRHBjb29mamwxcFB2ZDk3RGQtajBVbWFXTXgxbjBpcFNVc3cwTFBlZw?oc=5",
-          "source": "China Daily",
-          "published": "2026-06-03"
         }
       ],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 3
+      "outlet_count": 4
     },
     "25f4a760f2f91733": {
       "entity": "Santos",
@@ -204,9 +179,9 @@
           "published": "2026-06-04"
         },
         {
-          "title": "A prediction market reported former Rep. George Santos to prosecutors over suspicious Kalshi trade, AP source says - Springfield News-Sun",
-          "url": "https://news.google.com/rss/articles/CBMipAJBVV95cUxOR29aRmp1bTNVOFhzVVV3RE53V0JXRnZlTXFQNTJTWEtxcnhBSnRSbWU1WHFFdXhYaHpUMjV2MUlGbjhhRnZxb3FyTlZiUTNuNW1DWi1MdEZGZ1hHWlBmdWQ1cDRkNnNIRlA5VzRrUGRCdUUzSzNRdkE0TnpkSVVuT3U1VTdLa2tvSGVSc19BR0hvVkdMSEhXeFFTRzF4bWM4WGJnVW9DYVJsWGF6b0hvN20tS2Q3UmxjVVlnUzA0bXhCUVA4ZXBnWmR6OXkza2xkQTdKZWk4NzlpaXp1UEd0N2ZDVk1NaUlVc0NNQzNoc0dQdUhaQVdpbFRGTzlPQUdsZ2VIVU03MVowbDlJZXB0Sm9HVTJydWlzal9VQzE4QnV2bGh4?oc=5",
-          "source": "Springfield News-Sun",
+          "title": "A prediction market reported former Rep. George Santos to prosecutors over suspicious Kalshi trade, AP source says - KING5.com",
+          "url": "https://news.google.com/rss/articles/CBMitgJBVV95cUxPSC1SRlNQUU1USG9Qa2FBN2xFYzNhdldkUEUxTkg3Ym9KcHJ1aDVtcjU1LXdKVjVhYXFPdjV6WUZOUng4Ry10RzBILURKT3g0TjRON1NOMWRzY2dFZ1RDZUktM3ctTVBsU0Fva2dYSGdVVW4yUTdJeG9MTm5kOUNTeHBKVGpkR3BvcTY0d1pHejZac2N4cUY0bjhSQUR2LUIzOFZJTGVRSUpMMDZ1dk9Od0tpUWVERU9yTW5GdUtxbUUwYnJkU184OFNyeTZSMkY1amVMMllld3QybkdSTEI1RGEtNVNOY0U2UGZpTEYzLWx1U0VOLWRxZmh3UnM0S3R5NVR1dm9pckNOdGdhRk4wXy1TZUJ4enhfWmdjbVFzLUdOQ2dCYXdBM0ZUUWx3NjNiaTFrUjln?oc=5",
+          "source": "KING5.com",
           "published": "2026-06-03"
         },
         {
@@ -230,6 +205,12 @@
       "entity": "Zeebrugge",
       "items": [
         {
+          "title": "Auto market turmoil takes toll on German carmakers, study says - Reuters",
+          "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPSmhmOUpqUnpiWUc3ZU1xTDdwLXlaOFN3Ym1wbElZN204c0J3WE9oNTJrNHIzTXNfcTJYUGQ1N3hDT012QkZqRlRMZzhDZFpRUnhRakZlcXRrb2RoRXRxWlkzZFBUU2xZcmtUZHFnYm1jdFgzWm9wNGU4TzZLZFRlZlJVNHZ4YzNuaWtWR0VNTnd2REd4cFZVY1V5Wlg1NHNLdzgweVlfM1dIS3JTT3V0ZWtPc01Qa1FwQktSR0c5UHRxZw?oc=5",
+          "source": "Reuters",
+          "published": "2026-06-05"
+        },
+        {
           "title": "Boluda Renews Towage at the Belgian Port of Zeebrugge - Puente de Mando",
           "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE41ckhUZTRDekIwQWxEaGxEVjBacmFfaXNPM3dFSC1tVXg3empiSjhLdG9KUW9DWUU5RUlrVzFvMU9WNlF3TzVYTVVGZU5HYVVVQmJQSTNqaUFFeWZuM3YxNXByY2lJdXpHX1lJWnB6NFdwdw?oc=5",
           "source": "Puente de Mando",
@@ -246,17 +227,11 @@
           "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQX3g1V1pyY1k1MVZrR0dxMlZCbG1aUy0yZ0VHcFZBTlp1UTFORTV3SVNTZDE0YjFOLTRvMUk4VTBCX2hVS3lHN3FYeTVYZm1yaS05NFkzUm5kMXY1U0VON1drNm9lZFlyb1pwYk16OFZzaU0wOUJxVHNiT1ppcndaNFpUcHRCaEN1MnlMT2xVTEhiRElMeU5LR2ZfUTY0YjJuNGIzWm55a1hra1FnUUZ2RTd3?oc=5",
           "source": "Cyprus Shipping News",
           "published": "2026-05-28"
-        },
-        {
-          "title": "Antwerp and Zeebrugge Take on the Port of Rotterdam - Puente de Mando",
-          "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1NVWpqT3czWDFpTjg1MWV6aEwzQi1EbFdnUzRRMzlORmhMOUhpdlpuekZzb2FraHllMnQ5LWdsYTFBUEJDcERtLTBSQ2EwUXF6cE5hWG5pamI3eFpteU1lUGhJbFVDOENVbTVLTXdWMU0?oc=5",
-          "source": "Puente de Mando",
-          "published": "2026-05-23"
         }
       ],
       "relation": "possibly_related",
       "disclaimer": "Headlines co-occurring in time and place \u2014 not a confirmed cause of this anomaly.",
-      "outlet_count": 2
+      "outlet_count": 3
     },
     "e5adc8a1a22b0e6e": {
       "entity": "Ombai Strait",
