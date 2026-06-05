@@ -63,13 +63,14 @@ const STYLE: StyleSpecification = {
 const sqrtScale = (v: number, k: number): number => Math.sqrt(Math.max(0, v)) * k;
 
 // live AIS vessel dot color by coarse type (AIS only resolves cargo/tanker/etc.).
-// Generic vessels use teal so they read as ships, distinct from the slate port dust.
+// Vivid, higher-chroma so the live ships read clearly against the muted slate ports;
+// generic vessels are bright teal (the majority of an AIS sample).
 const VESSEL_COLOR: Record<string, [number, number, number]> = {
-  cargo: [58, 110, 165],
-  tanker: [194, 97, 31],
-  passenger: [120, 106, 154],
-  fishing: [138, 109, 59],
-  vessel: [13, 148, 136],
+  cargo: [37, 99, 235], // bright blue
+  tanker: [234, 88, 12], // bright orange
+  passenger: [147, 51, 234], // violet
+  fishing: [202, 138, 4], // gold
+  vessel: [13, 184, 156], // bright teal
 };
 
 interface LayerInputs {
@@ -125,21 +126,32 @@ function buildLayers({
       pickable: true,
     }),
 
-    // live AIS vessels — REAL current positions near the chokepoints (a sample), as
-    // crisp little type-colored dots with a thin white edge. Clear "where ships are",
-    // not the old confusing animated streaks.
+    // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
+    // type-colored glow makes each one read as a live point that stands out from the
+    // static slate ports, even when zoomed out where they cluster at the chokepoints…
+    new ScatterplotLayer({
+      id: 'ships-glow',
+      data: ships || [],
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 7,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 7,
+      radiusMaxPixels: 7,
+      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 48),
+    }),
+    // …with a crisp bright core + white edge on top.
     new ScatterplotLayer({
       id: 'ships',
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: 2.4,
+      getRadius: 3,
       radiusUnits: 'pixels',
-      radiusMinPixels: 2,
-      radiusMaxPixels: 3.2,
-      getFillColor: (d) => VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel,
+      radiusMinPixels: 3,
+      radiusMaxPixels: 3,
+      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 255),
       stroked: true,
-      getLineColor: rgba([255, 255, 255], 170),
-      lineWidthMinPixels: 0.5,
+      getLineColor: rgba([255, 255, 255], 220),
+      lineWidthMinPixels: 0.8,
       pickable: true,
     }),
 
