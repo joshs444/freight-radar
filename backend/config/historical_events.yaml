@@ -1,0 +1,69 @@
+# Curated major ocean-freight disruptions, 2019 -> now. Dated + source-cited so the
+# History timeline can annotate them honestly — these are factual events, never generated.
+# `date` is the onset/marker placed on the timeline; `from`/`to` shade the span.
+events:
+  - id: covid
+    title: COVID-19 pandemic
+    date: 2020-03-11
+    from: 2020-02-01
+    to: 2020-05-31
+    blurb: >-
+      China's factory and port shutdowns, then global lockdowns, cut sailings and
+      whipsawed chokepoint traffic worldwide.
+    source: World Health Organization
+    url: https://www.who.int/europe/emergencies/situations/covid-19
+
+  - id: ever-given
+    title: Ever Given blocks the Suez Canal
+    date: 2021-03-23
+    from: 2021-03-23
+    to: 2021-03-29
+    blurb: >-
+      The 400 m container ship Ever Given wedged across the Suez Canal for six days,
+      halting one of the world's busiest trade arteries and stranding 400+ vessels.
+    source: Reuters
+    url: https://www.reuters.com/business/aerospace-defense/giant-container-ship-blocks-egypts-suez-canal-2021-03-24/
+
+  - id: congestion-2021
+    title: Global port-congestion peak
+    date: 2021-10-01
+    from: 2021-08-01
+    to: 2022-02-28
+    blurb: >-
+      Post-lockdown demand, container shortages and labour gaps backed up ships at
+      Los Angeles / Long Beach and across Asia-Europe lanes.
+    source: Reuters
+    url: https://www.reuters.com/business/global-supply-chains-2021-12-17/
+
+  - id: ukraine
+    title: Russia invades Ukraine
+    date: 2022-02-24
+    from: 2022-02-24
+    to: 2022-08-01
+    blurb: >-
+      War in the Black Sea froze Ukrainian grain exports and disrupted traffic through
+      the Bosporus and Kerch Strait.
+    source: Reuters
+    url: https://www.reuters.com/world/europe/russia-attacks-ukraine-2022-02-24/
+
+  - id: panama-drought
+    title: Panama Canal drought
+    date: 2023-08-01
+    from: 2023-07-01
+    to: 2024-02-29
+    blurb: >-
+      A historic drought dropped Gatún Lake to record lows; the Canal Authority cut daily
+      transit slots and ship draft, throttling the Panama chokepoint.
+    source: Panama Canal Authority (ACP)
+    url: https://pancanal.com/en/
+
+  - id: red-sea
+    title: Red Sea / Houthi shipping crisis
+    date: 2023-12-15
+    from: 2023-12-01
+    to: 2024-12-31
+    blurb: >-
+      Attacks on merchant ships pushed most container traffic off the Bab el-Mandeb /
+      Suez route and around the Cape of Good Hope, adding ~10 days per voyage.
+    source: Reuters
+    url: https://www.reuters.com/world/middle-east/red-sea-shipping-attacks-2023-12-18/
