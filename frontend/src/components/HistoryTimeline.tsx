@@ -75,6 +75,21 @@ export default function HistoryTimeline({
     [events, dates]
   );
 
+  // label only the 4 highest-impact shocks on the chart (by the stress at their week) so
+  // the flagship moments are named even when paused — the rest stay as bare ticks.
+  const labelEvents = useMemo(
+    () => [...eventMarks].sort((a, b) => (stress[b.i] ?? 0) - (stress[a.i] ?? 0)).slice(0, 4),
+    [eventMarks, stress]
+  );
+
+  // the 2019→now peak, as a persistent "where today sits vs the worst it's been" anchor
+  const peakIdx = useMemo(
+    () => stress.reduce((bi, s, i) => (s > (stress[bi] ?? 0) ? i : bi), 0),
+    [stress]
+  );
+  const peakStress = stress[peakIdx] ?? 0;
+  const peakDate = dates[peakIdx];
+
   // year ticks for orientation
   const years = useMemo(() => {
     const out: { y: number; i: number }[] = [];
@@ -109,11 +124,27 @@ export default function HistoryTimeline({
             <b>{curDate}</b> · Ocean Freight Stress{' '}
             <b style={{ color: 'var(--amber)' }}>{curStress.toFixed(0)}</b>/100 (
             {stressLabel(curStress)})
+            <span className="fr-hist-peak">
+              2019→now peak {peakStress.toFixed(0)} · {peakDate}
+            </span>
           </span>
         </div>
         <button className="fr-hist-close" onClick={onClose} aria-label="Exit history mode">
           ← Live
         </button>
+      </div>
+
+      <div className="fr-hist-evrow">
+        {labelEvents.map(({ e, i }) => (
+          <span
+            key={e.id}
+            className={`fr-hist-evlabel ${i <= week ? 'is-past' : ''}`}
+            style={{ left: `${(xAt(i) / VW) * 100}%` }}
+            title={e.blurb}
+          >
+            {e.title}
+          </span>
+        ))}
       </div>
 
       <svg
@@ -175,7 +206,8 @@ export default function HistoryTimeline({
           aria-label="Scrub the history timeline"
         />
         <span className="fr-hist-note">
-          PortWatch daily transits · index = our composite · events curated + cited
+          PortWatch transits, weekly-averaged (the live view is daily) · index = our composite ·
+          events curated + cited
         </span>
       </div>
     </div>
