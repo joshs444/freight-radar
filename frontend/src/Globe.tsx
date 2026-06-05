@@ -157,28 +157,11 @@ function buildLayers({
       parameters: MARKER_PARAMETERS,
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: 7,
+      getRadius: 8.5,
       radiusUnits: 'pixels',
-      radiusMinPixels: 7,
-      radiusMaxPixels: 7,
-      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 48),
-    }),
-    // …with a crisp bright core + white edge on top.
-    new ScatterplotLayer({
-      id: 'ships',
-      visible: layers.ships,
-      parameters: MARKER_PARAMETERS,
-      data: ships || [],
-      getPosition: (d) => [d.lon, d.lat],
-      getRadius: 3,
-      radiusUnits: 'pixels',
-      radiusMinPixels: 3,
-      radiusMaxPixels: 3,
-      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 255),
-      stroked: true,
-      getLineColor: rgba([255, 255, 255], 220),
-      lineWidthMinPixels: 0.8,
-      pickable: true,
+      radiusMinPixels: 8.5,
+      radiusMaxPixels: 8.5,
+      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 64),
     }),
 
     // chokepoints — solid amber circles with a clean white ring
@@ -196,6 +179,26 @@ function buildLayers({
       stroked: true,
       lineWidthMinPixels: 1.4,
       getLineColor: rgba([255, 255, 255], 235),
+      pickable: true,
+    }),
+
+    // the bright AIS ship cores draw ON TOP of the amber chokepoints (their soft glow sits
+    // UNDER the chokepoints above, so the chokepoints stay readable) — bigger + brighter so
+    // vessels read as live points, not port dust. Type-colored with a white edge.
+    new ScatterplotLayer({
+      id: 'ships',
+      visible: layers.ships,
+      parameters: MARKER_PARAMETERS,
+      data: ships || [],
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 4.5,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 4.5,
+      radiusMaxPixels: 4.5,
+      getFillColor: (d) => rgba(VESSEL_COLOR[d.type] || VESSEL_COLOR.vessel, 255),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 230),
+      lineWidthMinPixels: 1,
       pickable: true,
     }),
 
