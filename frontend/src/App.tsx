@@ -11,11 +11,13 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 const Globe = lazy(() => import('./Globe.tsx'));
 const Chat = lazy(() => import('./components/Chat.tsx'));
 const StressDetail = lazy(() => import('./components/StressDetail.tsx'));
+const HistoryTimeline = lazy(() => import('./components/HistoryTimeline.tsx'));
 import StormIndicator from './components/StormIndicator.tsx';
 import Onboarding from './components/Onboarding.tsx';
 import { useData } from './lib/useData.ts';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.ts';
 import { useMonitorModel } from './lib/useMonitorModel.ts';
+import { useHistory } from './lib/useHistory.ts';
 import type { MonitorEntity, MapApi, Flag, GlobeFlag } from './types.ts';
 import type { AppliedExposure } from './components/Upload.tsx';
 
@@ -78,6 +80,11 @@ export default function App() {
     selectEntity,
     setFilter,
   });
+
+  // "play through history" (2019→now) — owns its own load/playhead state and derives the
+  // synthetic globe view at the playhead week; the live view is untouched until entered.
+  const hist = useHistory(data?.snapshot?.ports ?? []);
+  const noop = useCallback(() => {}, []);
 
   // browser-notify on new/escalated flags for watched entities
   useEffect(() => {
@@ -199,68 +206,103 @@ export default function App() {
             >
               <Suspense fallback={<div className="fr-globe-fallback">acquiring signal…</div>}>
                 <Globe
-                  snapshot={globeView.snapshot}
-                  lanes={data.lanes}
-                  flags={globeView.flags}
-                  ships={data.ships}
-                  storms={data.weather?.storms}
-                  selectedFlag={selected?.flag || null}
-                  onSelectFlag={onSelectFlagFromGlobe}
+                  snapshot={hist.mode ? hist.snapshot : globeView.snapshot}
+                  lanes={hist.mode ? [] : data.lanes}
+                  flags={hist.mode ? hist.flags : globeView.flags}
+                  ships={hist.mode ? null : data.ships}
+                  storms={hist.mode ? [] : data.weather?.storms}
+                  selectedFlag={hist.mode ? null : selected?.flag || null}
+                  onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
-                  windOn={windOn}
+                  windOn={hist.mode ? false : windOn}
                 />
               </Suspense>
             </ErrorBoundary>
           )}
-          <div className="fr-legend">
-            <span>
-              <i className="sw amber" /> chokepoint
-            </span>
-            <span>
-              <i className="sw port" /> port
-            </span>
-            <span>
-              <i className="sw pulse" /> flagged
-            </span>
-            {data?.wind && (
-              <button
-                type="button"
-                className={`fr-legend-toggle ${windOn ? 'on' : 'off'}`}
-                onClick={toggleWind}
-                aria-pressed={windOn}
-                title={`${windOn ? 'Hide' : 'Show'} the animated wind · ${data.wind.source} · ${data.wind.cycle}`}
-              >
-                <i className="sw wind" /> wind{windOn ? '' : ' (off)'}
-              </button>
-            )}
-            {(data?.weather?.counts?.active_storms ?? 0) > 0 && (
+          {data && !hist.mode && (
+            <button className="fr-history-enter" onClick={hist.enter}>
+              ▸ History · play 2019→now
+            </button>
+          )}
+          {!hist.mode && (
+            <div className="fr-legend">
               <span>
-                <i className="sw storm" /> storm
+                <i className="sw amber" /> chokepoint
               </span>
-            )}
-            {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
-              <span
-                title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}
+              <span>
+                <i className="sw port" /> port
+              </span>
+              <span>
+                <i className="sw pulse" /> flagged
+              </span>
+              {data?.wind && (
+                <button
+                  type="button"
+                  className={`fr-legend-toggle ${windOn ? 'on' : 'off'}`}
+                  onClick={toggleWind}
+                  aria-pressed={windOn}
+                  title={`${windOn ? 'Hide' : 'Show'} the animated wind · ${data.wind.source} · ${data.wind.cycle}`}
+                >
+                  <i className="sw wind" /> wind{windOn ? '' : ' (off)'}
+                </button>
+              )}
+              {(data?.weather?.counts?.active_storms ?? 0) > 0 && (
+                <span>
+                  <i className="sw storm" /> storm
+                </span>
+              )}
+              {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
+                <span
+                  title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}
+                >
+                  <i className="sw ship" /> {data.ships.count} ships · AIS
+                </span>
+              )}
+            </div>
+          )}
+          {hist.mode && hist.event && (
+            <div className="fr-hist-caption" role="status">
+              <div className="fr-hist-caption-title">{hist.event.title}</div>
+              <p className="fr-hist-caption-blurb">{hist.event.blurb}</p>
+              <a
+                className="fr-hist-caption-src"
+                href={hist.event.url}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <i className="sw ship" /> {data.ships.count} ships · AIS
-              </span>
-            )}
-          </div>
-          {ts && ts.dates?.length > 1 && (
-            <TimeScrubber
-              timeseries={ts}
-              index={scrubIndex}
-              playing={playing}
-              onChange={(i) => setScrubIndex(i)}
-              onPlayToggle={() => setPlaying((p) => !p)}
-              onLive={() => {
-                setPlaying(false);
-                setScrubIndex(null);
-              }}
-            />
+                {hist.event.source} ↗
+              </a>
+            </div>
+          )}
+          {hist.mode && hist.history ? (
+            <Suspense fallback={null}>
+              <HistoryTimeline
+                history={hist.history}
+                week={hist.week}
+                playing={hist.playing}
+                onWeek={hist.setWeek}
+                onPlayToggle={hist.togglePlay}
+                onClose={hist.exit}
+              />
+            </Suspense>
+          ) : (
+            ts &&
+            ts.dates?.length > 1 && (
+              <TimeScrubber
+                timeseries={ts}
+                index={scrubIndex}
+                playing={playing}
+                onChange={(i) => setScrubIndex(i)}
+                onPlayToggle={() => setPlaying((p) => !p)}
+                onLive={() => {
+                  setPlaying(false);
+                  setScrubIndex(null);
+                }}
+              />
+            )
           )}
           {loading && <div className="fr-loading">acquiring signal…</div>}
-          {data && <Onboarding />}
+          {data && !hist.mode && <Onboarding />}
         </section>
 
         {data && (
