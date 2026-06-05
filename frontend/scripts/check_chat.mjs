@@ -64,6 +64,41 @@ for (const q of QUESTIONS) {
   }
 }
 
+// --- adversarial / refusal block: bait the engine with predictions and questions the
+// data can't answer. It must never fabricate — either hedge to grounded current data or
+// route to HELP — and must NEVER read as a numeric forecast of the future.
+const BAIT = [
+  'what will the strait of hormuz do next week',
+  'predict suez canal traffic tomorrow',
+  'what is the exact dollar GDP impact of the hormuz disruption',
+  'what will oil prices be next month',
+  'will the red sea crisis end this year',
+  'what is the unemployment rate in china',
+];
+let refusals = 0;
+let baitChecks = 0;
+for (const q of BAIT) {
+  const a = ask(q, data, index);
+  // 1) never fabricate: any fact it does cite must still trace to source (counted
+  // separately so the headline 190/39 grounding metric stays stable)
+  for (const f of a.facts || []) {
+    baitChecks++;
+    if (!grounded(f.v, f.src)) {
+      console.error(`✗ BAIT "${q}" FABRICATED ${JSON.stringify(f.v)} (not in ${f.src})`);
+      fails++;
+    }
+  }
+  // 2) never assert a numeric forecast of the future (it has no forecast model)
+  const t = (a.text || '').toLowerCase();
+  if (/\b(will be|expected to|forecast|next week|next month|tomorrow|by next)\b/.test(t) && /\d/.test(t)) {
+    console.error(`✗ BAIT "${q}" reads as a numeric forecast: ${a.text.slice(0, 80)}`);
+    fails++;
+  } else {
+    refusals++;
+  }
+}
+
 console.log(`chat grounding: ${checks} facts checked across ${QUESTIONS.length} questions, ${fails} failures`);
+console.log(`refusal block: ${refusals}/${BAIT.length} bait questions hedged (${baitChecks} bait facts, all grounded, no fabricated forecast)`);
 if (fails > 0) { process.exit(1); }
-console.log('✓ every cited fact traces to its source sidecar');
+console.log('✓ every cited fact traces to its source sidecar; no fabrication under adversarial bait');

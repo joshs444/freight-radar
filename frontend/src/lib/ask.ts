@@ -31,8 +31,9 @@ type AskData = AppData | null | undefined;
 // a value a fact can carry: a raw figure or label lifted straight from a sidecar
 type FactValue = number | string | null | undefined;
 
-// a grounded fact: a raw value lifted straight from `src`
-interface Fact {
+// a grounded fact: a raw value lifted straight from `src`. Exported so the chat UI can
+// render claim-level provenance (the value + the source file it came from).
+export interface Fact {
   v: FactValue;
   src: string;
 }

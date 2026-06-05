@@ -2858,6 +2858,58 @@ body,
   padding: 1px 5px;
   letter-spacing: 0.02em;
 }
+/* claim-level provenance: an expandable drawer listing each cited fact's value + the
+   source file it came from — "show your work" instead of a bare row of filenames. */
+.fr-chat-evidence {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+.fr-chat-evidence > summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink-dim);
+  letter-spacing: 0.03em;
+  padding: 2px 0;
+  user-select: none;
+}
+.fr-chat-evidence > summary::-webkit-details-marker {
+  display: none;
+}
+.fr-chat-evidence > summary:hover {
+  color: var(--ink);
+}
+.fr-chat-ev-tick {
+  color: var(--ink);
+  font-weight: 700;
+}
+.fr-chat-facts {
+  margin-top: 5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.fr-chat-fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 8px;
+  border-top: 1px solid var(--line);
+}
+.fr-chat-fact:first-child {
+  border-top: none;
+}
+.fr-chat-fact-v {
+  color: var(--ink);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fr-chat-fact-src {
+  color: var(--ink-faint);
+  flex: none;
+}
 .fr-chat-sugg {
   display: flex;
   flex-wrap: wrap;
