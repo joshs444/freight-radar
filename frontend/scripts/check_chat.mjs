@@ -6,7 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { ask, buildIndex, SUGGESTED } from '../src/lib/ask.js';
+import { ask, buildIndex, SUGGESTED } from '../src/lib/ask.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dataDir = join(here, '..', 'public', 'data');

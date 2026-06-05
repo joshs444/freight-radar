@@ -7,9 +7,9 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { computeExposure } from '../src/lib/exposure.js';
-import { makeResolver } from '../src/lib/routing.js';
-import { parseCSV } from '../src/lib/csv.js';
+import { computeExposure } from '../src/lib/exposure.ts';
+import { makeResolver } from '../src/lib/routing.ts';
+import { parseCSV } from '../src/lib/csv.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dataDir = join(here, '..', 'public', 'data');
