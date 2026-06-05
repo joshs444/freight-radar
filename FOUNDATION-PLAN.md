@@ -1,5 +1,20 @@
 # Freight Radar — Foundation Plan (post-audit hardening)
 
+> **✅ COMPLETE — all five phases shipped + deployed + verified live (2026-06-05).**
+> 1. **Tooling** — ESLint 9 flat config (react/hooks/jsx-a11y) + Prettier + a CI
+>    lint/format gate. 2. **Accessibility** — every icon control is a labelled native
+>    `<button>`, the Monitor rows are a valid disclosure (zero interactive-in-interactive
+>    nesting), the stress modal is a real `role="dialog"` with focus + Escape, plus a
+>    skip-link and a map text-alternative; jsx-a11y interaction rules promoted to errors.
+>    3. **Architecture** — the Globe rebuilds its deck layers from a data/selection
+>    effect (no idle rAF), and a `useMonitorModel` hook pulled the derivation out of App
+>    (463 → 288 lines). 4. **TypeScript** — the whole frontend is strict TS (no `any`, no
+>    suppressions) behind a typed `src/types.ts` sidecar contract, with a CI `typecheck`
+>    gate. 5. **Backend** — `uv.lock` (+ `eccodeslib` so the wind decode is
+>    self-contained) with a uv-based refresh, a package logger that surfaces degraded
+>    layers, a shared `_http.py`, and tz-aware timestamps. The remaining items below are
+>    documentation of the journey; the boxes are kept for the record.
+
 _Turns the remaining items from the 5-agent best-practice audit (perf · frontend
 architecture · a11y/SEO · backend · CI/security) into a sequenced, self-contained build
 plan for the **foundational** work: real type safety, clean architecture, full
