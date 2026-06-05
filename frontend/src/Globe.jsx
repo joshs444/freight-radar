@@ -44,11 +44,23 @@ const sqrtScale = (v, k) => Math.sqrt(Math.max(0, v)) * k;
 // live AIS vessel dot color by coarse type (AIS only resolves cargo/tanker/etc.).
 // Generic vessels use teal so they read as ships, distinct from the slate port dust.
 const VESSEL_COLOR = {
-  cargo: [58, 110, 165], tanker: [194, 97, 31], passenger: [120, 106, 154],
-  fishing: [138, 109, 59], vessel: [13, 148, 136],
+  cargo: [58, 110, 165],
+  tanker: [194, 97, 31],
+  passenger: [120, 106, 154],
+  fishing: [138, 109, 59],
+  vessel: [13, 148, 136],
 };
 
-function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, selectedId, onSelectFlag }) {
+function buildLayers({
+  ports,
+  chokepoints,
+  lanes,
+  flags,
+  ships,
+  storms,
+  selectedId,
+  onSelectFlag,
+}) {
   return [
     // shipping lanes — thin, soft great-circle arcs
     new ArcLayer({
@@ -180,7 +192,16 @@ function buildLayers({ ports, chokepoints, lanes, flags, ships, storms, selected
   ];
 }
 
-export default function Globe({ snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, mapApiRef }) {
+export default function Globe({
+  snapshot,
+  lanes,
+  flags,
+  ships,
+  storms,
+  selectedFlag,
+  onSelectFlag,
+  mapApiRef,
+}) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
@@ -192,7 +213,7 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     ports: snapshot?.ports ?? [],
     chokepoints: snapshot?.chokepoints ?? [],
     lanes: lanes ?? [],
-    ships: ships?.vessels ?? [],   // live AIS current positions near the chokepoints
+    ships: ships?.vessels ?? [], // live AIS current positions near the chokepoints
     storms: storms ?? [],
   };
 
@@ -208,14 +229,14 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
       bearing: 0,
       attributionControl: { compact: true },
       dragRotate: false,
-      antialias: true,   // MSAA — smooths deck marker edges in interleaved mode
+      antialias: true, // MSAA — smooths deck marker edges in interleaved mode
     });
     map.scrollZoom.setWheelZoomRate(1 / 200);
     mapRef.current = map;
 
     const overlay = new MapboxOverlay({
       interleaved: true,
-      pickingRadius: 6,   // forgiving hover/click — grab a dot from a few px away
+      pickingRadius: 6, // forgiving hover/click — grab a dot from a few px away
       layers: [],
       getTooltip: ({ object, layer }) => {
         if (!object) return null;
@@ -223,19 +244,34 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
           return { html: `<b>${object.entity}</b><br/>${object.headline}`, className: 'fr-tip' };
         }
         if (layer?.id === 'choke') {
-          const pct = object.pct_change != null ? ` · ${object.pct_change > 0 ? '+' : ''}${object.pct_change}% vs 28d` : '';
-          return { html: `<b>${object.name}</b><br/>${object.n_total} vessels/day${pct}`, className: 'fr-tip' };
+          const pct =
+            object.pct_change != null
+              ? ` · ${object.pct_change > 0 ? '+' : ''}${object.pct_change}% vs 28d`
+              : '';
+          return {
+            html: `<b>${object.name}</b><br/>${object.n_total} vessels/day${pct}`,
+            className: 'fr-tip',
+          };
         }
         if (layer?.id === 'ports') {
-          return { html: `<b>${object.name}</b>${object.country ? ', ' + object.country : ''}<br/>${object.vessels.toLocaleString()} vessels/yr`, className: 'fr-tip' };
+          return {
+            html: `<b>${object.name}</b>${object.country ? ', ' + object.country : ''}<br/>${object.vessels.toLocaleString()} vessels/yr`,
+            className: 'fr-tip',
+          };
         }
         if (layer?.id === 'storms') {
           const wind = object.max_wind_kmh ? ` · ${object.max_wind_kmh} km/h` : '';
-          return { html: `🌀 <b>${object.name}</b> (${object.category})<br/>${object.basin}${wind} · live ${object.agency}`, className: 'fr-tip' };
+          return {
+            html: `🌀 <b>${object.name}</b> (${object.category})<br/>${object.basin}${wind} · live ${object.agency}`,
+            className: 'fr-tip',
+          };
         }
         if (layer?.id === 'ships') {
           const nm = object.name ? `<b>${object.name}</b>` : `<b>Vessel ${object.mmsi}</b>`;
-          return { html: `${nm}<br/>${object.type} · heading ${object.heading}° · AIS`, className: 'fr-tip' };
+          return {
+            html: `${nm}<br/>${object.type} · heading ${object.heading}° · AIS`,
+            className: 'fr-tip',
+          };
         }
         return null;
       },
@@ -251,7 +287,9 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     map.addControl(windOverlay);
     let windCancelled = false;
     makeWindLayer(import.meta.env.BASE_URL || '/')
-      .then((layer) => { if (layer && !windCancelled) windOverlay.setProps({ layers: [layer] }); })
+      .then((layer) => {
+        if (layer && !windCancelled) windOverlay.setProps({ layers: [layer] });
+      })
       .catch(() => {});
 
     map.on('load', () => map.resize());
@@ -290,7 +328,12 @@ export default function Globe({ snapshot, lanes, flags, ships, storms, selectedF
     return () => {
       cancelAnimationFrame(raf);
       windCancelled = true;
-      try { windOverlay.setProps({ layers: [] }); map.removeControl(windOverlay); } catch { /* noop */ }
+      try {
+        windOverlay.setProps({ layers: [] });
+        map.removeControl(windOverlay);
+      } catch {
+        /* noop */
+      }
       map.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

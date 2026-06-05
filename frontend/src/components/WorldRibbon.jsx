@@ -13,7 +13,8 @@ function Trend({ pct, dir, invert }) {
   const tone = invert ? (dir === 'up' ? 'down' : dir === 'down' ? 'up' : 'flat') : dir;
   return (
     <span className={`fr-w-trend ${tone}`}>
-      {arrow} {pct > 0 ? '+' : ''}{pct}%<em>7d</em>
+      {arrow} {pct > 0 ? '+' : ''}
+      {pct}%<em>7d</em>
     </span>
   );
 }
@@ -31,7 +32,8 @@ export default function WorldRibbon({ world }) {
               <span className="fr-w-sub">{m.sublabel}</span>
             </div>
             <div className="fr-w-val">
-              {compact(m.value)}<span className="fr-w-unit">{m.unit}</span>
+              {compact(m.value)}
+              <span className="fr-w-unit">{m.unit}</span>
             </div>
             <div className="fr-w-trendwrap">
               <Trend pct={m.vs7_pct} dir={m.trend} invert={m.invert} />

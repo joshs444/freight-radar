@@ -6,11 +6,32 @@ const FRAME_MS = 130; // playback speed (~7.7 days/sec)
 function fmt(d) {
   // 'YYYY-MM-DD' -> 'DD Mon'
   const [, m, day] = d.split('-');
-  const mon = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+m];
+  const mon = [
+    '',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ][+m];
   return `${day} ${mon}`;
 }
 
-export default function TimeScrubber({ timeseries, index, playing, onChange, onPlayToggle, onLive }) {
+export default function TimeScrubber({
+  timeseries,
+  index,
+  playing,
+  onChange,
+  onPlayToggle,
+  onLive,
+}) {
   const { dates, flags } = timeseries;
   const n = dates.length;
   const live = index === null;
@@ -40,9 +61,7 @@ export default function TimeScrubber({ timeseries, index, playing, onChange, onP
   }, [playing]);
 
   // flag tick marks positioned along the timeline by their date index
-  const ticks = flags
-    .map((f) => ({ ...f, i: dates.indexOf(f.as_of) }))
-    .filter((f) => f.i >= 0);
+  const ticks = flags.map((f) => ({ ...f, i: dates.indexOf(f.as_of) })).filter((f) => f.i >= 0);
 
   return (
     <div className="fr-scrubber">

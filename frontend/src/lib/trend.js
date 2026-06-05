@@ -18,7 +18,8 @@ export function trendLabel(t, kind) {
   if (!t) return null;
   const isDrop = kind && (kind.includes('collapse') || kind.includes('drop'));
   const isSpike = kind && (kind.includes('spike') || kind.includes('surge'));
-  if (t.dir === 'flat') return { arrow: '→', label: kind ? 'holding' : 'stable', cls: 'tr-flat', pct: t.pct };
+  if (t.dir === 'flat')
+    return { arrow: '→', label: kind ? 'holding' : 'stable', cls: 'tr-flat', pct: t.pct };
   if (isDrop)
     return t.dir === 'up'
       ? { arrow: '↗', label: 'recovering', cls: 'tr-good', pct: t.pct }

@@ -22,9 +22,12 @@ function OfficialEvent({ oe }) {
   if (!oe) return null;
   return (
     <div className="fr-oe">
-      <span className="fr-oe-badge" style={{ background: ALERT_C[oe.alertlevel] || '#888' }}>{oe.alertlevel}</span>
+      <span className="fr-oe-badge" style={{ background: ALERT_C[oe.alertlevel] || '#888' }}>
+        {oe.alertlevel}
+      </span>
       <span className="fr-oe-text">
-        Official corroboration: <b>{oe.name}</b> ({oe.type_label}, {oe.from} → {oe.to}) — {oe.source}
+        Official corroboration: <b>{oe.name}</b> ({oe.type_label}, {oe.from} → {oe.to}) —{' '}
+        {oe.source}
       </span>
     </div>
   );
@@ -37,12 +40,28 @@ function StormChip({ storm }) {
     <div className="fr-storm">
       <span className="fr-storm-badge">🌀 {storm.agency}</span>
       <span className="fr-storm-text">
-        Possibly related: <b>{storm.category} {storm.name}</b> ~{storm.km} km away{wind} · {storm.basin}
+        Possibly related:{' '}
+        <b>
+          {storm.category} {storm.name}
+        </b>{' '}
+        ~{storm.km} km away{wind} · {storm.basin}
         {storm.url && (
-          <> · <a href={storm.url} target="_blank" rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}>forecast</a></>
+          <>
+            {' '}
+            ·{' '}
+            <a
+              href={storm.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              forecast
+            </a>
+          </>
         )}
-        <span className="fr-storm-note">live {storm.source} forecast position — not a confirmed cause</span>
+        <span className="fr-storm-note">
+          live {storm.source} forecast position — not a confirmed cause
+        </span>
       </span>
     </div>
   );
@@ -60,7 +79,8 @@ function Metric({ v, alert }) {
   const up = v > 0;
   return (
     <span className={`fr-metric ${alert ? 'fr-hot' : ''}`}>
-      {up ? '↑' : '↓'} {up ? '+' : ''}{Math.round(v)}%
+      {up ? '↑' : '↓'} {up ? '+' : ''}
+      {Math.round(v)}%
     </span>
   );
 }
@@ -70,8 +90,12 @@ function CostLine({ label, band, strong }) {
   return (
     <div className={`fr-cost-line ${strong ? 'is-total' : ''}`}>
       <span className="fr-cost-label">{label}</span>
-      <span className="fr-cost-val"><b>{money(band.expected)}</b>
-        <span className="fr-biz-range"> {money(band.low)}–{money(band.high)}</span>
+      <span className="fr-cost-val">
+        <b>{money(band.expected)}</b>
+        <span className="fr-biz-range">
+          {' '}
+          {money(band.low)}–{money(band.high)}
+        </span>
       </span>
     </div>
   );
@@ -81,8 +105,12 @@ function BusinessImpact({ b }) {
   const [showWork, setShowWork] = useState(false);
   if (!b) return null;
   if (!b.lane_count) {
-    return <div className="fr-biz"><div className="fr-biz-head">Business impact</div>
-      <div className="fr-biz-none">No exposure in your trade data.</div></div>;
+    return (
+      <div className="fr-biz">
+        <div className="fr-biz-head">Business impact</div>
+        <div className="fr-biz-none">No exposure in your trade data.</div>
+      </div>
+    );
   }
   const d = b.est_delay_days || {};
   const cs = b.cost_stack || {};
@@ -95,13 +123,22 @@ function BusinessImpact({ b }) {
     <div className="fr-biz">
       <div className="fr-biz-head">
         Business impact <span className="fr-biz-est">estimate</span>
-        {conf && <span className={`fr-biz-conf c-${conf}`}>routing: {CONF_LABEL[conf] || conf}</span>}
+        {conf && (
+          <span className={`fr-biz-conf c-${conf}`}>routing: {CONF_LABEL[conf] || conf}</span>
+        )}
       </div>
       <div className="fr-biz-stat">
-        <b>{money(b.exposed_value_usd)}</b> of your trade exposed · {b.lane_count} lane{b.lane_count > 1 ? 's' : ''}
+        <b>{money(b.exposed_value_usd)}</b> of your trade exposed · {b.lane_count} lane
+        {b.lane_count > 1 ? 's' : ''}
         {b.exposed_teu ? ` · ${b.exposed_teu.toLocaleString()} TEU` : ''}
       </div>
-      <div className="fr-biz-stat fr-biz-sub">est. <b>+{d.low}–{d.high}d</b> added transit</div>
+      <div className="fr-biz-stat fr-biz-sub">
+        est.{' '}
+        <b>
+          +{d.low}–{d.high}d
+        </b>{' '}
+        added transit
+      </div>
 
       <div className="fr-cost-stack">
         <CostLine label="carrying cost of delay" band={carrying} />
@@ -109,18 +146,27 @@ function BusinessImpact({ b }) {
         <CostLine label="cost of disruption" band={total} strong />
       </div>
       <div className="fr-biz-stat fr-biz-sub">
-        ≈<b>{money(wc.expected)}</b> working capital tied up (locked, not lost — excluded from total)
+        ≈<b>{money(wc.expected)}</b> working capital tied up (locked, not lost — excluded from
+        total)
       </div>
 
       {b.method?.length > 0 && (
         <>
-          <button className="fr-biz-work" onClick={(e) => { e.stopPropagation(); setShowWork((s) => !s); }}>
+          <button
+            className="fr-biz-work"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowWork((s) => !s);
+            }}
+          >
             {showWork ? '▾' : '▸'} show your work
           </button>
           {showWork && (
             <div className="fr-biz-method">
               {b.method.map((m, i) => (
-                <div key={i} className="fr-biz-mline"><code>{m.line}</code> = {m.basis}</div>
+                <div key={i} className="fr-biz-mline">
+                  <code>{m.line}</code> = {m.basis}
+                </div>
               ))}
             </div>
           )}
@@ -128,7 +174,8 @@ function BusinessImpact({ b }) {
       )}
       {b.top_items?.length > 0 && <div className="fr-biz-items">{b.top_items.join(' · ')}</div>}
       <div className="fr-biz-note">
-        assumes ~{Math.round((b.carrying_rate_assumed || 0.25) * 100)}%/yr carrying cost · sample trade data — replace with your terms
+        assumes ~{Math.round((b.carrying_rate_assumed || 0.25) * 100)}%/yr carrying cost · sample
+        trade data — replace with your terms
       </div>
     </div>
   );
@@ -142,17 +189,26 @@ function MarketBlock({ market, flagId }) {
   if (!shown.length) return null;
   return (
     <div className="fr-market">
-      <div className="fr-market-head">Market context <span>· in this chokepoint's orbit</span></div>
+      <div className="fr-market-head">
+        Market context <span>· in this chokepoint's orbit</span>
+      </div>
       <div className="fr-market-grid">
         {shown.map((v) => {
           const up = (v.change_pct || 0) >= 0;
           return (
             <div key={v.name} className="fr-mkt">
-              <span className="fr-mkt-name">{v.name}{v.estimate ? ' ·est' : ''}</span>
+              <span className="fr-mkt-name">
+                {v.name}
+                {v.estimate ? ' ·est' : ''}
+              </span>
               <span className="fr-mkt-row">
-                <b>{v.value}</b><span className="fr-mkt-unit">{v.unit}</span>
+                <b>{v.value}</b>
+                <span className="fr-mkt-unit">{v.unit}</span>
                 {v.change_pct != null && (
-                  <span className={`fr-mkt-chg ${up ? 'up' : 'down'}`}>{up ? '▲' : '▼'} {up ? '+' : ''}{v.change_pct}%</span>
+                  <span className={`fr-mkt-chg ${up ? 'up' : 'down'}`}>
+                    {up ? '▲' : '▼'} {up ? '+' : ''}
+                    {v.change_pct}%
+                  </span>
                 )}
               </span>
             </div>
@@ -168,7 +224,9 @@ function NewsBlock({ news }) {
   if (!news) return null;
   return (
     <div className="fr-news">
-      <div className="fr-news-head">Possibly related coverage <span>· not a confirmed cause</span></div>
+      <div className="fr-news-head">
+        Possibly related coverage <span>· not a confirmed cause</span>
+      </div>
       {news.items?.length ? (
         news.items.map((a, i) => (
           <span
@@ -176,10 +234,17 @@ function NewsBlock({ news }) {
             className="fr-news-item"
             role="link"
             tabIndex={0}
-            onClick={(ev) => { ev.stopPropagation(); window.open(a.url, '_blank', 'noopener'); }}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              window.open(a.url, '_blank', 'noopener');
+            }}
           >
             <span className="fr-news-title">{a.title}</span>
-            <span className="fr-news-meta">{a.source}{a.source && a.published ? ' · ' : ''}{a.published}</span>
+            <span className="fr-news-meta">
+              {a.source}
+              {a.source && a.published ? ' · ' : ''}
+              {a.published}
+            </span>
           </span>
         ))
       ) : (
@@ -189,7 +254,19 @@ function NewsBlock({ news }) {
   );
 }
 
-function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, watched, onToggleWatch, gatun }) {
+function Row({
+  e,
+  active,
+  onSelect,
+  series,
+  dates,
+  news,
+  market,
+  scrubIndex,
+  watched,
+  onToggleWatch,
+  gatun,
+}) {
   const ser = series?.[e.id];
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
@@ -205,12 +282,18 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
           role="button"
           tabIndex={0}
           title={isWatched ? 'Unwatch' : 'Watch — notify on new/escalated flags'}
-          onClick={(ev) => { ev.stopPropagation(); onToggleWatch?.(e.id); }}
+          onClick={(ev) => {
+            ev.stopPropagation();
+            onToggleWatch?.(e.id);
+          }}
         >
           {isWatched ? '★' : '☆'}
         </span>
         {e.critical ? (
-          <span className="fr-sev" style={{ color: severityCss(e.severity), borderColor: severityCss(e.severity) }}>
+          <span
+            className="fr-sev"
+            style={{ color: severityCss(e.severity), borderColor: severityCss(e.severity) }}
+          >
             {e.severity}
           </span>
         ) : (
@@ -219,8 +302,14 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
         <div className="fr-row-titles">
           <span className="fr-row-name">{e.name}</span>
           <span className="fr-row-sub">
-            {e.type}{e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
-            {tl && <span className={`fr-trend ${tl.cls}`}> · {tl.arrow} {tl.label}</span>}
+            {e.type}
+            {e.flag ? ` · ${e.flag.kind.replaceAll('_', ' ')}` : ' · normal'}
+            {tl && (
+              <span className={`fr-trend ${tl.cls}`}>
+                {' '}
+                · {tl.arrow} {tl.label}
+              </span>
+            )}
           </span>
         </div>
         {ser && <Sparkline values={ser.values} color={sparkColor} mark={scrubIndex} />}
@@ -229,17 +318,34 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
       {active && (
         <div className="fr-row-brief">
           {e.flag && <Markdown text={e.flag.brief_md} />}
-          <SparkHistory s={ser} dates={dates} asOf={e.flag?.as_of} baseline={e.flag?.baseline ?? e.baseline} color={sparkColor} />
+          <SparkHistory
+            s={ser}
+            dates={dates}
+            asOf={e.flag?.as_of}
+            baseline={e.flag?.baseline ?? e.baseline}
+            color={sparkColor}
+          />
           {tl && (
             <div className={`fr-trendline ${tl.cls}`}>
-              Trending <b>{tl.arrow} {tl.label}</b>
+              Trending{' '}
+              <b>
+                {tl.arrow} {tl.label}
+              </b>
               {tl.pct ? ` — ${tl.pct > 0 ? '+' : ''}${tl.pct}% over the last 10 days` : ''}
             </div>
           )}
-          <CargoMix mix={e.cargo_mix} unit={e.type === 'chokepoint' ? 'transits' : 'port calls'}
-            avgSize={e.avg_vessel_size_dwt} tonnage={e.capacity_total} />
+          <CargoMix
+            mix={e.cargo_mix}
+            unit={e.type === 'chokepoint' ? 'transits' : 'port calls'}
+            avgSize={e.avg_vessel_size_dwt}
+            tonnage={e.capacity_total}
+          />
           {e.type === 'port' && (
-            <NationalDependence shareImport={e.share_import} shareExport={e.share_export} country={e.country} />
+            <NationalDependence
+              shareImport={e.share_import}
+              shareExport={e.share_export}
+              country={e.country}
+            />
           )}
           {gatun?.available && gatun.portid === e.id && <GatunPanel gatun={gatun} />}
           {e.flag?.live_storm && <StormChip storm={e.flag.live_storm} />}
@@ -257,43 +363,104 @@ function Row({ e, active, onSelect, series, dates, news, market, scrubIndex, wat
   );
 }
 
-export default function DataFeed({ rows, filter, setFilter, criticalCount, exposure, upload, search, brief, flags, disruptions, gatun, scrubDate, scrubIndex, onLive, watched, onToggleWatch, onPickEntity, series, dates, news, market, selected, onSelect, asOf, source }) {
-  const filters = watched?.size ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }] : FILTERS;
+export default function DataFeed({
+  rows,
+  filter,
+  setFilter,
+  criticalCount,
+  exposure,
+  upload,
+  search,
+  brief,
+  flags,
+  disruptions,
+  gatun,
+  scrubDate,
+  scrubIndex,
+  onLive,
+  watched,
+  onToggleWatch,
+  onPickEntity,
+  series,
+  dates,
+  news,
+  market,
+  selected,
+  onSelect,
+  asOf,
+  source,
+}) {
+  const filters = watched?.size
+    ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }]
+    : FILTERS;
   return (
     <aside className="fr-feed">
       <div className="fr-feed-head">
         <span className="fr-feed-title">Monitor</span>
-        <span className="fr-feed-count"><b>{criticalCount}</b> critical · {rows.length} shown</span>
+        <span className="fr-feed-count">
+          <b>{criticalCount}</b> critical · {rows.length} shown
+        </span>
       </div>
 
       {scrubDate && (
         <div className="fr-scrubbing">
-          <span>▶ viewing <b>{scrubDate}</b> — feed reflects flags fired by then</span>
+          <span>
+            ▶ viewing <b>{scrubDate}</b> — feed reflects flags fired by then
+          </span>
           <button onClick={onLive}>back to live</button>
         </div>
       )}
 
       {search && <SearchBox {...search} />}
 
-      {brief && <BriefCard brief={brief} onPickEntity={onPickEntity} onExport={() => exportBrief(brief)} />}
+      {brief && (
+        <BriefCard brief={brief} onPickEntity={onPickEntity} onExport={() => exportBrief(brief)} />
+      )}
 
       {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
 
-      {upload && <Suspense fallback={null}><Upload {...upload} /></Suspense>}
+      {upload && (
+        <Suspense fallback={null}>
+          <Upload {...upload} />
+        </Suspense>
+      )}
 
       {exposure && (
         <div className="fr-exposure">
-          <div className="fr-exp-label">Your exposure <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span>
-            <button className="fr-exp-export" onClick={() => exportExposureCSV(flags)} title="Download exposure as CSV">↓ csv</button>
+          <div className="fr-exp-label">
+            Your exposure{' '}
+            <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span>
+            <button
+              className="fr-exp-export"
+              onClick={() => exportExposureCSV(flags)}
+              title="Download exposure as CSV"
+            >
+              ↓ csv
+            </button>
           </div>
           <div className="fr-exp-row">
-            <div><b>{money(exposure.exposed_value_usd)}</b><span>exposed</span></div>
-            <div><b>{money((exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)?.expected)}</b><span>cost of disruption</span></div>
-            <div><b>{exposure.active_disruptions_hitting_you}</b><span>hitting you</span></div>
+            <div>
+              <b>{money(exposure.exposed_value_usd)}</b>
+              <span>exposed</span>
+            </div>
+            <div>
+              <b>
+                {money(
+                  (exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)
+                    ?.expected
+                )}
+              </b>
+              <span>cost of disruption</span>
+            </div>
+            <div>
+              <b>{exposure.active_disruptions_hitting_you}</b>
+              <span>hitting you</span>
+            </div>
           </div>
           {exposure.lanes_with_known_route != null && (
             <div className="fr-exp-cov">
-              {exposure.lanes_with_known_route} of {exposure.total_flows} lanes modeled ({exposure.coverage_pct}%)
+              {exposure.lanes_with_known_route} of {exposure.total_flows} lanes modeled (
+              {exposure.coverage_pct}%)
             </div>
           )}
         </div>
@@ -301,7 +468,11 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
 
       <div className="fr-filters">
         {filters.map((f) => (
-          <button key={f.key} className={`fr-chip ${filter === f.key ? 'on' : ''}`} onClick={() => setFilter(f.key)}>
+          <button
+            key={f.key}
+            className={`fr-chip ${filter === f.key ? 'on' : ''}`}
+            onClick={() => setFilter(f.key)}
+          >
             {f.label}
           </button>
         ))}
@@ -309,14 +480,27 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
       <div className="fr-rows">
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
-          <Row key={e.id} e={e} active={selected?.id === e.id} onSelect={onSelect} series={series} dates={dates}
-            news={e.flag ? news?.[e.flag.flag_id] : null} market={market} scrubIndex={scrubIndex}
-            watched={watched} onToggleWatch={onToggleWatch} gatun={gatun} />
+          <Row
+            key={e.id}
+            e={e}
+            active={selected?.id === e.id}
+            onSelect={onSelect}
+            series={series}
+            dates={dates}
+            news={e.flag ? news?.[e.flag.flag_id] : null}
+            market={market}
+            scrubIndex={scrubIndex}
+            watched={watched}
+            onToggleWatch={onToggleWatch}
+            gatun={gatun}
+          />
         ))}
       </div>
       <div className="fr-feed-foot">
         <span>{source}</span>
-        <span>as of <b>{asOf}</b></span>
+        <span>
+          as of <b>{asOf}</b>
+        </span>
       </div>
     </aside>
   );

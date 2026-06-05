@@ -4,7 +4,7 @@
 // dip. Straight from the snapshot (0-100%), no estimate. Ports only.
 export default function NationalDependence({ shareImport, shareExport, country }) {
   const hi = Math.max(shareImport || 0, shareExport || 0);
-  if (hi < 10) return null;  // below this it isn't a meaningful dependency story
+  if (hi < 10) return null; // below this it isn't a meaningful dependency story
   const sole = hi >= 80;
   return (
     <div className={`fr-natdep ${sole ? 'is-sole' : ''}`}>
@@ -13,10 +13,16 @@ export default function NationalDependence({ shareImport, shareExport, country }
       </div>
       <div className="fr-natdep-row">
         {shareImport != null && (
-          <div className="fr-natdep-stat"><b>{Math.round(shareImport)}%</b><span>of imports</span></div>
+          <div className="fr-natdep-stat">
+            <b>{Math.round(shareImport)}%</b>
+            <span>of imports</span>
+          </div>
         )}
         {shareExport != null && (
-          <div className="fr-natdep-stat"><b>{Math.round(shareExport)}%</b><span>of exports</span></div>
+          <div className="fr-natdep-stat">
+            <b>{Math.round(shareExport)}%</b>
+            <span>of exports</span>
+          </div>
         )}
       </div>
       {sole && (

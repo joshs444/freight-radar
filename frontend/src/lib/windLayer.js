@@ -17,19 +17,19 @@ export async function makeWindLayer(base = '/') {
 
   const image = await loadTextureData(`${base}data/${meta.image}`);
   // respect prefers-reduced-motion: render a static field instead of flowing particles
-  const reduceMotion = typeof matchMedia === 'function'
-    && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion =
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   return new ParticleLayer({
     id: 'wind',
     image,
     imageType: ImageType.VECTOR,
-    imageUnscale: meta.imageUnscale,   // [-30, 30] m/s -> the PNG's 0..255 range
-    bounds: meta.bounds,               // [-180, -90, 180, 90]
+    imageUnscale: meta.imageUnscale, // [-30, 30] m/s -> the PNG's 0..255 range
+    bounds: meta.bounds, // [-180, -90, 180, 90]
     numParticles: 3500,
     maxAge: 25,
     speedFactor: 4,
     width: 1.6,
-    color: [72, 102, 150],             // soft slate-blue, reads as wind under the markers
+    color: [72, 102, 150], // soft slate-blue, reads as wind under the markers
     opacity: 0.42,
     animate: !reduceMotion,
   });
