@@ -5,7 +5,8 @@ import type { StyleSpecification } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
 import { AMBER, PORT, LANE, severityColor } from './lib/colors.ts';
-import { makeWindLayer } from './lib/windLayer.ts';
+import { loadWind, makeWindLayer } from './lib/windLayer.ts';
+import type { WindData } from './lib/windLayer.ts';
 import type {
   SnapshotPort,
   Lane,
@@ -43,17 +44,19 @@ const STYLE: StyleSpecification = {
     },
   },
   layers: [
-    { id: 'space', type: 'background', paint: { 'background-color': '#e9edf3' } },
-    { id: 'carto', type: 'raster', source: 'carto', paint: { 'raster-opacity': 0.94 } },
+    { id: 'space', type: 'background', paint: { 'background-color': '#dfe5ee' } },
+    // fully opaque basemap so the globe reads as a solid sphere (not washed-out)
+    { id: 'carto', type: 'raster', source: 'carto', paint: { 'raster-opacity': 1 } },
   ],
   sky: {
-    'sky-color': '#d6e3f4',
-    'sky-horizon-blend': 0.5,
+    'sky-color': '#cfddf0',
+    'sky-horizon-blend': 0.4,
     'horizon-color': '#eef2f7',
-    'horizon-fog-blend': 0.6,
+    'horizon-fog-blend': 0.7,
     'fog-color': '#eef2f7',
-    'fog-ground-blend': 0.5,
-    'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 5, 0.2, 8, 0.0],
+    // push fog to the far horizon only (high blend) so the surface stays crisp, not hazy
+    'fog-ground-blend': 0.9,
+    'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.35, 5, 0.12, 8, 0.0],
   },
 };
 
@@ -103,18 +106,22 @@ function buildLayers({
       greatCircle: true,
     }),
 
-    // ports — faint dark dust (no glow); clean pinpricks on the light globe.
-    // A near-fixed 2–2.5px dot (never sub-pixel) stops the shimmer/flicker on ~2000
-    // points while panning/zooming; alpha 200 keeps each dot a solid, crisp pinprick.
+    // ports — solid slate dots. A FIXED screen size (equal min/max radius) means each
+    // dot never resizes or sub-pixel-jitters as you zoom — it stays exactly where it is.
+    // Full opacity + a faint white edge gives it a hard boundary so it reads as fully
+    // "there" instead of shimmering dust.
     new ScatterplotLayer({
       id: 'ports',
       data: ports,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: (d) => sqrtScale(d.vessels, 0.34),
+      getRadius: 2.8,
       radiusUnits: 'pixels',
-      radiusMinPixels: 2,
-      radiusMaxPixels: 2.6,
-      getFillColor: rgba(PORT, 200),
+      radiusMinPixels: 2.8,
+      radiusMaxPixels: 2.8,
+      getFillColor: rgba(PORT, 255),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 130),
+      lineWidthMinPixels: 0.6,
       pickable: true,
     }),
 
@@ -230,6 +237,7 @@ interface GlobeProps {
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
+  windOn: boolean;
 }
 
 export default function Globe({
@@ -241,10 +249,16 @@ export default function Globe({
   selectedFlag,
   onSelectFlag,
   mapApiRef,
+  windOn,
 }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
+  const windOverlayRef = useRef<MapboxOverlay | null>(null);
+  const windDataRef = useRef<WindData | null>(null);
+  // read the live toggle inside the async wind load without re-running the mount effect
+  const windOnRef = useRef(windOn);
+  windOnRef.current = windOn;
 
   // Create the map, the interleaved marker overlay, and the separate self-animating
   // wind overlay exactly once. mapApiRef is the only external value used (a stable ref
@@ -319,11 +333,15 @@ export default function Globe({
     // !isMoving rebuild gate (and never fights the basemap's per-frame globe redraw).
     // It draws UNDER the markers, which stay on the interleaved overlay above.
     const windOverlay = new MapboxOverlay({ interleaved: false, layers: [] });
+    windOverlayRef.current = windOverlay;
     map.addControl(windOverlay);
     let windCancelled = false;
-    makeWindLayer(import.meta.env.BASE_URL || '/')
-      .then((layer) => {
-        if (layer && !windCancelled) windOverlay.setProps({ layers: [layer] });
+    loadWind(import.meta.env.BASE_URL || '/')
+      .then((wd) => {
+        if (!wd || windCancelled) return;
+        windDataRef.current = wd;
+        // honour the current toggle when the data finishes loading
+        windOverlay.setProps({ layers: windOnRef.current ? [makeWindLayer(wd)] : [] });
       })
       .catch(() => {});
 
@@ -347,9 +365,20 @@ export default function Globe({
         /* noop */
       }
       overlayRef.current = null;
+      windOverlayRef.current = null;
+      windDataRef.current = null;
       map.remove();
     };
   }, [mapApiRef]);
+
+  // Show/hide the wind when the toggle flips. Re-enabling builds a FRESH ParticleLayer
+  // (deck can't re-add one it has already finalized), disabling drops it entirely.
+  useEffect(() => {
+    const overlay = windOverlayRef.current;
+    const wd = windDataRef.current;
+    if (!overlay) return;
+    overlay.setProps({ layers: windOn && wd ? [makeWindLayer(wd)] : [] });
+  }, [windOn]);
 
   // Data/selection-driven layer push: rebuild the deck layers ONLY when the underlying
   // data or the current selection changes — never on a timer. In interleaved mode deck
