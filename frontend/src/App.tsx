@@ -171,6 +171,12 @@ export default function App() {
             <p className="fr-tag">
               Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.
             </p>
+            <span
+              className="fr-provenance"
+              title="Every figure is computed in Python from IMF PortWatch and string-substituted into template prose — no model is in the number path."
+            >
+              Computed in Python · IMF PortWatch · no model in the number path
+            </span>
           </div>
         </div>
         {data?.stress?.available && (
@@ -235,6 +241,13 @@ export default function App() {
               <span>
                 <i className="sw pulse" /> flagged
               </span>
+              <span
+                className="fr-legend-size"
+                title="Chokepoint dot size scales with vessels/day (√-scaled)"
+              >
+                <i className="sw amber sw-sm" />
+                <i className="sw amber sw-lg" /> vessels/day
+              </span>
               {data?.wind && (
                 <button
                   type="button"
@@ -247,8 +260,9 @@ export default function App() {
                 </button>
               )}
               {(data?.weather?.counts?.active_storms ?? 0) > 0 && (
-                <span>
-                  <i className="sw storm" /> storm
+                <span className="fr-legend-size" title="Storm halo size scales with max wind speed">
+                  <i className="sw storm sw-sm" />
+                  <i className="sw storm sw-lg" /> storm · wind
                 </span>
               )}
               {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
