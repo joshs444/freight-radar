@@ -83,17 +83,25 @@ def _to_frame(rows: list[dict], colmap: dict[str, str], *, label: str) -> pd.Dat
     return df.convert_dtypes()
 
 
-async def load_chokepoint_daily(
+async def stage_chokepoint_daily(
     con, client: ArcGISClient, start: date, end: date
 ) -> int:
+    """Write step of WAP: land the fresh chokepoint pull into STAGING (not prod).
+
+    The fetch-completeness gate (``verify_count``) and the silent-column-drop
+    gate (``_to_frame``) fire here, before staging; the staging-level DQ audit
+    (wap.audit) and the atomic swap into ``fct_chokepoint_daily`` follow in
+    ``wap.promote``.
+    """
     rows = await client.query_date_window(
         SERVICES["daily_chokepoints"], start, end, chunk_days=45, verify_count=True
     )
-    return upsert_df(con, "fct_chokepoint_daily", _to_frame(rows, _CHOKE_MAP, label="fct_chokepoint_daily"))
+    return upsert_df(con, "stg_chokepoint_daily", _to_frame(rows, _CHOKE_MAP, label="fct_chokepoint_daily"))
 
 
-async def load_port_daily(con, client: ArcGISClient, start: date, end: date) -> int:
+async def stage_port_daily(con, client: ArcGISClient, start: date, end: date) -> int:
+    """Write step of WAP: land the fresh port pull into STAGING (not prod)."""
     rows = await client.query_date_window(
         SERVICES["daily_ports"], start, end, chunk_days=20, verify_count=True
     )
-    return upsert_df(con, "fct_port_daily", _to_frame(rows, _PORT_MAP, label="fct_port_daily"))
+    return upsert_df(con, "stg_port_daily", _to_frame(rows, _PORT_MAP, label="fct_port_daily"))

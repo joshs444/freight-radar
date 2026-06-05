@@ -26,6 +26,43 @@ _SIDECARS = ("exposure", "news", "timeseries", "ports_lookup", "ships", "market"
              "world", "events", "brief", "disruptions", "gatun", "weather", "wind", "dwell")
 
 
+def read_lineage(db: Path) -> dict:
+    """Latest Write-Audit-Publish verdict per fact table, from meta_publish_runs.
+
+    Reads the most recent promotion for each staged table so the manifest can show
+    the DQ verdict + deterministic lineage_run_id that cleared the live facts. Best
+    effort: a missing DB/table (fresh checkout, manifest-only republish) yields an
+    empty dict rather than failing the publish.
+    """
+    db = Path(db)
+    if not db.exists():
+        return {}
+    import duckdb
+
+    try:
+        con = duckdb.connect(str(db), read_only=True)
+    except duckdb.Error:
+        return {}
+    try:
+        rows = con.execute(
+            "SELECT lineage_run_id, verdict, rows_promoted, checks_run "
+            "FROM meta_publish_runs QUALIFY row_number() OVER "
+            "(PARTITION BY split_part(lineage_run_id, '-', 1) ORDER BY promoted_at DESC) = 1 "
+            "ORDER BY lineage_run_id"
+        ).fetchall()
+    except duckdb.Error:
+        return {}
+    finally:
+        con.close()
+    if not rows:
+        return {}
+    runs = [
+        {"lineage_run_id": r[0], "verdict": r[1], "rows_promoted": int(r[2]), "checks_run": int(r[3])}
+        for r in rows
+    ]
+    return {"verdict": "pass" if all(r["verdict"] == "pass" for r in runs) else "fail", "runs": runs}
+
+
 def _layers(out_dir: Path) -> dict:
     out: dict[str, dict] = {}
     for name in _SIDECARS:
@@ -44,7 +81,7 @@ def _layers(out_dir: Path) -> dict:
     return out
 
 
-def write_manifest(out_dir: Path) -> dict:
+def write_manifest(out_dir: Path, lineage: dict | None = None) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     snap = json.loads((out_dir / "snapshot.json").read_text())
     flags = json.loads((out_dir / "flags.json").read_text())
@@ -66,6 +103,10 @@ def write_manifest(out_dir: Path) -> dict:
         "chokepoints": len(snap.get("chokepoints", [])),
         "ports": len(snap.get("ports", [])),
         "lanes": len(LANES),
+        # Write-Audit-Publish lineage: the DQ verdict + the deterministic run id(s)
+        # that cleared this publish, so each map is traceable to the audit that
+        # produced it. Passed in by the caller (deterministic; never random/now).
+        "lineage": lineage or read_lineage(db_path()),
         "layers": _layers(out_dir),
     }
     fd, tmp = tempfile.mkstemp(dir=out_dir, suffix=".tmp")

@@ -30,9 +30,10 @@ from ._log import get_logger
 from .arcgis import ArcGISClient
 from .config import BACKEND_DIR, DEFAULT_DB_PATH, publish_dir
 from .ingest.dims import load_dims
-from .ingest.portwatch import load_chokepoint_daily
+from .ingest.portwatch import stage_chokepoint_daily
 from .narrative import stress
 from .storage.db import connect
+from .wap import promote
 
 log = get_logger(__name__)
 
@@ -45,9 +46,13 @@ async def _pull_daily(db_path) -> pd.DataFrame:
     """Full 2019->today daily chokepoint throughput, joined to name/lat/lon."""
     con = connect(db_path)
     end = date.today()
+    # Write-Audit-Publish: stage the full-history pull, audit it, then atomically
+    # promote into fct_chokepoint_daily (same seam the backfill + durable path use).
+    con.execute("DELETE FROM stg_chokepoint_daily")
     async with ArcGISClient() as client:
         await load_dims(con, client)
-        rows_loaded = await load_chokepoint_daily(con, client, HISTORY_START, end)
+        await stage_chokepoint_daily(con, client, HISTORY_START, end)
+    rows_loaded = promote(con, "stg_chokepoint_daily")["rows_promoted"]
     log.info("history: pulled %s daily chokepoint rows (%s -> %s)", rows_loaded, HISTORY_START, end)
     rows = con.execute(
         """
