@@ -24,6 +24,20 @@ import type {
 type RGBA = [number, number, number, number];
 const rgba = (c: readonly number[], a: number): RGBA => [c[0], c[1], c[2], a];
 
+// deck.gl v9 (luma.gl v9) GPU depth parameters for the flat, screen-space marker discs.
+// THE blink fix: in interleaved mode deck shares MapLibre's depth buffer, but the v5 globe
+// writes its sphere surface with its OWN depth formula (it "calculates z in the vertex
+// shader") while deck depth-tests these dots with a perspective near/far from the map
+// transform. The two encodings disagree at the same screen pixel, so a dot's depth
+// straddles the surface and intermittently fails deck's default `depthCompare:'less-equal'`
+// — it drops behind the globe and pops back, i.e. blinks, and worsens as zoom collapses
+// near-surface depth precision. These dots are 2-D pixel billboards with no real
+// globe-surface depth, so the correct fix is to take them out of the depth test entirely:
+// always pass, never write. (v9 removed the old `depthTest:false` boolean; these are the
+// replacement keys.) The 3-D great-circle ArcLayer is intentionally left depth-tested so
+// back-of-globe lanes stay hidden.
+const MARKER_PARAMETERS = { depthCompare: 'always', depthWriteEnabled: false } as const;
+
 // Clean, token-free LIGHT basemap (CARTO Positron) draped on the v5 globe.
 // 'light_nolabels' @2x drops the busy place labels + boundary clutter and serves
 // retina (512px) tiles, so the whole map reads sharp at every zoom.
@@ -113,6 +127,7 @@ function buildLayers({
     // "there" instead of shimmering dust.
     new ScatterplotLayer({
       id: 'ports',
+      parameters: MARKER_PARAMETERS,
       data: ports,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 2.8,
@@ -131,6 +146,7 @@ function buildLayers({
     // static slate ports, even when zoomed out where they cluster at the chokepoints…
     new ScatterplotLayer({
       id: 'ships-glow',
+      parameters: MARKER_PARAMETERS,
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 7,
@@ -142,6 +158,7 @@ function buildLayers({
     // …with a crisp bright core + white edge on top.
     new ScatterplotLayer({
       id: 'ships',
+      parameters: MARKER_PARAMETERS,
       data: ships || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 3,
@@ -158,6 +175,7 @@ function buildLayers({
     // chokepoints — solid amber circles with a clean white ring
     new ScatterplotLayer({
       id: 'choke',
+      parameters: MARKER_PARAMETERS,
       data: chokepoints,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: (d) => 2.8 + sqrtScale(d.n_total, 0.24),
@@ -176,6 +194,7 @@ function buildLayers({
     // halo alpha is high enough to read clearly as weather against the ocean.
     new ScatterplotLayer({
       id: 'storms-halo',
+      parameters: MARKER_PARAMETERS,
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: (d) => 13 + Math.min((d.max_wind_kmh || 0) / 8, 22),
@@ -190,6 +209,7 @@ function buildLayers({
     }),
     new ScatterplotLayer({
       id: 'storms',
+      parameters: MARKER_PARAMETERS,
       data: storms || [],
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
@@ -209,6 +229,7 @@ function buildLayers({
     // marker is rock-steady at every zoom and reads its position precisely.
     new ScatterplotLayer({
       id: 'flags-halo',
+      parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: 1,
@@ -221,6 +242,7 @@ function buildLayers({
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
+      parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
       getRadius: (d) => (d.flag_id === selectedId ? 9 : 7),
