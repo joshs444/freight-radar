@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import type { ReactElement } from 'react';
 import { ask, buildIndex, SUGGESTED } from '../lib/ask.ts';
+import type { Fact } from '../lib/ask.ts';
 import { MdInline } from '../lib/md.tsx';
 import type { AppData } from '../types.ts';
 
@@ -20,6 +21,7 @@ interface UserMsg {
 interface BotMsg {
   role: 'bot';
   text: string;
+  facts: Fact[];
   cites: string[];
   entity: ChatEntity | null;
   kind: string;
@@ -130,14 +132,31 @@ export default function Chat({ data, onPickEntity }: ChatProps) {
                       ↳ show {m.entity.name} on the globe
                     </button>
                   )}
-                  {m.cites?.length > 0 && (
-                    <div className="fr-chat-cites">
-                      {m.cites.map((c) => (
-                        <span key={c} className="fr-chat-cite">
-                          {c}
-                        </span>
-                      ))}
-                    </div>
+                  {m.facts?.length > 0 ? (
+                    <details className="fr-chat-evidence">
+                      <summary>
+                        <span className="fr-chat-ev-tick">✓</span> {m.facts.length} cited fact
+                        {m.facts.length === 1 ? '' : 's'} — show evidence
+                      </summary>
+                      <div className="fr-chat-facts">
+                        {m.facts.map((f, j) => (
+                          <div key={j} className="fr-chat-fact">
+                            <span className="fr-chat-fact-v">{String(f.v)}</span>
+                            <span className="fr-chat-fact-src">{f.src}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  ) : (
+                    m.cites?.length > 0 && (
+                      <div className="fr-chat-cites">
+                        {m.cites.map((c) => (
+                          <span key={c} className="fr-chat-cite">
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    )
                   )}
                   {(m.suggestions?.length ?? 0) > 0 && (
                     <div className="fr-chat-sugg">

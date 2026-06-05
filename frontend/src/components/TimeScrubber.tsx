@@ -101,6 +101,7 @@ export default function TimeScrubber({
           max={n - 1}
           value={cur}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(+e.target.value)}
+          aria-label="Scrub through the trailing 120 days of history"
         />
       </div>
 
