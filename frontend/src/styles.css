@@ -435,6 +435,35 @@ body,
   align-items: center;
   gap: 6px;
 }
+/* the wind legend item is a real toggle button — same look as the chips, clickable,
+   dimmed when the layer is muted */
+.fr-legend-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  padding: 2px 5px;
+  margin: -2px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  color: var(--ink-dim);
+  transition:
+    background 0.12s,
+    opacity 0.12s;
+}
+.fr-legend-toggle:hover {
+  background: var(--hover);
+}
+.fr-legend-toggle.off {
+  opacity: 0.5;
+}
+.fr-legend-toggle.off .sw.wind {
+  filter: grayscale(1);
+}
 .sw {
   width: 9px;
   height: 9px;

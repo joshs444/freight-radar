@@ -27,6 +27,25 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [userExposure, setUserExposure] = useState<AppliedExposure | null>(null);
   const [showStress, setShowStress] = useState(false);
+  // ambient wind layer: on by default, but a toggle (the legend chip) lets you mute it
+  // since it can read as busy; the choice is remembered.
+  const [windOn, setWindOn] = useState(() => {
+    try {
+      return localStorage.getItem('fr_wind_off') !== '1';
+    } catch {
+      return true;
+    }
+  });
+  const toggleWind = useCallback(() => {
+    setWindOn((on) => {
+      try {
+        localStorage.setItem('fr_wind_off', on ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      return !on;
+    });
+  }, []);
   const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef<MapApi | null>(null);
 
@@ -188,6 +207,7 @@ export default function App() {
                   selectedFlag={selected?.flag || null}
                   onSelectFlag={onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
+                  windOn={windOn}
                 />
               </Suspense>
             </ErrorBoundary>
@@ -203,9 +223,15 @@ export default function App() {
               <i className="sw pulse" /> flagged
             </span>
             {data?.wind && (
-              <span title={`Animated 10 m wind · ${data.wind.source} · ${data.wind.cycle}`}>
-                <i className="sw wind" /> wind
-              </span>
+              <button
+                type="button"
+                className={`fr-legend-toggle ${windOn ? 'on' : 'off'}`}
+                onClick={toggleWind}
+                aria-pressed={windOn}
+                title={`${windOn ? 'Hide' : 'Show'} the animated wind · ${data.wind.source} · ${data.wind.cycle}`}
+              >
+                <i className="sw wind" /> wind{windOn ? '' : ' (off)'}
+              </button>
             )}
             {(data?.weather?.counts?.active_storms ?? 0) > 0 && (
               <span>
