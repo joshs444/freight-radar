@@ -12,7 +12,8 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css}\"",
     "test:chat": "node scripts/check_chat.mjs",
-    "test:parity": "node scripts/check_exposure_parity.mjs"
+    "test:parity": "node scripts/check_exposure_parity.mjs",
+    "test:bundle": "node scripts/check_bundle.mjs"
   },
   "dependencies": {
     "@deck.gl/core": "^9.1.0",
