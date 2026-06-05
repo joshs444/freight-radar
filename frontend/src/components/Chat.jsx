@@ -9,9 +9,13 @@ function BotText({ text }) {
   // answers may carry newline-separated bullets; render each line inline
   return (
     <>
-      {String(text).split('\n').map((ln, i) => (
-        <div key={i} className="fr-chat-line"><MdInline text={ln} /></div>
-      ))}
+      {String(text)
+        .split('\n')
+        .map((ln, i) => (
+          <div key={i} className="fr-chat-line">
+            <MdInline text={ln} />
+          </div>
+        ))}
     </>
   );
 }
@@ -35,14 +39,22 @@ export default function Chat({ data, onPickEntity }) {
     setInput('');
   };
 
-  const onKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+  const onKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  };
 
   if (!data) return null;
 
   return (
     <>
-      <button className={`fr-chat-fab ${open ? 'is-open' : ''}`} onClick={() => setOpen((o) => !o)}
-        title="Ask Freight Radar">
+      <button
+        className={`fr-chat-fab ${open ? 'is-open' : ''}`}
+        onClick={() => setOpen((o) => !o)}
+        title="Ask Freight Radar"
+      >
         {open ? '×' : '✦ Ask'}
       </button>
 
@@ -53,19 +65,25 @@ export default function Chat({ data, onPickEntity }) {
               <span className="fr-chat-title">Ask Freight Radar</span>
               <span className="fr-chat-sub">grounded in this data · every number is cited</span>
             </div>
-            <button className="fr-chat-x" onClick={() => setOpen(false)}>×</button>
+            <button className="fr-chat-x" onClick={() => setOpen(false)}>
+              ×
+            </button>
           </div>
 
           <div className="fr-chat-body" ref={scrollRef}>
             {msgs.length === 0 && (
               <div className="fr-chat-intro">
-                <p>Ask about a chokepoint, the biggest risk, what's improving, your exposure, or the market.
-                  I answer only with numbers I can trace to a source file.</p>
+                <p>
+                  Ask about a chokepoint, the biggest risk, what's improving, your exposure, or the
+                  market. I answer only with numbers I can trace to a source file.
+                </p>
               </div>
             )}
-            {msgs.map((m, i) => (
+            {msgs.map((m, i) =>
               m.role === 'user' ? (
-                <div key={i} className="fr-chat-msg user">{m.text}</div>
+                <div key={i} className="fr-chat-msg user">
+                  {m.text}
+                </div>
               ) : (
                 <div key={i} className="fr-chat-msg bot">
                   <BotText text={m.text} />
@@ -76,25 +94,33 @@ export default function Chat({ data, onPickEntity }) {
                   )}
                   {m.cites?.length > 0 && (
                     <div className="fr-chat-cites">
-                      {m.cites.map((c) => <span key={c} className="fr-chat-cite">{c}</span>)}
+                      {m.cites.map((c) => (
+                        <span key={c} className="fr-chat-cite">
+                          {c}
+                        </span>
+                      ))}
                     </div>
                   )}
                   {m.suggestions?.length > 0 && (
                     <div className="fr-chat-sugg">
                       {m.suggestions.map((q) => (
-                        <button key={q} className="fr-chat-chip sm" onClick={() => send(q)}>{q}</button>
+                        <button key={q} className="fr-chat-chip sm" onClick={() => send(q)}>
+                          {q}
+                        </button>
                       ))}
                     </div>
                   )}
                 </div>
               )
-            ))}
+            )}
           </div>
 
           {msgs.length === 0 && (
             <div className="fr-chat-starter">
               {SUGGESTED.map((q) => (
-                <button key={q} className="fr-chat-chip" onClick={() => send(q)}>{q}</button>
+                <button key={q} className="fr-chat-chip" onClick={() => send(q)}>
+                  {q}
+                </button>
               ))}
             </div>
           )}
@@ -106,7 +132,9 @@ export default function Chat({ data, onPickEntity }) {
               onKeyDown={onKey}
               placeholder="Ask about ocean freight…"
             />
-            <button onClick={() => send()} disabled={!input.trim()}>Send</button>
+            <button onClick={() => send()} disabled={!input.trim()}>
+              Send
+            </button>
           </div>
         </div>
       )}

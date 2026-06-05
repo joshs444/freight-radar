@@ -17,16 +17,28 @@ export default function StormIndicator({ storms, onPick }) {
       </button>
       {open && (
         <div className="fr-storms-pop">
-          <div className="fr-storms-pop-head">Active tropical cyclones <span>· live NHC + GDACS</span></div>
+          <div className="fr-storms-pop-head">
+            Active tropical cyclones <span>· live NHC + GDACS</span>
+          </div>
           {storms.map((s, i) => (
-            <button key={s.id || i} className="fr-storms-row" onClick={() => { onPick?.(s); setOpen(false); }}>
+            <button
+              key={s.id || i}
+              className="fr-storms-row"
+              onClick={() => {
+                onPick?.(s);
+                setOpen(false);
+              }}
+            >
               <span className="fr-storms-name">🌀 {s.name}</span>
               <span className="fr-storms-meta">
-                {s.category} · {s.basin}{s.max_wind_kmh ? ` · ${s.max_wind_kmh} km/h` : ''} · {s.agency}
+                {s.category} · {s.basin}
+                {s.max_wind_kmh ? ` · ${s.max_wind_kmh} km/h` : ''} · {s.agency}
               </span>
             </button>
           ))}
-          <div className="fr-storms-foot">click a storm to fly the globe to it · possibly related, not a cause</div>
+          <div className="fr-storms-foot">
+            click a storm to fly the globe to it · possibly related, not a cause
+          </div>
         </div>
       )}
     </div>

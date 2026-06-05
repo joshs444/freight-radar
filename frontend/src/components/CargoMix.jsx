@@ -6,12 +6,18 @@
 
 const CARGO_ORDER = ['container', 'tanker', 'dry_bulk', 'general_cargo', 'roro'];
 const CARGO_LABEL = {
-  container: 'Container', tanker: 'Tanker', dry_bulk: 'Dry bulk',
-  general_cargo: 'Gen. cargo', roro: 'RoRo',
+  container: 'Container',
+  tanker: 'Tanker',
+  dry_bulk: 'Dry bulk',
+  general_cargo: 'Gen. cargo',
+  roro: 'RoRo',
 };
 const CARGO_COLOR = {
-  container: '#3a6ea5', tanker: '#c2611f', dry_bulk: '#8a6d3b',
-  general_cargo: '#5b8a72', roro: '#7a6a9a',
+  container: '#3a6ea5',
+  tanker: '#c2611f',
+  dry_bulk: '#8a6d3b',
+  general_cargo: '#5b8a72',
+  roro: '#7a6a9a',
 };
 
 import { compact } from '../lib/format.js';
@@ -20,15 +26,17 @@ export default function CargoMix({ mix, unit = 'transits', avgSize, tonnage }) {
   if (!mix) return null;
   const total = CARGO_ORDER.reduce((s, k) => s + (mix[k] || 0), 0);
   if (!total) return null;
-  const parts = CARGO_ORDER
-    .map((k) => ({ k, n: mix[k] || 0, pct: ((mix[k] || 0) / total) * 100 }))
+  const parts = CARGO_ORDER.map((k) => ({ k, n: mix[k] || 0, pct: ((mix[k] || 0) / total) * 100 }))
     .filter((p) => p.n > 0)
     .sort((a, b) => b.n - a.n);
   const dominant = parts[0];
   return (
     <div className="fr-cargo">
       <div className="fr-cargo-head">
-        Vessel mix <span>· by {unit} · {total.toLocaleString()} latest day</span>
+        Vessel mix{' '}
+        <span>
+          · by {unit} · {total.toLocaleString()} latest day
+        </span>
       </div>
       <div className="fr-cargo-bar">
         {parts.map((p) => (
@@ -50,8 +58,14 @@ export default function CargoMix({ mix, unit = 'transits', avgSize, tonnage }) {
       </div>
       {avgSize ? (
         <div className="fr-cargo-tonnage">
-          <span><b>~{compact(avgSize)}</b> DWT avg vessel</span>
-          {tonnage ? <span><b>{compact(tonnage)}</b> DWT transiting</span> : null}
+          <span>
+            <b>~{compact(avgSize)}</b> DWT avg vessel
+          </span>
+          {tonnage ? (
+            <span>
+              <b>{compact(tonnage)}</b> DWT transiting
+            </span>
+          ) : null}
           <span className="fr-cargo-note">size = tonnage ÷ vessels, not utilization</span>
         </div>
       ) : null}

@@ -43,7 +43,9 @@ export default function App() {
     const flagByPort = {};
     (flags || [])
       .filter((f) => f.lifecycle !== 'resolved' && (!scrubDate || f.as_of <= scrubDate))
-      .forEach((f) => { flagByPort[f.portid] = f; });
+      .forEach((f) => {
+        flagByPort[f.portid] = f;
+      });
     const seriesAt = (portid, baseline) => {
       const v = ts?.series?.[portid]?.values?.[scrubIndex];
       if (v == null || !baseline) return null;
@@ -53,23 +55,38 @@ export default function App() {
     // cargo_mix lookup so flagged-port rows (built from flags, not snapshot) can
     // still show the vessel mix from their snapshot record.
     const mixByPort = {};
-    (data.snapshot?.chokepoints || []).forEach((c) => { if (c.cargo_mix) mixByPort[c.portid] = c.cargo_mix; });
-    (data.snapshot?.ports || []).forEach((p) => { if (p.cargo_mix) mixByPort[p.portid] = p.cargo_mix; });
+    (data.snapshot?.chokepoints || []).forEach((c) => {
+      if (c.cargo_mix) mixByPort[c.portid] = c.cargo_mix;
+    });
+    (data.snapshot?.ports || []).forEach((p) => {
+      if (p.cargo_mix) mixByPort[p.portid] = p.cargo_mix;
+    });
     // national-dependence lookup (ports only) for flagged-port rows built from flags
     const portMetaById = {};
-    (data.snapshot?.ports || []).forEach((p) => { portMetaById[p.portid] = p; });
+    (data.snapshot?.ports || []).forEach((p) => {
+      portMetaById[p.portid] = p;
+    });
 
     const choke = (data.snapshot?.chokepoints || []).map((c) => {
       const flag = flagByPort[c.portid] || null;
       return {
-        id: c.portid, name: c.name, type: 'chokepoint', lat: c.lat, lon: c.lon,
+        id: c.portid,
+        name: c.name,
+        type: 'chokepoint',
+        lat: c.lat,
+        lon: c.lon,
         // flagged rows show the flag's own pct (e.g. Hormuz -92% persistent), not
         // the noisy latest-vs-28d snapshot value (+124%); normals show the snapshot.
         // while scrubbing, normals show the value at the scrubbed date.
-        metric: flag ? flag.pct_change : (scrubDate ? seriesAt(c.portid, c.baseline) : c.pct_change),
-        n_total: c.n_total, baseline: c.baseline, cargo_mix: c.cargo_mix,
-        avg_vessel_size_dwt: c.avg_vessel_size_dwt, capacity_total: c.capacity_total,
-        flag, severity: flag ? flag.severity : null, critical: !!flag,
+        metric: flag ? flag.pct_change : scrubDate ? seriesAt(c.portid, c.baseline) : c.pct_change,
+        n_total: c.n_total,
+        baseline: c.baseline,
+        cargo_mix: c.cargo_mix,
+        avg_vessel_size_dwt: c.avg_vessel_size_dwt,
+        capacity_total: c.capacity_total,
+        flag,
+        severity: flag ? flag.severity : null,
+        critical: !!flag,
         weight: c.n_total || 0,
       };
     });
@@ -77,8 +94,16 @@ export default function App() {
     const portFlags = Object.values(flagByPort)
       .filter((f) => !chokeIds.has(f.portid))
       .map((f) => ({
-        id: f.portid, name: f.entity, type: 'port', lat: f.lat, lon: f.lon,
-        metric: f.pct_change, flag: f, severity: f.severity, critical: true, weight: 1e9,
+        id: f.portid,
+        name: f.entity,
+        type: 'port',
+        lat: f.lat,
+        lon: f.lon,
+        metric: f.pct_change,
+        flag: f,
+        severity: f.severity,
+        critical: true,
+        weight: 1e9,
         cargo_mix: mixByPort[f.portid] || null,
         share_import: portMetaById[f.portid]?.share_import,
         share_export: portMetaById[f.portid]?.share_export,
@@ -89,23 +114,35 @@ export default function App() {
       .slice(0, 40)
       .filter((p) => !flagByPort[p.portid])
       .map((p) => ({
-        id: p.portid, name: p.name, type: 'port', lat: p.lat, lon: p.lon,
-        metric: null, vessels: p.vessels, flag: null, critical: false, weight: p.vessels || 0,
+        id: p.portid,
+        name: p.name,
+        type: 'port',
+        lat: p.lat,
+        lon: p.lon,
+        metric: null,
+        vessels: p.vessels,
+        flag: null,
+        critical: false,
+        weight: p.vessels || 0,
         cargo_mix: p.cargo_mix,
-        share_import: p.share_import, share_export: p.share_export, country: p.country,
+        share_import: p.share_import,
+        share_export: p.share_export,
+        country: p.country,
       }));
     return { choke, portFlags, topPorts };
   }, [data, flags, scrubDate, scrubIndex, ts]);
 
   // critical first (by severity), then normal by real traffic — not by noisy %
   const byCritThenSeverity = (a, b) =>
-    b.critical - a.critical || (b.severity || 0) - (a.severity || 0) ||
+    b.critical - a.critical ||
+    (b.severity || 0) - (a.severity || 0) ||
     (b.weight || 0) - (a.weight || 0);
 
   const rows = useMemo(() => {
     const { choke, portFlags, topPorts } = sets;
     let list;
-    if (filter === 'watching') list = [...choke, ...portFlags, ...topPorts].filter((e) => watched.has(e.id));
+    if (filter === 'watching')
+      list = [...choke, ...portFlags, ...topPorts].filter((e) => watched.has(e.id));
     else if (filter === 'critical') list = [...choke, ...portFlags].filter((e) => e.critical);
     else if (filter === 'chokepoints') list = choke;
     else if (filter === 'ports') list = [...portFlags, ...topPorts];
@@ -114,7 +151,9 @@ export default function App() {
   }, [sets, filter, watched]);
 
   // browser-notify on new/escalated flags for watched entities
-  useEffect(() => { if (data) notifyWatched(watched, flags); }, [data, flags, watched]);
+  useEffect(() => {
+    if (data) notifyWatched(watched, flags);
+  }, [data, flags, watched]);
 
   const criticalCount = useMemo(
     () => [...sets.choke, ...sets.portFlags].filter((e) => e.critical).length,
@@ -128,22 +167,44 @@ export default function App() {
 
   // brief bullet / stress gauge / search → jump to an entity by portid (fly globe
   // + open its row). Falls back to the full snapshot so ANY of the 2,065 ports works.
-  const pickByPortid = useCallback((portid) => {
-    const all = [...sets.choke, ...sets.portFlags, ...sets.topPorts];
-    let e = all.find((x) => x.id === portid);
-    if (!e && data) {
-      const c = (data.snapshot?.chokepoints || []).find((x) => x.portid === portid);
-      const p = c || (data.snapshot?.ports || []).find((x) => x.portid === portid);
-      if (p) e = { id: p.portid, name: p.name, type: c ? 'chokepoint' : 'port',
-        lat: p.lat, lon: p.lon, metric: c ? c.pct_change : null, flag: null, critical: false,
-        cargo_mix: p.cargo_mix, share_import: p.share_import, share_export: p.share_export, country: p.country };
-    }
-    if (e) { setFilter('all'); selectEntity(e); }
-  }, [sets, selectEntity, data]);
+  const pickByPortid = useCallback(
+    (portid) => {
+      const all = [...sets.choke, ...sets.portFlags, ...sets.topPorts];
+      let e = all.find((x) => x.id === portid);
+      if (!e && data) {
+        const c = (data.snapshot?.chokepoints || []).find((x) => x.portid === portid);
+        const p = c || (data.snapshot?.ports || []).find((x) => x.portid === portid);
+        if (p)
+          e = {
+            id: p.portid,
+            name: p.name,
+            type: c ? 'chokepoint' : 'port',
+            lat: p.lat,
+            lon: p.lon,
+            metric: c ? c.pct_change : null,
+            flag: null,
+            critical: false,
+            cargo_mix: p.cargo_mix,
+            share_import: p.share_import,
+            share_export: p.share_export,
+            country: p.country,
+          };
+      }
+      if (e) {
+        setFilter('all');
+        selectEntity(e);
+      }
+    },
+    [sets, selectEntity, data]
+  );
 
   const flagByPort = useMemo(() => {
     const m = {};
-    (flags || []).filter((f) => f.lifecycle !== 'resolved').forEach((f) => { m[f.portid] = f; });
+    (flags || [])
+      .filter((f) => f.lifecycle !== 'resolved')
+      .forEach((f) => {
+        m[f.portid] = f;
+      });
     return m;
   }, [flags]);
 
@@ -153,9 +214,12 @@ export default function App() {
     if (!data || appliedHash.current) return;
     appliedHash.current = true;
     const h = new URLSearchParams(window.location.hash.slice(1));
-    const e = h.get('e'); if (e) pickByPortid(e);         // sets filter='all' as a side effect…
-    const f = h.get('f'); if (f) setFilter(f);            // …so restore the filter AFTER
-    const t = h.get('t'); if (t !== null && t !== '') setScrubIndex(Number(t));
+    const e = h.get('e');
+    if (e) pickByPortid(e); // sets filter='all' as a side effect…
+    const f = h.get('f');
+    if (f) setFilter(f); // …so restore the filter AFTER
+    const t = h.get('t');
+    if (t !== null && t !== '') setScrubIndex(Number(t));
   }, [data, pickByPortid]);
 
   useEffect(() => {
@@ -165,16 +229,30 @@ export default function App() {
     if (filter !== 'all') p.set('f', filter);
     if (scrubIndex != null) p.set('t', String(scrubIndex));
     const s = p.toString();
-    window.history.replaceState(null, '', s ? `#${s}` : window.location.pathname + window.location.search);
+    window.history.replaceState(
+      null,
+      '',
+      s ? `#${s}` : window.location.pathname + window.location.search
+    );
   }, [data, selected, filter, scrubIndex]);
 
   // a flag ring clicked on the globe -> select the matching feed entity
-  const onSelectFlagFromGlobe = useCallback((flag) => {
-    selectEntity({
-      id: flag.portid, name: flag.entity, type: flag.kind.startsWith('chokepoint') ? 'chokepoint' : 'port',
-      lat: flag.lat, lon: flag.lon, metric: flag.pct_change, flag, severity: flag.severity, critical: true,
-    });
-  }, [selectEntity]);
+  const onSelectFlagFromGlobe = useCallback(
+    (flag) => {
+      selectEntity({
+        id: flag.portid,
+        name: flag.entity,
+        type: flag.kind.startsWith('chokepoint') ? 'chokepoint' : 'port',
+        lat: flag.lat,
+        lon: flag.lon,
+        metric: flag.pct_change,
+        flag,
+        severity: flag.severity,
+        critical: true,
+      });
+    },
+    [selectEntity]
+  );
 
   // globe replay: scrub swaps chokepoint glow + which flags have fired
   const globeView = useMemo(() => {
@@ -187,10 +265,17 @@ export default function App() {
     }
     const day = ts.dates[scrubIndex];
     const chokepoints = ts.chokepoints.map((c) => ({
-      portid: c.portid, name: c.name, lat: c.lat, lon: c.lon,
-      n_total: c.values[scrubIndex], pct_change: null,
+      portid: c.portid,
+      name: c.name,
+      lat: c.lat,
+      lon: c.lon,
+      n_total: c.values[scrubIndex],
+      pct_change: null,
     }));
-    return { snapshot: { ...data.snapshot, chokepoints }, flags: ts.flags.filter((f) => f.as_of <= day) };
+    return {
+      snapshot: { ...data.snapshot, chokepoints },
+      flags: ts.flags.filter((f) => f.as_of <= day),
+    };
   }, [data, ts, scrubIndex]);
 
   if (error) {
@@ -198,7 +283,9 @@ export default function App() {
       <div className="fr-fallback">
         <h1>Freight Radar</h1>
         <p>Could not load the snapshot ({error}).</p>
-        <p className="dim">Run the exporter: <code>python -m freight_radar.publish</code></p>
+        <p className="dim">
+          Run the exporter: <code>python -m freight_radar.publish</code>
+        </p>
       </div>
     );
   }
@@ -210,10 +297,14 @@ export default function App() {
     <div className="fr-app">
       <header className="fr-topbar">
         <div className="fr-brand">
-          <span className="fr-logo" aria-hidden>◐</span>
+          <span className="fr-logo" aria-hidden>
+            ◐
+          </span>
           <div>
             <h1>FREIGHT RADAR</h1>
-            <p className="fr-tag">Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.</p>
+            <p className="fr-tag">
+              Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.
+            </p>
           </div>
         </div>
         {data?.stress?.available && (
@@ -224,7 +315,8 @@ export default function App() {
           onPick={(s) => s?.lon != null && mapApiRef.current?.flyTo(s.lon, s.lat)}
         />
         <div className="fr-asof">
-          <span className="fr-dot" /> {source}<br />
+          <span className="fr-dot" /> {source}
+          <br />
           data as of <b>{asOf}</b>
         </div>
       </header>
@@ -234,7 +326,13 @@ export default function App() {
       <div className="fr-main">
         <section className="fr-stage">
           {data && (
-            <ErrorBoundary fallback={<div className="fr-globe-fallback">Map unavailable on this device — the feed, brief and chat still work.</div>}>
+            <ErrorBoundary
+              fallback={
+                <div className="fr-globe-fallback">
+                  Map unavailable on this device — the feed, brief and chat still work.
+                </div>
+              }
+            >
               <Suspense fallback={<div className="fr-globe-fallback">acquiring signal…</div>}>
                 <Globe
                   snapshot={globeView.snapshot}
@@ -250,13 +348,29 @@ export default function App() {
             </ErrorBoundary>
           )}
           <div className="fr-legend">
-            <span><i className="sw amber" /> chokepoint</span>
-            <span><i className="sw port" /> port</span>
-            <span><i className="sw pulse" /> flagged</span>
-            {data?.wind && <span title={`Animated 10 m wind · ${data.wind.source} · ${data.wind.cycle}`}><i className="sw wind" /> wind</span>}
-            {data?.weather?.counts?.active_storms > 0 && <span><i className="sw storm" /> storm</span>}
+            <span>
+              <i className="sw amber" /> chokepoint
+            </span>
+            <span>
+              <i className="sw port" /> port
+            </span>
+            <span>
+              <i className="sw pulse" /> flagged
+            </span>
+            {data?.wind && (
+              <span title={`Animated 10 m wind · ${data.wind.source} · ${data.wind.cycle}`}>
+                <i className="sw wind" /> wind
+              </span>
+            )}
+            {data?.weather?.counts?.active_storms > 0 && (
+              <span>
+                <i className="sw storm" /> storm
+              </span>
+            )}
             {data?.ships?.mode === 'live' && data?.ships?.count > 0 && (
-              <span title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}>
+              <span
+                title={`Real AIS vessel positions near the chokepoints, sampled at last refresh · ${data.ships.count} vessels · aisstream.io`}
+              >
                 <i className="sw ship" /> {data.ships.count} ships · AIS
               </span>
             )}
@@ -268,7 +382,10 @@ export default function App() {
               playing={playing}
               onChange={(i) => setScrubIndex(i)}
               onPlayToggle={() => setPlaying((p) => !p)}
-              onLive={() => { setPlaying(false); setScrubIndex(null); }}
+              onLive={() => {
+                setPlaying(false);
+                setScrubIndex(null);
+              }}
             />
           )}
           {loading && <div className="fr-loading">acquiring signal…</div>}
@@ -283,14 +400,22 @@ export default function App() {
             criticalCount={criticalCount}
             exposure={exposureSummary}
             search={{ snapshot: data.snapshot, flagByPort, onJump: pickByPortid }}
-            upload={{ flags: data.flags, applied: userExposure, onApply: setUserExposure, onReset: () => setUserExposure(null) }}
+            upload={{
+              flags: data.flags,
+              applied: userExposure,
+              onApply: setUserExposure,
+              onReset: () => setUserExposure(null),
+            }}
             brief={data.brief}
             flags={flags}
             disruptions={data.disruptions}
             gatun={data.gatun}
             scrubDate={scrubDate}
             scrubIndex={scrubIndex}
-            onLive={() => { setPlaying(false); setScrubIndex(null); }}
+            onLive={() => {
+              setPlaying(false);
+              setScrubIndex(null);
+            }}
             watched={watched}
             onToggleWatch={toggleWatch}
             onPickEntity={pickByPortid}
@@ -308,13 +433,20 @@ export default function App() {
 
       {showStress && data?.stress && (
         <Suspense fallback={null}>
-          <StressDetail stress={data.stress} onClose={() => setShowStress(false)} onPickEntity={pickByPortid} />
+          <StressDetail
+            stress={data.stress}
+            onClose={() => setShowStress(false)}
+            onPickEntity={pickByPortid}
+          />
         </Suspense>
       )}
 
       {data && (
         <Suspense fallback={null}>
-          <Chat data={userExposure ? { ...data, flags, exposure: exposureSummary } : data} onPickEntity={pickByPortid} />
+          <Chat
+            data={userExposure ? { ...data, flags, exposure: exposureSummary } : data}
+            onPickEntity={pickByPortid}
+          />
         </Suspense>
       )}
     </div>
