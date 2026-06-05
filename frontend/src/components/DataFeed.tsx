@@ -515,91 +515,101 @@ export default function DataFeed({
     : FILTERS;
   return (
     <aside className="fr-feed" id="fr-monitor" tabIndex={-1} aria-label="Monitor feed">
-      <div className="fr-feed-head">
-        <span className="fr-feed-title">Monitor</span>
-        <span className="fr-feed-count">
-          <b>{criticalCount}</b> critical · {rows.length} shown
-        </span>
-      </div>
-
-      {scrubDate && (
-        <div className="fr-scrubbing">
-          <span>
-            ▶ viewing <b>{scrubDate}</b> — feed reflects flags fired by then
+      {/* sticky controls — never scroll away, so you can always re-filter/search */}
+      <div className="fr-feed-sticky">
+        <div className="fr-feed-head">
+          <span className="fr-feed-title">Monitor</span>
+          <span className="fr-feed-count">
+            <b>{criticalCount}</b> critical · {rows.length} shown
           </span>
-          <button onClick={onLive}>back to live</button>
         </div>
-      )}
 
-      {search && <SearchBox {...search} />}
+        {scrubDate && (
+          <div className="fr-scrubbing">
+            <span>
+              ▶ viewing <b>{scrubDate}</b> — feed reflects flags fired by then
+            </span>
+            <button onClick={onLive}>back to live</button>
+          </div>
+        )}
 
-      {brief && (
-        <BriefCard brief={brief} onPickEntity={onPickEntity} onExport={() => exportBrief(brief)} />
-      )}
+        {search && <SearchBox {...search} />}
 
-      {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
-
-      {upload && (
-        <Suspense fallback={null}>
-          <Upload {...upload} />
-        </Suspense>
-      )}
-
-      {exposure && (
-        <div className="fr-exposure">
-          <div className="fr-exp-label">
-            Your exposure{' '}
-            <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span>
+        <div className="fr-filters">
+          {filters.map((f) => (
             <button
-              type="button"
-              className="fr-exp-export"
-              onClick={() => exportExposureCSV(flags)}
-              title="Download exposure as CSV"
-              aria-label="Download your exposure as CSV"
+              key={f.key}
+              className={`fr-chip ${filter === f.key ? 'on' : ''}`}
+              onClick={() => setFilter(f.key)}
             >
-              ↓ csv
+              {f.label}
             </button>
-          </div>
-          <div className="fr-exp-row">
-            <div>
-              <b>{money(exposure.exposed_value_usd)}</b>
-              <span>exposed</span>
-            </div>
-            <div>
-              <b>
-                {money(
-                  (exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)
-                    ?.expected
-                )}
-              </b>
-              <span>cost of disruption</span>
-            </div>
-            <div>
-              <b>{exposure.active_disruptions_hitting_you}</b>
-              <span>hitting you</span>
-            </div>
-          </div>
-          {exposure.lanes_with_known_route != null && (
-            <div className="fr-exp-cov">
-              {exposure.lanes_with_known_route} of {exposure.total_flows} lanes modeled (
-              {exposure.coverage_pct}%)
-            </div>
-          )}
+          ))}
         </div>
-      )}
-
-      <div className="fr-filters">
-        {filters.map((f) => (
-          <button
-            key={f.key}
-            className={`fr-chip ${filter === f.key ? 'on' : ''}`}
-            onClick={() => setFilter(f.key)}
-          >
-            {f.label}
-          </button>
-        ))}
       </div>
+
+      {/* the single scroll region — context blocks scroll WITH the issues so the issues
+          (the point of a "Monitor") always own the remaining height + stay reachable */}
       <div className="fr-rows">
+        {brief && (
+          <BriefCard
+            brief={brief}
+            onPickEntity={onPickEntity}
+            onExport={() => exportBrief(brief)}
+          />
+        )}
+
+        {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
+
+        {upload && (
+          <Suspense fallback={null}>
+            <Upload {...upload} />
+          </Suspense>
+        )}
+
+        {exposure && (
+          <div className="fr-exposure">
+            <div className="fr-exp-label">
+              Your exposure{' '}
+              <span>· {upload?.applied ? 'your uploaded data' : 'sample trade data'}</span>
+              <button
+                type="button"
+                className="fr-exp-export"
+                onClick={() => exportExposureCSV(flags)}
+                title="Download exposure as CSV"
+                aria-label="Download your exposure as CSV"
+              >
+                ↓ csv
+              </button>
+            </div>
+            <div className="fr-exp-row">
+              <div>
+                <b>{money(exposure.exposed_value_usd)}</b>
+                <span>exposed</span>
+              </div>
+              <div>
+                <b>
+                  {money(
+                    (exposure.total_cost_of_disruption_usd || exposure.carrying_cost_of_delay_usd)
+                      ?.expected
+                  )}
+                </b>
+                <span>cost of disruption</span>
+              </div>
+              <div>
+                <b>{exposure.active_disruptions_hitting_you}</b>
+                <span>hitting you</span>
+              </div>
+            </div>
+            {exposure.lanes_with_known_route != null && (
+              <div className="fr-exp-cov">
+                {exposure.lanes_with_known_route} of {exposure.total_flows} lanes modeled (
+                {exposure.coverage_pct}%)
+              </div>
+            )}
+          </div>
+        )}
+
         {rows.length === 0 && <div className="fr-empty">Nothing to show in this filter.</div>}
         {rows.map((e) => (
           <Row

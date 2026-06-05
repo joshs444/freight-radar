@@ -609,6 +609,16 @@ body,
   border-left: 1px solid var(--line);
   min-height: 0;
 }
+/* the pinned controls zone: flex:none keeps it above the scrolling .fr-rows on desktop;
+   position:sticky keeps it pinned on mobile where the whole .fr-feed scrolls as one. */
+.fr-feed-sticky {
+  flex: none;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
 .fr-feed-head {
   display: flex;
   align-items: baseline;
@@ -1754,7 +1764,6 @@ body,
   display: flex;
   gap: 6px;
   padding: 0 16px 12px;
-  border-bottom: 1px solid var(--line);
 }
 .fr-chip {
   flex: 1;

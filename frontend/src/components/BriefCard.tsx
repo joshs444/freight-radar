@@ -22,7 +22,26 @@ interface BriefCardProps {
 }
 
 export default function BriefCard({ brief, onPickEntity, onExport }: BriefCardProps) {
-  const [open, setOpen] = useState(true);
+  // Default COLLAPSED so the brief doesn't steal the feed's height from the critical-issue
+  // rows on first paint — the collapsed header still shows the kicker + the computed stress
+  // headline, so it stays the always-on "what's going on" summary. Remembers if you open it.
+  const [open, setOpen] = useState(() => {
+    try {
+      return localStorage.getItem('fr_brief_open') === '1';
+    } catch {
+      return false;
+    }
+  });
+  const toggle = () =>
+    setOpen((o) => {
+      const next = !o;
+      try {
+        localStorage.setItem('fr_brief_open', next ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
   if (!brief?.bullets?.length) return null;
   const lv = stressLevel(brief.stress_label);
 
@@ -32,7 +51,7 @@ export default function BriefCard({ brief, onPickEntity, onExport }: BriefCardPr
         <button
           type="button"
           className="fr-brief-toggle-btn"
-          onClick={() => setOpen((o) => !o)}
+          onClick={toggle}
           aria-expanded={open}
           aria-label={open ? 'Collapse the weekly brief' : 'Expand the weekly brief'}
         >
