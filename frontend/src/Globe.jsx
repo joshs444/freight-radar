@@ -205,18 +205,10 @@ export default function Globe({
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
-  const propsRef = useRef({ flags, selectedFlag, onSelectFlag });
-  propsRef.current = { flags, selectedFlag, onSelectFlag };
 
-  const dataRef = useRef({ ports: [], chokepoints: [], lanes: [], ships: [], storms: [] });
-  dataRef.current = {
-    ports: snapshot?.ports ?? [],
-    chokepoints: snapshot?.chokepoints ?? [],
-    lanes: lanes ?? [],
-    ships: ships?.vessels ?? [], // live AIS current positions near the chokepoints
-    storms: storms ?? [],
-  };
-
+  // Create the map, the interleaved marker overlay, and the separate self-animating
+  // wind overlay exactly once. mapApiRef is the only external value used (a stable ref
+  // from the parent), so this honestly runs on mount — no eslint-disable needed.
   useEffect(() => {
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -303,30 +295,7 @@ export default function Globe({
       };
     }
 
-    // Every layer is static now, so we don't need a per-frame loop — just rebuild the
-    // deck layers whenever the camera settles (and once up front). Gating on !isMoving
-    // keeps the overlay from re-instantiating layers mid-gesture (the old blink cause);
-    // during a pan/zoom the interleaved overlay redraws existing layers in lockstep
-    // with the basemap. The separate data/selection effect below pushes real updates.
-    let raf;
-    const tick = () => {
-      if (!map.isMoving()) {
-        const { flags: fl, selectedFlag: sel, onSelectFlag: sl } = propsRef.current;
-        overlay.setProps({
-          layers: buildLayers({
-            ...dataRef.current,
-            flags: fl ?? [],
-            selectedId: sel?.flag_id ?? null,
-            onSelectFlag: sl,
-          }),
-        });
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
     return () => {
-      cancelAnimationFrame(raf);
       windCancelled = true;
       try {
         windOverlay.setProps({ layers: [] });
@@ -334,10 +303,33 @@ export default function Globe({
       } catch {
         /* noop */
       }
+      overlayRef.current = null;
       map.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mapApiRef]);
+
+  // Data/selection-driven layer push: rebuild the deck layers ONLY when the underlying
+  // data or the current selection changes — never on a timer. In interleaved mode deck
+  // re-renders the existing layer instances in lockstep with the basemap during a
+  // pan/zoom on its own, so there is no idle requestAnimationFrame and no mid-gesture
+  // re-instantiation (the old marker blink is gone by construction). The wind overlay
+  // is independent and self-animates.
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    overlay.setProps({
+      layers: buildLayers({
+        ports: snapshot?.ports ?? [],
+        chokepoints: snapshot?.chokepoints ?? [],
+        lanes: lanes ?? [],
+        ships: ships?.vessels ?? [], // live AIS positions near the chokepoints
+        storms: storms ?? [],
+        flags: flags ?? [],
+        selectedId: selectedFlag?.flag_id ?? null,
+        onSelectFlag,
+      }),
+    });
+  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag]);
 
   return (
     <div
