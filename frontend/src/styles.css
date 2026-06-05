@@ -796,6 +796,31 @@ body,
   position: relative;
   margin: 0 16px 10px;
 }
+.fr-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 2px 5px;
+}
+.fr-search-clear:hover {
+  color: var(--ink);
+}
+.fr-search-count {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  padding: 6px 11px 4px;
+  border-bottom: 1px solid var(--line);
+}
 .fr-search-ico {
   position: absolute;
   left: 11px;
@@ -2106,6 +2131,10 @@ body,
   color: var(--ink-faint);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+.fr-allclear {
+  color: #3f7a5a !important; /* calm green — zero critical flags is a GOOD state, not empty */
+  font-weight: 600;
 }
 .fr-empty {
   color: var(--ink-faint);
