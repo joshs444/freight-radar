@@ -1,5 +1,15 @@
 # Freight Radar — "Play Through History" mode (2019 → today)
 
+> **✅ SHIPPED + DEPLOYED + VERIFIED LIVE (2026-06-05).** A "▸ History · play 2019→now"
+> button opens a timeline of the Global Ocean Freight Stress Index across PortWatch's full
+> record; Play sweeps the playhead from 2019 forward, the globe recolours/flares each
+> chokepoint by its deviation-from-normal at that week, and dated, source-cited captions
+> (COVID, Ever Given, Panama drought, Red Sea…) appear as they come into frame. Backend:
+> `history.py` reuses the live stress engine over the full window → `history.json` (45 KB,
+> weekly). Honest: same composite index, PortWatch transits, curated+cited events. Verified
+> headless on the live site (captions at the right weeks, displayed index matches the data,
+> 0 console errors).
+
 _A History view that animates the global ocean-freight stress index across PortWatch's
 full daily record (verified **2019-01-01 → present**, ~2,700 days), so you can watch the
 real shocks land — COVID (spring 2020), the Ever Given blocking Suez (Mar 2021), the
