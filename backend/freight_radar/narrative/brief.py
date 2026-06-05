@@ -169,11 +169,16 @@ def build(out: Path, today: date) -> dict:
         })
 
     as_of = stress.get("as_of") or (flags[0]["as_of"] if flags else today.isoformat())
-    headline = "Ocean freight: "
+    # Active, conclusion-bearing headline (names the stat, its meaning, the one driver) —
+    # every value is already computed above, so it stays un-hallucinatable template prose.
     if stress.get("available"):
-        headline += f"stress {stress['index']}/100 ({stress['label']})"
+        wd = stress.get("wow_direction", "flat")
+        trend = "and rising" if wd == "up" else "and easing" if wd == "down" else "and holding"
+        headline = f"Ocean-freight stress is {str(stress['label']).upper()} {trend} — {stress['index']}/100"
+        if top:
+            headline += f"; {top['name']} is the lead driver, {top['pct_vs_normal']:+.0f}% vs normal"
     else:
-        headline += f"{len(active)} active disruptions"
+        headline = f"Ocean freight: {len(active)} active disruptions"
 
     return {
         "generated_at": today.isoformat(),

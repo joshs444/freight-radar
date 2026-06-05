@@ -139,6 +139,22 @@ body,
   color: var(--ink-faint);
   letter-spacing: 0.01em;
 }
+/* persistent honesty chip — the brand's core claim, made visible in the 30-second scan
+   (every figure is computed in Python; no model touches a number). Header copy only, kept
+   off the chat surface so it never implies the chat's wording is model-free. */
+.fr-provenance {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 3px 8px;
+}
 .fr-asof {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -470,6 +486,21 @@ body,
   border-radius: 50%;
   display: inline-block;
 }
+/* size key: a small + large swatch pair documents that marker SIZE is a real encoding
+   (chokepoint dot = vessels/day, storm halo = max wind), so big-vs-small reads as data */
+.fr-legend-size {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fr-legend-size .sw-sm {
+  width: 5px;
+  height: 5px;
+}
+.fr-legend-size .sw-lg {
+  width: 12px;
+  height: 12px;
+}
 .sw.amber {
   background: var(--amber);
 }
@@ -742,28 +773,6 @@ body,
   margin: 0 0 9px;
 }
 .fr-onb-lede b {
-  color: var(--ink);
-}
-.fr-onb-list {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-}
-.fr-onb-list li {
-  font-size: 12px;
-  color: var(--ink-dim);
-  line-height: 1.5;
-  padding: 3px 0 3px 14px;
-  position: relative;
-}
-.fr-onb-list li::before {
-  content: '·';
-  position: absolute;
-  left: 3px;
-  color: var(--amber);
-  font-weight: 700;
-}
-.fr-onb-list b {
   color: var(--ink);
 }
 .fr-onb-go {
@@ -2196,6 +2205,23 @@ body,
   border-radius: 3px;
   transition: width 0.4s ease;
 }
+/* Tabular figures everywhere a number lives, so a changing value never reflows or
+   sub-pixel-shifts its neighbours — stable digits read as computed, not typed. Load-bearing
+   on the proportional Archivo scores (the hero 26px + the 42px detail score); a no-op on the
+   already-monospace marks, harmless to list them. */
+.fr-stress-num,
+.fr-stress-max,
+.fr-sd-score,
+.fr-w-val,
+.fr-metric,
+.fr-mkt-row b,
+.fr-mkt-unit,
+.fr-cost-val b,
+.fr-exp-row b,
+.fr-asof b {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
 .fr-stress-num {
   font-size: 26px;
   font-weight: 800;
@@ -2580,7 +2606,9 @@ body,
   font-size: 13.5px;
   font-weight: 700;
   color: var(--ink);
-  text-transform: capitalize;
+  /* sentence case — the headline is now an active, conclusion-bearing sentence
+     ("…stress is HIGH and rising — Hormuz is the lead driver"), not a noun-phrase to
+     Title-Case. */
 }
 .fr-brief-toggle {
   font-family: var(--mono);

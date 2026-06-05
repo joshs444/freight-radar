@@ -1,0 +1,59 @@
+name: CI — tests + grounding evals
+
+# The credibility gate. Runs on every push + PR so the backend test suite and the
+# grounding/parity evals — the artifacts that make the honesty claims TRUE — are
+# enforced, not decorative. A change that ungrounds a number, breaks a fail-loud ETL
+# guard, or drifts the JS exposure math from the Python pipeline now fails here instead
+# of deploying clean. deploy.yml gates the frontend lint/typecheck/build; this covers
+# what it doesn't. Free: the repo is public, so Actions minutes are unlimited.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    name: backend pytest (non-live)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install backend (hash-pinned from uv.lock)
+        working-directory: backend
+        run: uv sync --extra wind
+      - name: Run the deterministic (non-live) test suite
+        working-directory: backend
+        run: uv run pytest -q -m "not live"
+
+  grounding-evals:
+    name: chat grounding + exposure parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Chat grounding eval — every cited fact must trace to its source sidecar
+        working-directory: frontend
+        run: npm run test:chat
+      - name: Exposure parity eval — JS matches the Python pipeline on the sample CSV
+        working-directory: frontend
+        run: npm run test:parity
