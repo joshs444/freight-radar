@@ -30,9 +30,10 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
-      - name: Install backend (hash-pinned from uv.lock)
+      - name: Install backend + test deps (hash-pinned from uv.lock)
         working-directory: backend
-        run: uv sync --extra wind
+        # `dev` carries pytest/pytest-asyncio; `wind` lets the GFS-decode tests import.
+        run: uv sync --extra wind --extra dev
       - name: Run the deterministic (non-live) test suite
         working-directory: backend
         run: uv run pytest -q -m "not live"
