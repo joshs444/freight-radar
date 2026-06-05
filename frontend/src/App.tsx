@@ -76,6 +76,18 @@ export default function App() {
     [hoveredId, searchHits]
   );
 
+  // honest ship coverage: how many of the 28 chokepoints actually have a sampled vessel
+  // near them right now (the live sample clusters near a handful, not all 28) — the most
+  // truthful answer to "do we see all the ships?".
+  const shipCoverage = useMemo(() => {
+    const v = data?.ships?.vessels ?? [];
+    const ch = data?.snapshot?.chokepoints ?? [];
+    if (!v.length || !ch.length) return 0;
+    return ch.filter((c) =>
+      v.some((s) => Math.abs(s.lat - c.lat) < 1.6 && Math.abs(s.lon - c.lon) < 1.6)
+    ).length;
+  }, [data]);
+
   const ts = data?.timeseries;
 
   // uploaded trade data (if any) overrides the sample exposure + per-flag business
@@ -278,6 +290,7 @@ export default function App() {
                 lanes: data.lanes?.length ?? 0,
               }}
               ships={data.ships ?? null}
+              shipCoverage={shipCoverage}
               hasWind={!!data.wind}
             />
           )}
