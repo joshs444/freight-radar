@@ -17,7 +17,6 @@ import { money, compact } from './format.js';
 // --- formatting (display only — never feeds `facts`) -----------------------
 const pct = (v) => (v == null ? '—' : `${v > 0 ? '+' : ''}${Math.round(v)}%`);
 const perDay = (v) => (v == null ? '—' : `${Math.round(v)}/day`);
-const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 // a grounded fact: a raw value lifted straight from `src`
 const F = (v, src) => ({ v, src });
@@ -132,7 +131,7 @@ function summarize(data) {
   });
 }
 
-function entityStatus(e, data) {
+function entityStatus(e) {
   if (!e) return null;
   const cites = [];
   const facts = [];
@@ -401,7 +400,7 @@ export function ask(q, data, prebuiltIndex) {
 
   // Panama Canal Gatun lake level / draft (leading indicator)
   if (has('panama', 'gatun', 'draft', 'water level', 'lake level', 'neopanamax', 'canal water'))
-    return gatunAnswer(data) || (e ? entityStatus(e, data) : summarize(data));
+    return gatunAnswer(data) || (e ? entityStatus(e) : summarize(data));
 
   // natural hazards / official events
   if (has('weather', 'storm', 'cyclone', 'hurricane', 'typhoon', 'earthquake', 'flood', 'hazard',
@@ -438,7 +437,7 @@ export function ask(q, data, prebuiltIndex) {
     return listDisrupted(data);
 
   // an entity was named → its status (with vs-normal flavor handled inside)
-  if (e) return entityStatus(e, data);
+  if (e) return entityStatus(e);
 
   // overall state
   if (has('going on', 'happening', 'summary', 'overview', 'state of', 'how is freight', 'how bad', 'stress', 'situation', 'overall'))
