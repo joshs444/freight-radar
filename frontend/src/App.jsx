@@ -1,11 +1,16 @@
-import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
-import Globe from './Globe.jsx';
+import { useRef, useState, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import DataFeed from './components/DataFeed.jsx';
 import TimeScrubber from './components/TimeScrubber.jsx';
 import StressGauge from './components/StressGauge.jsx';
-import StressDetail from './components/StressDetail.jsx';
-import Chat from './components/Chat.jsx';
 import WorldRibbon from './components/WorldRibbon.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+
+// Heavy / interaction-gated views are lazy so the boot bundle is just the app shell:
+// Globe pulls maplibre + deck + weatherlayers (~480KB gz); Chat pulls the in-browser
+// query engine; StressDetail is modal-gated. React paints the shell while they stream in.
+const Globe = lazy(() => import('./Globe.jsx'));
+const Chat = lazy(() => import('./components/Chat.jsx'));
+const StressDetail = lazy(() => import('./components/StressDetail.jsx'));
 import StormIndicator from './components/StormIndicator.jsx';
 import SearchBox from './components/SearchBox.jsx';
 import Onboarding from './components/Onboarding.jsx';
@@ -230,16 +235,20 @@ export default function App() {
       <div className="fr-main">
         <section className="fr-stage">
           {data && (
-            <Globe
-              snapshot={globeView.snapshot}
-              lanes={data.lanes}
-              flags={globeView.flags}
-              ships={data.ships}
-              storms={data.weather?.storms}
-              selectedFlag={selected?.flag || null}
-              onSelectFlag={onSelectFlagFromGlobe}
-              mapApiRef={mapApiRef}
-            />
+            <ErrorBoundary fallback={<div className="fr-globe-fallback">Map unavailable on this device — the feed, brief and chat still work.</div>}>
+              <Suspense fallback={<div className="fr-globe-fallback">acquiring signal…</div>}>
+                <Globe
+                  snapshot={globeView.snapshot}
+                  lanes={data.lanes}
+                  flags={globeView.flags}
+                  ships={data.ships}
+                  storms={data.weather?.storms}
+                  selectedFlag={selected?.flag || null}
+                  onSelectFlag={onSelectFlagFromGlobe}
+                  mapApiRef={mapApiRef}
+                />
+              </Suspense>
+            </ErrorBoundary>
           )}
           <div className="fr-legend">
             <span><i className="sw amber" /> chokepoint</span>
@@ -299,10 +308,16 @@ export default function App() {
       </div>
 
       {showStress && data?.stress && (
-        <StressDetail stress={data.stress} onClose={() => setShowStress(false)} onPickEntity={pickByPortid} />
+        <Suspense fallback={null}>
+          <StressDetail stress={data.stress} onClose={() => setShowStress(false)} onPickEntity={pickByPortid} />
+        </Suspense>
       )}
 
-      {data && <Chat data={userExposure ? { ...data, flags, exposure: exposureSummary } : data} onPickEntity={pickByPortid} />}
+      {data && (
+        <Suspense fallback={null}>
+          <Chat data={userExposure ? { ...data, flags, exposure: exposureSummary } : data} onPickEntity={pickByPortid} />
+        </Suspense>
+      )}
     </div>
   );
 }

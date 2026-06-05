@@ -4,7 +4,7 @@
   --surface: #ffffff;
   --ink: #1b2230;
   --ink-dim: #5b6675;
-  --ink-faint: #97a1b2;
+  --ink-faint: #6b7585;   /* darkened for WCAG AA contrast on the light bg */
   --amber: #e07b12;
   --line: #e4e8ee;
   --line-strong: #d3d9e2;
@@ -14,6 +14,21 @@
 }
 
 * { box-sizing: border-box; }
+
+/* visible keyboard focus everywhere (only for keyboard nav, not mouse) — WCAG 2.4.7 */
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+
+/* graceful globe failure (error boundary) + lazy-load fallback */
+.fr-globe-fallback {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  padding: 24px; text-align: center; color: var(--ink-dim);
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.03em;
+}
+
+/* respect reduced-motion: drop the decorative CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
 
 html, body, #root {
   margin: 0;
