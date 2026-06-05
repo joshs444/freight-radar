@@ -22,7 +22,7 @@ Wave 2 overwrites flags.json with STL+z-score detected anomalies of the same sha
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import duckdb
@@ -253,7 +253,7 @@ def export(db_path=DEFAULT_DB_PATH, out_dir: Path = OUT_DIR, write_flags: bool =
 
     snapshot = {
         "as_of": as_of,
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": SOURCE,
         "chokepoints": chokepoints,
         "ports": ports,

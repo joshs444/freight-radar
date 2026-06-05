@@ -20,12 +20,13 @@ Bunker VLSFO is MODELED from Brent (estimate:true), not quoted.
 from __future__ import annotations
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import httpx
 import yaml
 
+from .. import _http
 from ..config import BACKEND_DIR, publish_dir
 
 LINKS_PATH = BACKEND_DIR / "config" / "market_links.yaml"
@@ -120,7 +121,7 @@ def fetch_indicators(client: httpx.Client, today: date) -> dict:
 
 def run_market(flags: list[dict], today: date) -> dict:
     links = yaml.safe_load(LINKS_PATH.read_text()) or {}
-    with httpx.Client(headers={"User-Agent": "freight-radar/0.1 (+portfolio)"}, follow_redirects=True) as client:
+    with _http.client(headers={"User-Agent": "freight-radar/0.1 (+portfolio)"}) as client:
         indicators = fetch_indicators(client, today)
     items: dict[str, dict] = {}
     for f in flags:
@@ -130,7 +131,7 @@ def run_market(flags: list[dict], today: date) -> dict:
         if linked:
             items[f["flag_id"]] = {"entity": f["entity"], "linked": linked,
                                    "relation": "exposure_context", "disclaimer": DISCLAIMER}
-    return {"generated_at": datetime.now().isoformat(timespec="seconds"),
+    return {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "indicators": indicators, "items": items, "disclaimer": DISCLAIMER}
 
 

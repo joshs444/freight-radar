@@ -99,6 +99,9 @@ async def run_backfill(
 
 
 def main() -> None:
+    from ._log import configure as configure_logging
+
+    configure_logging()
     ap = argparse.ArgumentParser(description="Freight Radar PortWatch backfill")
     ap.add_argument("--db", default=str(DEFAULT_DB_PATH))
     ap.add_argument("--days", type=int, default=BACKFILL_DAYS)

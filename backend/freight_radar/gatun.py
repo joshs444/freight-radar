@@ -26,16 +26,20 @@ from pathlib import Path
 import duckdb
 import httpx
 
+from . import _http
+from ._log import get_logger
+
+log = get_logger(__name__)
+
 HISTORY_URL = "https://evtms-rpts.pancanal.com/eng/h2o/Download_Gatun_Lake_Water_Level_History.csv"
 PROJECTION_URL = "https://evtms-rpts.pancanal.com/eng/h2o/Gatun_Water_Level_Projection.csv"
 PANAMA_PORTID = "chokepoint2"
 NORMAL_MAX_DRAFT_FT = 50.0  # Neopanamax design max; ACP restricts below this in drought
 SPARK_DAYS = 120
-BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 
 def _get(url: str, client: httpx.Client) -> str:
-    r = client.get(url)
+    r = _http.get(client, url)
     r.raise_for_status()
     return r.text
 
@@ -83,7 +87,7 @@ def _pctile_of(value: float, values: list[float]) -> float:
 
 def build(client: httpx.Client | None = None) -> dict:
     own = client is None
-    client = client or httpx.Client(timeout=25.0, headers={"User-Agent": BROWSER_UA})
+    client = client or _http.client(timeout=25.0)
     try:
         hist = _parse_history(_get(HISTORY_URL, client))
         proj = _parse_projection(_get(PROJECTION_URL, client))
@@ -130,6 +134,7 @@ def run(ctx) -> dict:
     try:
         payload = build()
     except Exception as e:  # noqa: BLE001 — degrade like every other enricher
+        log.warning("Gatun lake-level source unavailable: %r", e)
         payload = {"available": False, "error": repr(e)}
     # stamp lat/lon from the dim if present (so the card can fly the globe)
     if payload.get("available"):

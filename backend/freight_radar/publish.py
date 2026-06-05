@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import db_path, publish_dir
@@ -60,7 +60,7 @@ def write_manifest(out_dir: Path) -> dict:
     manifest = {
         "version": prev + 1,
         "as_of": snap.get("as_of"),
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": SOURCE,
         "flag_count": len(flags),
         "chokepoints": len(snap.get("chokepoints", [])),
@@ -90,6 +90,9 @@ def publish_static(db=None, out_dir=None) -> dict:
 
 
 if __name__ == "__main__":
+    from ._log import configure as configure_logging
+
+    configure_logging()
     m = publish_static()
     print("=== published (static) ===")
     print(json.dumps(m, indent=2))
