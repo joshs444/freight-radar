@@ -16,6 +16,9 @@ export async function makeWindLayer(base = '/') {
   if (!meta?.image) return null;
 
   const image = await loadTextureData(`${base}data/${meta.image}`);
+  // respect prefers-reduced-motion: render a static field instead of flowing particles
+  const reduceMotion = typeof matchMedia === 'function'
+    && matchMedia('(prefers-reduced-motion: reduce)').matches;
   return new ParticleLayer({
     id: 'wind',
     image,
@@ -28,6 +31,6 @@ export async function makeWindLayer(base = '/') {
     width: 1.6,
     color: [72, 102, 150],             // soft slate-blue, reads as wind under the markers
     opacity: 0.42,
-    animate: true,
+    animate: !reduceMotion,
   });
 }

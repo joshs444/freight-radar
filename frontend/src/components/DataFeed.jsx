@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { severityCss } from '../lib/colors.js';
 import { money } from '../lib/format.js';
 import { Markdown } from '../lib/md.jsx';
@@ -9,7 +9,9 @@ import HazardsPanel from './HazardsPanel.jsx';
 import GatunPanel from './GatunPanel.jsx';
 import CargoMix from './CargoMix.jsx';
 import NationalDependence from './NationalDependence.jsx';
-import Upload from './Upload.jsx';
+// lazy: defers lib/csv.js + lib/exposure.js + the 128KB ports_lookup.json until the
+// user actually opens the upload flow (never fetched on first load).
+const Upload = lazy(() => import('./Upload.jsx'));
 import SearchBox from './SearchBox.jsx';
 import { exportBrief, exportExposureCSV } from '../lib/exporters.js';
 
@@ -277,7 +279,7 @@ export default function DataFeed({ rows, filter, setFilter, criticalCount, expos
 
       {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
 
-      {upload && <Upload {...upload} />}
+      {upload && <Suspense fallback={null}><Upload {...upload} /></Suspense>}
 
       {exposure && (
         <div className="fr-exposure">
