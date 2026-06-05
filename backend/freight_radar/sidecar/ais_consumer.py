@@ -23,10 +23,14 @@ import json
 import math
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
+from .._log import configure as configure_logging
+from .._log import get_logger
 from ..config import publish_dir
+
+log = get_logger(__name__)
 
 # (name, center_lon, center_lat, heading_deg) — real maritime hotspots
 HOTSPOTS = [
@@ -44,15 +48,15 @@ def _ships_path(out_dir: Path) -> Path:
     return out_dir / "ships.json"
 
 
-def write_offline(out_dir: Path = None) -> dict:
+def write_offline(out_dir: Path | None = None) -> dict:
     out = _ships_path(out_dir or publish_dir())
-    payload = {"mode": "offline", "generated_at": datetime.now().isoformat(timespec="seconds"),
+    payload = {"mode": "offline", "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                "t_max": T_MAX, "ships": []}
     out.write_text(json.dumps(payload, separators=(",", ":")))
     return payload
 
 
-def generate_demo(out_dir: Path = None, per_hotspot: int = 14) -> dict:
+def generate_demo(out_dir: Path | None = None, per_hotspot: int = 14) -> dict:
     """Deterministic SIMULATED tracks near real hotspots (clearly labelled)."""
     rng = random.Random(42)
     ships = []
@@ -81,7 +85,7 @@ def generate_demo(out_dir: Path = None, per_hotspot: int = 14) -> dict:
     payload = {
         "mode": "demo",
         "note": "Simulated demo tracks — NOT live vessel data.",
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "t_max": T_MAX,
         "ships": ships,
     }
@@ -89,7 +93,7 @@ def generate_demo(out_dir: Path = None, per_hotspot: int = 14) -> dict:
     return payload
 
 
-async def run_live(out_dir: Path = None, key: str = "", write_every: float = 4.0) -> None:
+async def run_live(out_dir: Path | None = None, key: str = "", write_every: float = 4.0) -> None:
     """Best-effort live AIS. Subscribes to hotspot bboxes, accumulates bounded
     per-MMSI trails, periodically writes ships.json. Any failure -> offline."""
     import websockets  # local import: only needed on the live path
@@ -105,7 +109,7 @@ async def run_live(out_dir: Path = None, key: str = "", write_every: float = 4.0
                 "FilterMessageTypes": ["PositionReport"],
             }))
             last_write = 0.0
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             async for raw in ws:
                 msg = json.loads(raw)
                 pr = msg.get("Message", {}).get("PositionReport")
@@ -122,7 +126,7 @@ async def run_live(out_dir: Path = None, key: str = "", write_every: float = 4.0
                     _write_live(out, trails)
     except Exception as exc:  # noqa: BLE001 - garnish: any failure degrades to offline
         write_offline(out)
-        print(f"AIS live failed ({exc!r}); wrote offline badge")
+        log.warning("AIS live failed (%r); wrote offline badge", exc)
 
 
 AIS_URL = "wss://stream.aisstream.io/v0/stream"
@@ -165,7 +169,7 @@ def _chokepoint_bboxes(half: float = 0.7) -> list:
     return [[[clat - 1.5, clon - 1.5], [clat + 1.5, clon + 1.5]] for _, clon, clat, _ in HOTSPOTS]
 
 
-async def snapshot_live(out_dir: Path = None, key: str = "", duration_s: float = 70.0) -> dict:
+async def snapshot_live(out_dir: Path | None = None, key: str = "", duration_s: float = 70.0) -> dict:
     """One-shot REAL AIS: collect a ~duration_s window of position reports near the
     monitored chokepoints, keep the LATEST position per vessel, write ships.json as
     current positions (not trails). Any failure degrades to offline. Honest: this is a
@@ -212,7 +216,7 @@ async def snapshot_live(out_dir: Path = None, key: str = "", duration_s: float =
         pass  # expected — we deliberately cap the collection window
     except Exception as exc:  # noqa: BLE001 - garnish: any failure degrades to offline
         write_offline(out)
-        print(f"AIS snapshot failed ({exc!r}); wrote offline badge")
+        log.warning("AIS snapshot failed (%r); wrote offline badge", exc)
         return {"mode": "offline", "count": 0}
 
     vessels = [
@@ -225,7 +229,7 @@ async def snapshot_live(out_dir: Path = None, key: str = "", duration_s: float =
         "mode": "live",
         "note": "Real AIS vessel positions near the monitored chokepoints, sampled at publish (a point-in-time sample, not all ships).",
         "source": "aisstream.io",
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "count": len(vessels),
         "vessels": vessels,
     }
@@ -241,12 +245,13 @@ def _write_live(out: Path, trails: dict[str, list]) -> None:
         path = [[round(p[0], 4), round(p[1], 4), int(i / (len(pts) - 1) * T_MAX)]
                 for i, p in enumerate(pts)]
         ships.append({"mmsi": mmsi, "name": mmsi, "type": "unknown", "path": path})
-    payload = {"mode": "live", "generated_at": datetime.now().isoformat(timespec="seconds"),
+    payload = {"mode": "live", "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                "t_max": T_MAX, "ships": ships}
     _ships_path(out).write_text(json.dumps(payload, separators=(",", ":")))
 
 
 def main() -> None:
+    configure_logging()
     ap = argparse.ArgumentParser(description="Freight Radar AIS garnish (optional)")
     ap.add_argument("--demo", action="store_true", help="force simulated tracks")
     ap.add_argument("--offline", action="store_true", help="force empty/offline")

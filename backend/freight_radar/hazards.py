@@ -27,13 +27,13 @@ from pathlib import Path
 import duckdb
 import httpx
 
+from . import _http
 from .config import ARCGIS_HOST
 
 DISRUPTIONS_URL = f"{ARCGIS_HOST}/portwatch_disruptions_database/FeatureServer/0/query"
 WINDOW_DAYS = 240          # how far back to surface "recent" hazard events
 CORROBORATE_DAYS = 30      # a flag is corroborated only by a near-contemporaneous event
 CHOKEPOINT_RADIUS_KM = 350  # spatial match of an event to a chokepoint
-BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 EVENT_TYPES = {
     "TC": "Tropical cyclone", "FL": "Flood", "EQ": "Earthquake", "VO": "Volcano",
@@ -71,9 +71,9 @@ def fetch_events(as_of: date, client: httpx.Client | None = None) -> list[dict]:
         "f": "json",
     }
     own = client is None
-    client = client or httpx.Client(timeout=20.0, headers={"User-Agent": BROWSER_UA})
+    client = client or _http.client(timeout=20.0)
     try:
-        r = client.get(DISRUPTIONS_URL, params=params)
+        r = _http.get(client, DISRUPTIONS_URL, params=params)
         r.raise_for_status()
         feats = r.json().get("features", [])
     finally:

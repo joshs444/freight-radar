@@ -22,6 +22,11 @@ import httpx
 import numpy as np
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
+from ._log import configure as configure_logging
+from ._log import get_logger
+
+log = get_logger(__name__)
+
 NOMADS = "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl"
 UNSCALE = (-30.0, 30.0)   # m/s range mapped onto 0..255 per channel (calm -> ~128)
 DOWNSAMPLE = 2            # 1440x721 -> 720x361 (lighter ~PNG, plenty for particles)
@@ -108,6 +113,7 @@ def run(ctx) -> dict:
             grib, cycle = _latest_grib(c)
         rgba = _encode(grib)
     except Exception as exc:  # noqa: BLE001 - degrade: no wind layer this run
+        log.warning("wind layer unavailable this run: %r", exc)
         return {"name": "wind", "sidecar": "wind.json", "error": repr(exc)}
 
     h, w = rgba.shape[:2]
@@ -129,6 +135,7 @@ def run(ctx) -> dict:
 if __name__ == "__main__":
     import types
 
+    configure_logging()
     from .config import publish_dir
 
     ctx = types.SimpleNamespace(out_dir=publish_dir(), as_of=date.today().isoformat(),

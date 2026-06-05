@@ -28,11 +28,15 @@ from pathlib import Path
 
 import httpx
 
+from . import _http
+from ._log import get_logger
+
+log = get_logger(__name__)
+
 NHC_URL = "https://www.nhc.noaa.gov/CurrentStorms.json"
 GDACS_URL = "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC"
 MATCH_RADIUS_KM = 500  # a TC's influence is broad; within this of a flag = "possibly related"
 KT_TO_KMH = 1.852
-BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 # NHC storm-id prefix -> basin label.
 _NHC_BASIN = {"al": "N Atlantic", "ep": "E Pacific", "cp": "C Pacific"}
@@ -130,16 +134,16 @@ def fetch_storms(client: httpx.Client | None = None) -> list[dict]:
     """Both live feeds, normalized + merged. A failed feed degrades to [] for that
     source (never aborts) — the other still publishes."""
     own = client is None
-    client = client or httpx.Client(timeout=20.0, headers={"User-Agent": BROWSER_UA},
-                                    follow_redirects=True)
+    client = client or _http.client()
     storms: list[dict] = []
     try:
         for url, norm in ((NHC_URL, normalize_nhc), (GDACS_URL, normalize_gdacs)):
             try:
-                r = client.get(url)
+                r = _http.get(client, url)
                 r.raise_for_status()
                 storms += norm(r.json())
-            except (httpx.HTTPError, ValueError):
+            except (httpx.HTTPError, ValueError) as exc:
+                log.warning("storm feed unavailable (%s): %r", url, exc)
                 continue
     finally:
         if own:

@@ -19,11 +19,13 @@ from __future__ import annotations
 import json
 import urllib.parse
 import xml.etree.ElementTree as ET
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 import httpx
+
+from .. import _http
 
 from ..config import publish_dir
 
@@ -85,7 +87,7 @@ def enrich_news(flags: list[dict], today: date) -> dict:
     """Fetch coverage for each active flag; return the news.json payload."""
     active = [f for f in flags if f.get("lifecycle") != "resolved"]
     items: dict[str, dict] = {}
-    with httpx.Client(headers={"User-Agent": "freight-radar/0.1 (+portfolio)"}, follow_redirects=True) as client:
+    with _http.client(headers={"User-Agent": "freight-radar/0.1 (+portfolio)"}) as client:
         for f in active:
             arts = fetch_for_entity(client, f["entity"], f["as_of"], today)
             items[f["flag_id"]] = {
@@ -96,7 +98,7 @@ def enrich_news(flags: list[dict], today: date) -> dict:
                 "outlet_count": len({a["source"].lower() for a in arts if a["source"]}),
             }
     return {
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "search_date": today.isoformat(),
         "items": items,
     }
