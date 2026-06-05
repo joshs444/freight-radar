@@ -31,7 +31,7 @@ export function useHistory(livePorts: SnapshotPort[]) {
       }
     }
     if (h) {
-      setWeek(h.dates.length - 1);
+      setWeek(0); // start at 2019 so "play 2019 → now" sweeps forward through the shocks
       setMode(true);
     }
   }, [history]);
