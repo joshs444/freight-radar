@@ -22,6 +22,9 @@ import type { MonitorEntity, MapApi, Flag, GlobeFlag, LayerId, LayerVisibility }
 import LayerPanel from './components/LayerPanel.tsx';
 import type { AppliedExposure } from './components/Upload.tsx';
 
+// labels for the GFS wind forecast scrubber (matches backend wind.FHOURS = 0,24,48,72,96)
+const WIND_FRAMES = ['now', '+1 day', '+2 days', '+3 days', '+4 days'];
+
 export default function App() {
   const { loading, error, data } = useData();
   const [selected, setSelected] = useState<MonitorEntity | null>(null);
@@ -72,6 +75,8 @@ export default function App() {
   // the globe (a cyan ring). The Globe gets the union of both.
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [searchHits, setSearchHits] = useState<string[]>([]);
+  // GFS wind forecast scrubber: 0 = now (analysis) … 4 = +4 days
+  const [windFrame, setWindFrame] = useState(0);
   const highlightIds = useMemo(
     () => (hoveredId ? [...new Set([hoveredId, ...searchHits])] : searchHits),
     [hoveredId, searchHits]
@@ -267,6 +272,7 @@ export default function App() {
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
                   windOn={hist.mode ? false : layers.wind}
+                  windFrame={windFrame}
                   layers={layers}
                   highlightIds={hist.mode ? [] : highlightIds}
                 />
@@ -294,6 +300,21 @@ export default function App() {
               shipCoverage={shipCoverage}
               hasWind={!!data.wind}
             />
+          )}
+          {!hist.mode && data?.wind && layers.wind && (
+            <div className="fr-wind-scrub" role="group" aria-label="GFS wind forecast hour">
+              <span className="fr-wind-scrub-lbl">GFS wind forecast</span>
+              <input
+                className="fr-wind-scrub-range"
+                type="range"
+                min={0}
+                max={WIND_FRAMES.length - 1}
+                value={windFrame}
+                onChange={(e) => setWindFrame(Number(e.target.value))}
+                aria-label="Scrub the NOAA GFS wind forecast forward in time"
+              />
+              <span className="fr-wind-scrub-val">{WIND_FRAMES[windFrame]}</span>
+            </div>
           )}
           {hist.mode && hist.event && (
             <div className="fr-hist-caption" role="status">

@@ -33,10 +33,14 @@ DOWNSAMPLE = 2            # 1440x721 -> 720x361 (lighter ~PNG, plenty for partic
 BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 
-def _cycle_url(d: date, hh: int) -> str:
+# forecast hours we publish so the wind can be scrubbed forward: now -> +4 days (daily).
+FHOURS = (0, 24, 48, 72, 96)
+
+
+def _cycle_url(d: date, hh: int, fhour: int = 0) -> str:
     ymd = d.strftime("%Y%m%d")
     return (f"{NOMADS}?dir=%2Fgfs.{ymd}%2F{hh:02d}%2Fatmos"
-            f"&file=gfs.t{hh:02d}z.pgrb2.0p25.f000"
+            f"&file=gfs.t{hh:02d}z.pgrb2.0p25.f{fhour:03d}"
             f"&var_UGRD=on&var_VGRD=on&lev_10_m_above_ground=on")
 
 
@@ -49,20 +53,27 @@ def _get(client: httpx.Client, url: str) -> httpx.Response:
     return client.get(url, timeout=90)
 
 
-def _latest_grib(client: httpx.Client) -> tuple[bytes, str]:
-    """Newest available GFS cycle's 10m u/v GRIB — loop newest->oldest until a 200."""
+def _fetch(client: httpx.Client, d: date, hh: int, fhour: int) -> bytes | None:
+    """One GFS forecast-hour GRIB, or None if it isn't published / isn't valid GRIB."""
+    try:
+        r = _get(client, _cycle_url(d, hh, fhour))
+    except httpx.HTTPError:
+        return None
+    if r.status_code == 200 and len(r.content) > 50_000 and r.content[:4] == b"GRIB":
+        return r.content
+    return None
+
+
+def _latest_cycle(client: httpx.Client) -> tuple[date, int]:
+    """Newest GFS cycle whose f000 is published — loop newest->oldest until found."""
     now = datetime.now(timezone.utc)
     for back in range(0, 3):  # today, yesterday, day before
         d = (now - timedelta(days=back)).date()
         for hh in (18, 12, 6, 0):
             if back == 0 and hh > now.hour:
                 continue  # cycle hasn't run yet today
-            try:
-                r = _get(client, _cycle_url(d, hh))
-            except httpx.HTTPError:
-                continue
-            if r.status_code == 200 and len(r.content) > 50_000 and r.content[:4] == b"GRIB":
-                return r.content, f"{d.isoformat()} {hh:02d}z f000"
+            if _fetch(client, d, hh, 0) is not None:
+                return d, hh
     raise RuntimeError("no available GFS cycle found")
 
 
@@ -108,28 +119,43 @@ def run(ctx) -> dict:
     from PIL import Image
 
     out = Path(ctx.out_dir)
+    frames: list[dict] = []
+    w = h = 0
     try:
         with httpx.Client(headers={"User-Agent": BROWSER_UA}, follow_redirects=True) as c:
-            grib, cycle = _latest_grib(c)
-        rgba = _encode(grib)
+            d, hh = _latest_cycle(c)
+            cycle_dt = datetime(d.year, d.month, d.day, hh, tzinfo=timezone.utc)
+            for fhour in FHOURS:
+                grib = _fetch(c, d, hh, fhour)
+                if grib is None:
+                    continue  # this forecast hour isn't published yet — skip it
+                rgba = _encode(grib)
+                h, w = rgba.shape[:2]
+                name = f"wind_f{fhour:03d}.png"
+                Image.fromarray(rgba, "RGBA").save(out / name, optimize=True)
+                valid = cycle_dt + timedelta(hours=fhour)
+                frames.append({"fhour": fhour, "valid": valid.strftime("%Y-%m-%d %H:%MZ"),
+                               "image": name})
     except Exception as exc:  # noqa: BLE001 - degrade: no wind layer this run
         log.warning("wind layer unavailable this run: %r", exc)
         return {"name": "wind", "sidecar": "wind.json", "error": repr(exc)}
+    if not frames:
+        return {"name": "wind", "sidecar": "wind.json", "error": "no forecast frames published"}
 
-    h, w = rgba.shape[:2]
-    Image.fromarray(rgba, "RGBA").save(out / "wind.png", optimize=True)
+    cycle = f"{d.isoformat()} {hh:02d}z"
     (out / "wind.json").write_text(json.dumps({
         "generated_at": ctx.today,
         "as_of": ctx.as_of or date.today().isoformat(),
         "source": "NOAA GFS 0.25° 10 m wind (NOMADS)",
         "cycle": cycle,
-        "image": "wind.png",
+        "image": frames[0]["image"],   # backward-compat: the f000 analysis frame
+        "frames": frames,              # the forecast hours, scrubbable in the UI
         "width": w, "height": h,
         "imageUnscale": list(UNSCALE),
         "bounds": [-180, -90, 180, 90],
     }, separators=(",", ":")))
-    return {"name": "wind", "sidecar": "wind.json", "cycle": cycle, "size": f"{w}x{h}",
-            "png_kb": round((out / "wind.png").stat().st_size / 1024, 1)}
+    return {"name": "wind", "sidecar": "wind.json", "cycle": cycle, "frames": len(frames),
+            "size": f"{w}x{h}"}
 
 
 if __name__ == "__main__":
