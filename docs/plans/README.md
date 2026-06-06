@@ -9,16 +9,17 @@ The single **active, forward-looking** plan is the **year vision**:
 into an honest world-awareness platform, with its full free-source catalog in
 [`DATA-SOURCES.md`](DATA-SOURCES.md). Shipped 2026-06-06: **P0** (typed `LayerDescriptor`
 registry + golden masters + structural firewall + Python↔dbt parity), **P1's honesty half**
-(registry-driven honesty predicates + scorecard), and **P1.5's read surface** (the read-only
-store API + `catalog.json` + the Standpoint Knowledge **MCP server**, no write tool). Next:
-the DuckDB-WASM in-browser SQL console (the P1.5 flourish), then the **P2 fact-pipeline**
-(generalized WAP · `fct_observation` · the 2065-port spine). The prior root plan
+(registry-driven honesty predicates + scorecard), and **all of P1.5** (the read-only
+store API + `catalog.json` + the Standpoint Knowledge **MCP server** (no write tool) + the
+**DuckDB-WASM in-browser SQL console** — a Data view that queries the whole store live, no
+backend). Next: the **P2 fact-pipeline** (generalized WAP · `fct_observation` · the
+2065-port spine). The prior root plan
 [`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md) is now shipped.
 
 For the distilled decisions (rather than the build sequence), see the
 [Architecture Decision Records](../adr/).
 
-### 🟢 Active — the forward plan (P0 ✅ · P1 honesty ✅ · P1.5 read surface + MCP ✅ · fact-pipeline next)
+### 🟢 Active — the forward plan (P0 ✅ · P1 honesty ✅ · P1.5 ✅ (read surface + MCP + SQL console) · P2 fact-pipeline next)
 
 | Plan | What it covers | Status |
 |---|---|---|

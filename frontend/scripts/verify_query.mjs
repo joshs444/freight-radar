@@ -5,7 +5,7 @@
 //   npm run preview &  ; node scripts/verify_query.mjs
 import { chromium } from 'playwright';
 
-const URL = 'http://localhost:4173/#v=data';
+const URL = (process.env.VERIFY_URL || 'http://localhost:4173/') + '#v=data';
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const errors = [];

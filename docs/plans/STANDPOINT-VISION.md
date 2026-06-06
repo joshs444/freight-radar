@@ -262,8 +262,10 @@ and the heavy build stays in the weekly Action.
   FastMCP server exposing `list_layers` / `get_layer_facts` / `nearby`, behind the `mcp` extra, with an
   **SDK-free tool contract** so CI proves the no-write guarantee without the SDK. _Chose a JSON read-surface
   (DuckDB-WASM reads the published JSON sidecars directly) over committing Parquet — zero new core deps,
-  zero git-bloat._ **Remaining (the visible flourish): the DuckDB-WASM in-browser SQL console** (query the
-  whole store live, no backend) — deferred to a focused pass (heavier frontend + headless-verification risk).
+  zero git-bloat._ **✅ The DuckDB-WASM in-browser SQL console shipped too** — a third view (Globe / Board /
+  **Data**) runs SQL over the published sidecars entirely in the browser (engine lazy-loaded from jsDelivr,
+  off the boot budget); headless-verified live (6 views, a cross-source `flags ⋈ chokepoints` JOIN, 0
+  console errors). **P1.5 is complete.**
 - **Goal:** make the store queryable by a machine **without building a reasoner** — the
   critic's key split: *substrate-for-agents* now, *the agent that reasons* much later.
 - **Build:** one export step emits **both** the per-layer sidecars **and** a compact, read-only
