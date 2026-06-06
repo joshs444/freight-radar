@@ -25,8 +25,8 @@ It's built on free, public **IMF PortWatch** data and a durable **Temporal** wor
 |---|---|---|
 | ![globe](docs/hero.png) | ![flag detail](docs/flag-detail.png) | ![time scrubber](docs/timescrubber.png) |
 
-- **Light globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints as crisp amber marks and ~2,065 ports as faint dust, sized by real vessel activity, with great-circle lane arcs.
-- **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1").
+- **Light globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints as crisp amber marks and ~2,065 ports sized into a hierarchy by real vessel traffic (big ports read first), plus sampled live AIS vessels and great-circle lane arcs. A **layer panel** toggles every overlay (ports / vessels / wind / storms / flags / lanes) with live counts, and answers honestly what the vessels are (a point-in-time AIS sample near the chokepoints, not all ships).
+- **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1"). **Search** by name, country, or status (`country:japan`, `is:critical`) lights every match on the globe; hovering a row rings its mark.
 - **Cargo-aware detection** — beyond the blended counts, the engine reads the per-cargo-type flows the warehouse already carries. A port's **dominant cargo stream** is detected on its own — so a brief reads *"Hong Kong container calls −38% (z −7.3), tanker +32%"* instead of a muddied total, surfacing moves a total-only view erases. Each chokepoint's **average vessel size** (transiting tonnage ÷ vessel count) is tracked as an axis **orthogonal to the count** (≈ −0.08 correlation), catching fleet-mix shifts the count can't see — e.g. *Yucatan Channel +34%, bigger ships, count flat*. Every row shows its **vessel mix**; chokepoints add avg vessel size + transiting tonnage.
 - **National-dependence weighting** — each port carries its share of its *country's* maritime trade (an IMF systemic-importance score). A country's **sole gateway** (Mombasa ≈ 99.8% of Kenya's trade) now outranks an equally-busy port that is one of many — and a flagged systemic port says *"handles ~N% of {country}'s maritime imports"* on its brief, with a National-dependence chip in the row.
 - **Global Ocean Freight Stress Index (0–100)** — one at-a-glance number in the top bar, with a 30-day sparkline and week-over-week momentum. It **blends breadth** (an economic-weighted mean of every chokepoint's deviation from its normal throughput) **with depth** (the single worst chokepoint), so a concentrated crisis at one strategic strait isn't averaged away. Both components are exposed for inspection.
@@ -129,7 +129,7 @@ python -m freight_radar.publish             # detect + snapshot + manifest -> fr
 python -m freight_radar.export_timeseries   # the scrubber's per-day series
 python -m freight_radar.sidecar.ais_consumer --demo   # optional simulated ship trails
 
-pytest -m "not live"     # 72 deterministic tests (detection, cargo-aware, ETL guards, temporal, narrative…)
+pytest -m "not live"     # 80 deterministic tests (detection, cargo-aware, ETL guards, WAP, temporal, narrative…)
 pytest -m live           # + the live PortWatch contract tests (network)
 ```
 
@@ -165,7 +165,7 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 - **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), the stress gauge + "this week" brief render, the chat answers with citations, flags are clickable (fly-to + real brief), and the scrubber replays real history — all with **0 console errors**.
 - **Business depth** — a real-world CSV (LOCODEs, alternate spellings, no region column) resolves instead of silently zeroing; coverage is reported ("X of N lanes modeled"); the cost-of-disruption stack's total is exactly carrying + reroute premium (no fabricated lines), with working capital held separate (locked ≠ lost) and a "show your work" method panel.
 - **Hazard corroboration** — synthetic GDACS events prove the matcher: exact port-ID matches + chokepoint proximity, old/non-infra events dropped, and a flag is corroborated **only** by a contemporaneous (±30d) hazard — never a stale one (no false causation).
-- **72/72** non-live backend tests pass (+ chat-grounding 190 facts/0 ungrounded + exposure-parity 0 mismatches).
+- **80/80** non-live backend tests pass (+ chat-grounding 190 facts/0 ungrounded + exposure-parity 0 mismatches).
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 
