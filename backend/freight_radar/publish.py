@@ -126,11 +126,13 @@ def publish_static(db=None, out_dir=None) -> dict:
     out = Path(out_dir) if out_dir else publish_dir()
     db = Path(db) if db else db_path()
     from .honesty.scorecard import write as write_scorecard
+    from .store import write_catalog
 
     run_detection.run(db, flags_json=out / "flags.json")
     run_enrichers(build_ctx(db=db, out=out))  # exposure + news + timeseries (+ future layers)
     export(db_path=db, out_dir=out, write_flags=False)
     write_scorecard(out)  # the honesty scorecard (Harness Layer 4) — registry-derived, free
+    write_catalog(out)  # the agent-legible read surface entry point (store/catalog.json)
     return write_manifest(out)
 
 
