@@ -105,12 +105,67 @@ flowchart LR
 
 ---
 
+## dbt analytics layer (`dbt/`)
+
+DuckDB is a **substrate**, not a single app's private store — the globe is one view of
+it; a second, co-equal consumer is a **dbt project** (`dbt-duckdb`) pointed at the same
+`data/freight_radar.duckdb`. dbt doesn't re-fetch anything: it declares the pipeline's
+landed tables as **sources** and re-expresses the transforms as a `raw → staging → marts`
+lineage, with the **fail-loud ETL guards re-expressed as dbt tests**.
+
+```
+sources (main.*)            staging (views, main_staging)        marts (tables, main_marts)
+  dim_chokepoint  ─┐          stg_chokepoints / stg_ports          mart_chokepoint_pressure   ← export_snapshot._chokepoints
+  dim_port         ├──────▶   stg_chokepoint_daily / _port_daily ▶ mart_port_activity         ← export_snapshot._ports
+  fct_chokepoint_daily        stg_flags                            int_chokepoint_stress ─▶ mart_freight_stress_index  ← narrative/stress.py
+  fct_port_daily  ─┘                                               mart_active_flags          ← detection serving
+  fct_flags
+```
+
+- **Re-expression, not new analysis.** The marts reproduce the existing numbers — the
+  28-day rolling baseline (`pct_change`/`z-score`), the per-port latest snapshot, and the
+  **Global Ocean Freight Stress Index** (80th-pctile normal → deviation squash → causal
+  3-day smoothing → `100·(0.6·breadth + 0.4·depth)`). The pipeline's named constants are
+  dbt `vars`, so the SQL reads them instead of hard-coding magic numbers, and DuckDB's
+  `round_even` matches Python's banker's rounding so the figures are identical, not merely close.
+- **The ETL guards become dbt tests.** Generic schema tests (`not_null`, `unique`,
+  `relationships`, `accepted_values`, `dbt_utils.accepted_range`,
+  `unique_combination_of_columns`) plus **singular tests** for the heavier invariants:
+  the **D1 join-coverage gate** (`portid`→geometry ≥ 0.95), the **cargo-mix reconciliation**
+  (leaf vessel types sum to the headline totals — the warehouse echo of the D2
+  silent-column-drop guard), and a stress-index range check. `dbt build` materializes 4
+  tables + 6 views and runs **82 tests** — green or the build fails.
+- **Reconciled to the Python pipeline, exactly.** Every materialized figure was diffed
+  against the functions it re-expresses: the stress index matches on **all 120 daily
+  points** (max |Δ| = 0; latest = `41.6 / "high"`), chokepoint pressure on all 28×5
+  computed fields, port activity on portcalls/vessels + full-precision shares — **0
+  mismatches**. The dbt marts and the globe trace to the same arithmetic.
+- **Isolation.** dbt writes to `main_staging` / `main_marts`; the app + API still read
+  `main` only, so the analytics layer never collides with the pipeline's own tables and
+  the production refresh job never imports dbt.
+- **CI is hermetic.** The 32 MB prod warehouse is gitignored, so CI rebuilds a tiny
+  fixture DB from committed CSVs (`dbt/ci/`) using the **exact prod DDL** and runs
+  `dbt build` against it — the dbt layer is enforced on every push, not decorative.
+- **Warehouse-portable.** Models are plain SQL on the standard `source()`/`ref()` lineage;
+  `profiles.yml` carries a commented **BigQuery** target showing the same models run on a
+  cloud warehouse by swapping the adapter. DuckDB is the live, tested target.
+
+```bash
+cd backend && uv sync --extra dbt                                   # dbt-core + dbt-duckdb
+uv run dbt deps  --project-dir ../dbt --profiles-dir ../dbt         # vendor dbt_utils
+uv run dbt build --project-dir ../dbt --profiles-dir ../dbt         # models + tests (dev target)
+uv run dbt docs generate --project-dir ../dbt --profiles-dir ../dbt # lineage + data dictionary
+```
+
+---
+
 ## Stack
 
 | Layer | Choice |
 |---|---|
 | Ingest | Python 3.12, `httpx` async, verified ArcGIS queries with `resultOffset` pagination |
 | Storage / detection substrate | **DuckDB** (single file; window functions for rolling baselines) |
+| Analytics layer | **dbt** (`dbt-core` + `dbt-duckdb`) — `raw → staging → marts` re-expression of the transforms, ETL guards as dbt tests, hermetic-fixture CI; reconciled to the Python pipeline exactly. See [dbt analytics layer](#dbt-analytics-layer-dbt) |
 | Detection | `statsmodels` STL(7, robust) → rolling z-score, CUSUM, `ruptures` PELT change-point gate; config-driven YAML. Runs on blended counts **plus** per-cargo-type dominant streams and an orthogonal avg-vessel-size (DWT/vessel) axis; port severity blends national-dependence share |
 | Orchestration | **Temporal** (`temporalio`) — one durable workflow, 6 activities, RetryPolicy, a Schedule, a dedup ledger |
 | API | FastAPI read-only (`/snapshot` `/flags` `/lanes` `/manifest` `/health`) with ETags |

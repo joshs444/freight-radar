@@ -1,0 +1,47 @@
+portid,fullname,portname,country,iso3,continent,lat,lon,vessel_count_total,industry_top1,industry_top2,industry_top3,locode,vessel_count_container,vessel_count_dry_bulk,vessel_count_general_cargo,vessel_count_roro,vessel_count_tanker,share_country_maritime_import,share_country_maritime_export
+port1065,"Busan, Korea",Busan,Korea,KOR,Asia & Pacific,35.08955067,128.9385952,19994,Mineral Products,Metals,Vegetable Products,KR PUS,12101,686,3347,417,3443,17.35,30.77
+port1069,"Qingdao, China",Qingdao,China,CHN,Asia & Pacific,36.02677905,120.2226181,11381,Mineral Products,Chemical & Allied Industries,Vegetable Products,CN QDG,7270,1251,1337,95,1428,6.54,7.98
+port1073,"Qiwei, China",Qiwei,China,CHN,Asia & Pacific,31.99831756,120.6176242,5837,Mineral Products,Metals,Vegetable Products,,194,2881,897,4,1861,2.15,0.29
+port1114,"Rotterdam, The Netherlands",Rotterdam,The Netherlands,NLD,Europe,51.92228121,4.215144967,32584,Mineral Products,Chemical & Allied Industries,Vegetable Products,NL RTM,7045,1052,5181,2316,16990,76.05,68.1
+port1128,"Sakai-Semboku, Japan",Sakai-Semboku,Japan,JPN,Asia & Pacific,34.5578402,135.4223815,9936,Mineral Products,Chemical & Allied Industries,Metals,,99,666,3408,542,5221,2.29,1.93
+port1160,"Santos, Brazil",Santos,Brazil,BRA,South America,-23.91706787,-46.33656353,5258,Mineral Products,Vegetable Products,Prepared Foodstuffs & Beverages,BR SSZ,2026,1791,333,167,941,13.47,12.7
+port1188,"Shanghai (Pudong), China",Shanghai (Pudong),China,CHN,Asia & Pacific,31.19179536,121.6441968,41093,Mineral Products,Metals,Wood & Wood Products,CN SGH,12110,13770,5162,1743,8308,7.33,10.44
+port1201,"Singapore, Singapore",Singapore,Singapore,SGP,Asia & Pacific,1.271989257,103.7074816,44369,Mineral Products,Vegetable Products,Chemical & Allied Industries,SG SIN,13921,810,2039,1322,26277,95.12,95.45
+port1252,"Taichung, Taiwan Province of China",Taichung,Taiwan Province of China,TWN,Asia & Pacific,24.25457118,120.5049668,5808,Mineral Products,Metals,Vegetable Products,TW TXG,2668,1219,788,39,1094,23.6,13.52
+port1253,"Suzhou (Taicang), China",Suzhou (Taicang),China,CHN,Asia & Pacific,31.68751575,121.137616,8374,Mineral Products,Wood & Wood Products,Vegetable Products,,1516,3116,1915,186,1641,2.8,0.44
+port1291,"Saigon, Vietnam",Saigon,Vietnam,VNM,Asia & Pacific,10.73624058,106.766152,9332,Mineral Products,Wood & Wood Products,Chemical & Allied Industries,,5205,805,1748,82,1492,28.54,15.68
+port1297,"Tianjin Xin Gang, China",Tianjin Xin Gang,China,CHN,Asia & Pacific,38.9397259,117.7336149,11678,Mineral Products,Chemical & Allied Industries,Vegetable Products,,3747,3572,1537,632,2190,7.03,8.77
+port1304,"Tokuyama, Japan",Tokuyama,Japan,JPN,Asia & Pacific,34.03990671,131.7828868,7272,Mineral Products,Chemical & Allied Industries,Prepared Foodstuffs & Beverages,JP TKY,484,1126,1317,0,4345,2.03,2.13
+port1305,"Tokyo, Japan",Tokyo,Japan,JPN,Asia & Pacific,35.60607114,139.7925781,9502,Mineral Products,Vegetable Products,Wood & Wood Products,,4646,529,1907,1682,738,4.89,7.5
+port1338,"Ulsan, Korea",Ulsan,Korea,KOR,Asia & Pacific,35.48647294,129.3780838,11795,Mineral Products,Chemical & Allied Industries,"Plastics, Rubber, Leather",KR USN,1143,625,936,448,8643,20.51,25.07
+port1404,"Xiamen, China",Xiamen,China,CHN,Asia & Pacific,24.46593394,118.0205536,7761,Mineral Products,Vegetable Products,Chemical & Allied Industries,CN XAM,5339,901,954,55,512,2.56,3.43
+port1416,"Yokkaichi, Japan",Yokkaichi,Japan,JPN,Asia & Pacific,34.97134904,136.6563083,7678,Mineral Products,Chemical & Allied Industries,"Plastics, Rubber, Leather",JP YKK,666,365,479,273,5895,1.52,2.18
+port1417,"Yokohama, Japan",Yokohama,Japan,JPN,Asia & Pacific,35.42755553,139.6688123,14372,Mineral Products,Vegetable Products,Wood & Wood Products,,4822,969,3691,1520,3370,5.37,7.67
+port2027,"Shanghai (Yangshan), China",Shanghai (Yangshan),China,CHN,Asia & Pacific,30.6150855074278,122.074785341805,5266,,,,,4441,127,209,0,489,3.6,7.56
+port239,"Chiba, Japan",Chiba,Japan,JPN,Asia & Pacific,35.52513992,140.0523392,13509,Mineral Products,Chemical & Allied Industries,Metals,,168,1004,2370,692,9275,4.68,5.1
+port273,"Dalian, China",Dalian,China,CHN,Asia & Pacific,38.9870355,121.770301,6968,Mineral Products,Chemical & Allied Industries,Vegetable Products,CN DAL,2413,908,1069,542,2036,1.45,1.95
+port425,"Guangzhou (Nansha), China",Guangzhou (Nansha),China,CHN,Asia & Pacific,23.02754052,113.4836,9654,Mineral Products,Prepared Foodstuffs & Beverages,Chemical & Allied Industries,CN GGZ,5528,656,961,607,1902,4.53,6.35
+port432,"Gwangyang (Kwangyang), Korea",Gwangyang (Kwangyang),Korea,KOR,Asia & Pacific,34.87669716,127.7165533,9586,Mineral Products,Chemical & Allied Industries,Prepared Foodstuffs & Beverages,,2041,852,1754,391,4548,19.75,21.61
+port434,"Hai Phong, Vietnam",Hai Phong,Vietnam,VNM,Asia & Pacific,20.84406939,106.7474848,7340,Mineral Products,Vegetable Products,Wood & Wood Products,,3637,314,1822,74,1493,11.65,4.86
+port446,"Hamburg, Germany",Hamburg,Germany,DEU,Europe,53.51640056,9.964294338,6740,Mineral Products,Wood & Wood Products,Vegetable Products,DE HAM,3537,398,1284,107,1414,46.26,52.39
+port45,"Amsterdam, The Netherlands",Amsterdam,The Netherlands,NLD,Europe,52.41036165,4.819634112,8246,Mineral Products,Chemical & Allied Industries,Vegetable Products,NL AMS,371,448,1675,124,5628,10.4,16.73
+port474,"Hong Kong, Hong Kong SAR",Hong Kong,Hong Kong SAR,HKG,Asia & Pacific,22.33510926,114.0966519,16306,Mineral Products,Vegetable Products,Prepared Foodstuffs & Beverages,HK HKG,13076,398,696,210,1926,100.0,100.0
+port481,"Houston, United States",Houston,United States,USA,North America,29.72023114,-95.13978774,7358,Mineral Products,Chemical & Allied Industries,Vegetable Products,US HOU,984,735,562,63,5014,8.21,17.78
+port493,"Immingham, United Kingdom",Immingham,United Kingdom,GBR,Europe,53.64188521,-0.226276065,5830,Mineral Products,Wood & Wood Products,Chemical & Allied Industries,GB IMM,838,256,723,2177,1836,13.32,8.09
+port494,"Incheon, Korea",Incheon,Korea,KOR,Asia & Pacific,37.44435778,126.6200824,6873,Mineral Products,Vegetable Products,Metals,,2274,735,1856,245,1763,10.52,4.2
+port504,"Istanbul, Türkiye",Istanbul,Türkiye,TUR,Europe,40.96999344,28.73553234,9107,Mineral Products,Vegetable Products,Metals,TR IST,267,1028,5405,41,2366,6.17,15.49
+port514,"Tanjung Priok, Indonesia",Tanjung Priok,Indonesia,IDN,Asia & Pacific,-6.100544627,106.9054876,9315,Mineral Products,Metals,Vegetable Products,,4257,590,2380,727,1361,13.66,2.48
+port541,"Kaohsiung, Taiwan Province of China",Kaohsiung,Taiwan Province of China,TWN,Asia & Pacific,22.5615278,120.3226847,13044,Mineral Products,Metals,Chemical & Allied Industries,,7471,1676,1680,72,2145,48.22,64.92
+port555,"Kawasaki, Japan",Kawasaki,Japan,JPN,Asia & Pacific,35.50702517,139.7484705,7836,Mineral Products,Chemical & Allied Industries,"Plastics, Rubber, Leather",,391,721,1910,374,4440,2.13,2.34
+port57,"Antwerp, Belgium",Antwerp,Belgium,BEL,Europe,51.27935494,4.317802311,22760,Mineral Products,Chemical & Allied Industries,Metals,,4600,567,3137,970,13486,83.64,89.26
+port581,"Kobe, Japan",Kobe,Japan,JPN,Asia & Pacific,34.67293989,135.2293271,10594,Mineral Products,Vegetable Products,Wood & Wood Products,JP UKB,4121,789,2636,558,2490,3.49,5.63
+port635,"Las Palmas (de Gran Canaria), Spain",Las Palmas (de Gran Canaria),Spain,ESP,Europe,28.14804985,-15.41136132,4905,Mineral Products,Vegetable Products,Prepared Foodstuffs & Beverages,,1333,1518,659,259,1136,8.56,10.91
+port694,"Manila, Philippines",Manila,Philippines,PHL,Asia & Pacific,14.59160879,120.8723998,8297,Mineral Products,Metals,Vegetable Products,PH MNL,2689,1065,2553,127,1863,50.73,49.87
+port744,"Jebel Ali, United Arab Emirates",Jebel Ali,United Arab Emirates,ARE,Asia & Pacific,24.99941947,55.07781687,7734,Mineral Products,Metals,Chemical & Allied Industries,,4495,464,939,463,1373,61.48,34.39
+port752,"Mizushima, Japan",Mizushima,Japan,JPN,Asia & Pacific,34.50033451,133.7242924,13746,Mineral Products,Metals,Chemical & Allied Industries,,648,1111,4084,419,7484,6.3,4.83
+port786,"Nagoya, Japan",Nagoya,Japan,JPN,Asia & Pacific,35.03618543,136.8500784,16252,Mineral Products,Metals,Wood & Wood Products,,3708,1071,5040,2196,4237,6.45,8.2
+port792,"Nantong, China",Nantong,China,CHN,Asia & Pacific,31.9862854,120.8374438,6778,Mineral Products,Vegetable Products,Prepared Foodstuffs & Beverages,CN NTG,272,2773,881,18,2834,2.08,0.22
+port824,"Ningbo, China",Ningbo,China,CHN,Asia & Pacific,29.92076897,121.8818408,18455,Mineral Products,Vegetable Products,Metals,CN NBO,10352,2117,770,271,4945,8.4,10.56
+port846,"Oita, Japan",Oita,Japan,JPN,Asia & Pacific,33.25922967,131.6858125,7874,Mineral Products,Chemical & Allied Industries,Metals,,235,674,3166,49,3750,4.89,3.59
+port862,"Osaka, Japan",Osaka,Japan,JPN,Asia & Pacific,34.6449306,135.4300262,9214,Mineral Products,Metals,Wood & Wood Products,JP OSA,3349,822,3580,323,1140,2.81,4.31
+port960,"Port Klang, Malaysia",Port Klang,Malaysia,MYS,Asia & Pacific,2.972594826,101.3403063,11273,Mineral Products,Vegetable Products,Prepared Foodstuffs & Beverages,,7139,479,985,226,2444,43.56,45.81

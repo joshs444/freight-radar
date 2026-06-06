@@ -1,0 +1,74 @@
+version: 2
+
+# The raw tables the Python pipeline LANDS in DuckDB (storage/schema.sql +
+# detect/flags_schema.sql). dbt reads from these — it never re-fetches PortWatch.
+# The app reads from `main` only; dbt's own models live in main_staging/main_marts,
+# so declaring these as sources keeps the lineage honest (raw -> staging -> mart).
+sources:
+  - name: freight_radar
+    description: >
+      IMF PortWatch warehouse the freight-radar pipeline maintains in DuckDB —
+      daily granularity, refreshed weekly. Loaded by `python -m freight_radar.backfill`.
+    schema: main
+    # Source freshness against the operational metadata: the pipeline stamps
+    # meta_source_status.max_data_date with the data's own freshness.
+    tables:
+      - name: dim_chokepoint
+        description: "Reference dims for the ~28 maritime chokepoints (lat/lon, fleet base, industries)."
+        columns:
+          - name: portid
+            description: "'chokepoint1'..'chokepoint28' — primary key."
+            data_tests: [not_null, unique]
+
+      - name: dim_port
+        description: "Reference dims for ~2,065 ports (lat/lon, fleet base, national-dependence shares)."
+        columns:
+          - name: portid
+            description: "'port1'..'portNNNN' — primary key."
+            data_tests: [not_null, unique]
+
+      - name: fct_chokepoint_daily
+        description: "Daily transit counts + capacity (DWT) per chokepoint."
+        columns:
+          - name: portid
+            data_tests:
+              - not_null
+              - relationships:
+                  # The portid->geometry join the D1 ETL guard protects. Strict
+                  # 100% here is a WARN; the tolerant >=0.95 gate is the singular
+                  # test tests/assert_join_coverage_ge_threshold.sql.
+                  arguments:
+                    to: source('freight_radar', 'dim_chokepoint')
+                    field: portid
+                  config:
+                    severity: warn
+          - name: date
+            data_tests: [not_null]
+
+      - name: fct_port_daily
+        description: "Daily port calls + import/export volumes per port."
+        columns:
+          - name: portid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('freight_radar', 'dim_port')
+                    field: portid
+                  config:
+                    severity: warn
+          - name: date
+            data_tests: [not_null]
+
+      - name: fct_flags
+        description: "Detected anomalies (STL+z, change-point gated). One row per (kind, portid, ISO-week)."
+        columns:
+          - name: flag_id
+            data_tests: [not_null, unique]
+
+      - name: meta_source_status
+        description: "Provenance: per-source last_success + the data's own max_data_date."
+        loaded_at_field: last_success
+        columns:
+          - name: source
+            data_tests: [not_null, unique]

@@ -38,6 +38,40 @@ jobs:
         working-directory: backend
         run: uv run pytest -q -m "not live"
 
+  dbt-build:
+    name: dbt build (duckdb, hermetic fixture)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    # The dbt layer (../dbt) re-expresses the DuckDB transforms as models and the ETL
+    # guards as tests. The 32 MB prod warehouse is gitignored, so we rebuild a tiny
+    # fixture DB from committed CSVs (dbt/ci/fixtures) with the EXACT prod DDL, then
+    # `dbt build` it — models materialize + every dbt test passes, or CI fails.
+    env:
+      # Both the fixture loader and the dbt `ci` target read this one path.
+      FREIGHT_RADAR_DB: ${{ github.workspace }}/dbt/freight_radar_ci.duckdb
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install backend + dbt deps (hash-pinned from uv.lock)
+        working-directory: backend
+        run: uv sync --extra dbt
+      - name: Build the hermetic CI warehouse from committed fixtures
+        working-directory: backend
+        run: uv run python ../dbt/ci/build_fixture_db.py
+      - name: dbt deps (vendor dbt_utils)
+        working-directory: backend
+        run: uv run dbt deps --project-dir ../dbt --profiles-dir ../dbt
+      - name: dbt build — models materialize + ETL-guard tests pass
+        working-directory: backend
+        run: uv run dbt build --project-dir ../dbt --profiles-dir ../dbt --target ci
+
   frontend-checks:
     name: grounding + parity + bundle budget
     runs-on: ubuntu-latest

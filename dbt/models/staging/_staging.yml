@@ -1,0 +1,121 @@
+version: 2
+
+# Schema tests on the staging views. The (portid, date) primary key the WAP audit
+# protects becomes a unique_combination_of_columns test; the surrogate entity_day_key
+# stands in for the built-in `unique` no-duplicate-keys check; not_null on every leaf
+# count is the warehouse-side echo of the D2 silent-column-drop guard (a dropped or
+# renamed upstream column surfaces as NULLs here and fails the build).
+models:
+  - name: stg_chokepoint_daily
+    description: "Standardized daily chokepoint transits — one row per (portid, date)."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [portid, date]
+    columns:
+      - name: entity_day_key
+        description: "portid|date surrogate PK."
+        data_tests: [not_null, unique]
+      - name: portid
+        data_tests: [not_null]
+      - name: date
+        data_tests: [not_null]
+      - name: n_container
+        data_tests: [not_null]
+      - name: n_dry_bulk
+        data_tests: [not_null]
+      - name: n_general_cargo
+        data_tests: [not_null]
+      - name: n_roro
+        data_tests: [not_null]
+      - name: n_tanker
+        data_tests: [not_null]
+      - name: n_cargo
+        data_tests: [not_null]
+      - name: n_total
+        data_tests: [not_null]
+
+  - name: stg_port_daily
+    description: "Standardized daily port activity — one row per (portid, date)."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [portid, date]
+    columns:
+      - name: entity_day_key
+        description: "portid|date surrogate PK."
+        data_tests: [not_null, unique]
+      - name: portid
+        data_tests: [not_null]
+      - name: date
+        data_tests: [not_null]
+      - name: portcalls_container
+        data_tests: [not_null]
+      - name: portcalls_dry_bulk
+        data_tests: [not_null]
+      - name: portcalls_general_cargo
+        data_tests: [not_null]
+      - name: portcalls_roro
+        data_tests: [not_null]
+      - name: portcalls_tanker
+        data_tests: [not_null]
+      - name: portcalls_cargo
+        data_tests: [not_null]
+      - name: portcalls_total
+        data_tests: [not_null]
+
+  - name: stg_chokepoints
+    description: "Chokepoint reference dim, standardized (~28 rows)."
+    columns:
+      - name: portid
+        data_tests: [not_null, unique]
+
+  - name: stg_ports
+    description: "Port reference dim, standardized (~2,065 rows)."
+    columns:
+      - name: portid
+        data_tests: [not_null, unique]
+      - name: has_geometry
+        description: "True when lat/lon are both present — the marts' geometry filter."
+        data_tests: [not_null]
+
+  - name: stg_flags
+    description: "Detected anomalies, standardized — one row per (kind, portid, ISO-week)."
+    columns:
+      - name: flag_id
+        data_tests: [not_null, unique]
+      - name: severity
+        description: "0..100 — Python-computed by the detection brain."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: kind
+        # Detector kinds evolve as new detectors ship, so an unrecognised kind is a
+        # WARN (a heads-up), not a hard build failure.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - chokepoint_transit_collapse
+                  - chokepoint_transit_spike
+                  - chokepoint_persistent_collapse
+                  - chokepoint_vessel_size_shift
+                  - port_activity_drop
+                  - port_congestion_spike
+                  - port_cargo_type_drop
+                  - port_cargo_type_spike
+                  - cape_reroute
+              config:
+                severity: warn
+      - name: lifecycle
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [new, ongoing, escalated, resolved]
+      - name: metric
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [n_total, portcalls_total, portcalls_container, avg_vessel_size_dwt]

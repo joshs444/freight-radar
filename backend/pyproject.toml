@@ -25,6 +25,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=1"]
+# dbt analytics layer (../dbt): re-expresses the DuckDB transforms as dbt models and
+# the ETL guards as dbt tests, via the dbt-duckdb adapter pointed at the same
+# data/freight_radar.duckdb. Kept OUT of the core runtime + the production refresh
+# job (the pipeline never imports dbt); install with `uv sync --extra dbt`.
+dbt = ["dbt-core>=1.8", "dbt-duckdb>=1.9"]
 # ambient wind layer (wind.py): GFS GRIB decode + PNG encode. eccodes is only the
 # Python bindings; eccodeslib ships the prebuilt libeccodes binary, so the layer
 # installs clean on CI (and locally) with no apt-get / system library.

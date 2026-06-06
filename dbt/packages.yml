@@ -1,0 +1,7 @@
+packages:
+  # The de-facto-standard dbt macro/test library. Used here for two generic tests
+  # the ETL guards map onto: unique_combination_of_columns (the (portid, date) PK)
+  # and accepted_range (severity 0..100, national-dependence shares 0..100).
+  # `dbt deps` vendors it into dbt_packages/ (gitignored) before a build.
+  - package: dbt-labs/dbt_utils
+    version: [">=1.1.1", "<2.0.0"]
