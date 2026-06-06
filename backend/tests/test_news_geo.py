@@ -19,13 +19,10 @@ from pathlib import Path
 import freight_radar.publish as publish
 from freight_radar import gdelt_news as g
 from freight_radar.enrich import ENRICHERS
+from freight_radar.honesty.lexicon import CAUSAL_FORECAST as CAUSAL  # one shared banned list
 
 REPO = Path(__file__).resolve().parents[2]
 FRONTEND = REPO / "frontend" / "src"
-
-# Recast-as-prediction / asserted-causation verbs. A news/context dot may never use them.
-CAUSAL = ("caused by", "because of", "will disrupt", "leads to", "results in",
-          "triggered by", "due to", "forecast", "predict", "cascade")
 
 
 def test_news_geo_is_registered_context_sidecar_only():

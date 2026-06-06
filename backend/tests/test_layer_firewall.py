@@ -141,3 +141,20 @@ def test_the_firewall_has_teeth() -> None:
     assert "freight_radar.detect.run_detection" in edges, (
         "resolver failed to catch a `from .detect.run_detection import run` — no teeth"
     )
+
+
+def test_a_malicious_context_layer_would_fail_ci() -> None:
+    # The vision's named scenario: a CONTEXT layer wired into the detector / fact-writers
+    # MUST fail CI. We don't commit such a layer — we prove the gate that catches it. The
+    # per-layer check is `_forbidden_reach(d.module)`; for a CONTEXT layer pointed at a
+    # fact-writer it is non-empty, so test_no_signal_or_context_layer_reaches_the_factwriters
+    # would go red. (Same machinery, applied to the adversarial case.)
+    for factwriter in (
+        "freight_radar.detect.run_detection",
+        "freight_radar.wap",
+        "freight_radar.ingest.portwatch",
+    ):
+        reach = _reachable(factwriter) | {factwriter}
+        assert any(m.startswith(FORBIDDEN_PREFIXES) for m in reach), (
+            f"a malicious CONTEXT layer on {factwriter} would slip the firewall"
+        )

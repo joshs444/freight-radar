@@ -13,12 +13,10 @@ from pathlib import Path
 import freight_radar.publish as publish
 from freight_radar import quakes as q
 from freight_radar.enrich import ENRICHERS
+from freight_radar.honesty.lexicon import CAUSAL_FORECAST as CAUSAL  # one shared banned list
 
 REPO = Path(__file__).resolve().parents[2]
 FRONTEND = REPO / "frontend" / "src"
-
-CAUSAL = ("caused by", "because of", "will disrupt", "leads to", "results in",
-          "triggered by", "due to", "forecast", "predict", "cascade")
 
 
 def test_quakes_is_registered_context_sidecar_only():

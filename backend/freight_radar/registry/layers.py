@@ -281,6 +281,11 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         fetch_file="data/exposure.json",
         appdata_key="exposure",
         metric="exposed trade value & banded cost-of-disruption (USD)",
+        source=Source(
+            "sample/user trade flows (samples/business_flows.csv)",
+            "https://github.com/joshs444/freight-radar",
+            "illustrative sample / user-provided",
+        ),
     ),
     LayerDescriptor(
         id="news",
@@ -294,6 +299,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         fetch_file="data/news.json",
         appdata_key="news",
+        source=Source("Google News RSS", "https://news.google.com", "Google News terms"),
         honesty_note="Per-flag cited headlines — possibly related, never a stated cause.",
     ),
     LayerDescriptor(
@@ -405,6 +411,11 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         fetch_file="data/market.json",
         appdata_key="market",
+        source=Source(
+            "FRED (St. Louis Fed) + Stooq",
+            "https://fred.stlouisfed.org",
+            "public domain (FRED) / Stooq terms",
+        ),
         honesty_note="Cited market indicators shown as published; never restated as ours.",
     ),
     LayerDescriptor(
