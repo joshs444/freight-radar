@@ -230,7 +230,16 @@ and the heavy build stays in the weekly Action.
   gate. _Deviation from the sketch above: `useData` keeps its typed fetches (a registry **drift
   test** enforces the manifest) rather than being fully generated — preserves per-file types._
 
-### P1 — Two-lane pipeline + CI honesty predicates + capability firewall  · _Month 1.5–3_ · effort L
+### P1 — Two-lane pipeline + CI honesty predicates + capability firewall  · _Month 1.5–3_ · effort L · 🟡 **honesty half SHIPPED 2026-06-06**
+- **✅ Shipped (the honesty half):** the import-graph firewall (landed in P0) + `freight_radar/honesty/`
+  — one shared causal/forecast **lexicon** (test_news_geo/test_quakes DRY'd to it; scoped to
+  asserted-causation copy, not the forecast-by-design layers), registry-driven **predicates**
+  (tier · zero-cost · source-completeness · source-coverage · causal-copy — all green, 100%
+  source coverage after sourcing news/market/exposure), the **malicious-branch proof** (a CONTEXT
+  layer on detect/wap/ingest fails CI), and the **scorecard** (Harness Layer 4 → `scoreboard.json`,
+  self-refreshed, never a ship gate). _Deferred (the fact-pipeline half — earned downstream, not a
+  pure refactor): generalize WAP to N measured layers + the per-row bitemporal stamp have little to
+  bite on at 2 SIGNAL layers and interlock with the P2 `fct_observation` decision._
 - **Goal:** generalize WAP to N measured layers; make honesty machine-checked; land the
   **per-row bitemporal stamp** — tier + **valid-time** + **knowledge-time** + **grain** +
   `lineage_run_id` (the temporal model is the keystone, [§4](#4-architecture--the-typed-descriptor-the-unlock)). The **structural import-graph

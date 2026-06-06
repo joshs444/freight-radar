@@ -7,18 +7,21 @@ verified live — and are kept for provenance, not as live TODO lists.
 The single **active, forward-looking** plan is the **year vision**:
 [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) — evolving the app from a freight globe
 into an honest world-awareness platform, with its full free-source catalog in
-[`DATA-SOURCES.md`](DATA-SOURCES.md). **P0 is shipped** (2026-06-06, PR #5 — the typed
-`LayerDescriptor` registry + acceptance-harness Layers 1–2); **P1 is next**. The prior
-root plan [`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md) is now shipped.
+[`DATA-SOURCES.md`](DATA-SOURCES.md). **P0 shipped** + **P1's honesty half shipped**
+(2026-06-06 — the typed `LayerDescriptor` registry, golden masters, the structural
+import-graph firewall, the registry-driven honesty predicates + scorecard, Python↔dbt
+parity); the P1/P2 **fact-pipeline** work (generalized WAP · `fct_observation` · the
+2065-port spine) is the next decision. The prior root plan
+[`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md) is now shipped.
 
 For the distilled decisions (rather than the build sequence), see the
 [Architecture Decision Records](../adr/).
 
-### 🟢 Active — the forward plan (P0 shipped · P1 next)
+### 🟢 Active — the forward plan (P0 ✅ · P1 honesty half ✅ · fact-pipeline next)
 
 | Plan | What it covers | Status |
 |---|---|---|
-| [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) | The **year roadmap** (P0–P6): typed `LayerDescriptor` registry → two-lane pipeline + capability firewall → full 2065-port spine → measured macro signals → context-ring breadth → honest cross-layer surface. Hub-and-spoke of ownership enforced by construction. From a 10-agent research pass + adversarial critic. | **P0 ✅ shipped · P1 next** |
+| [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) | The **year roadmap** (P0–P6): typed `LayerDescriptor` registry → two-lane pipeline + capability firewall → full 2065-port spine → measured macro signals → context-ring breadth → honest cross-layer surface. Hub-and-spoke of ownership enforced by construction. From a 10-agent research pass + adversarial critic. | **P0 ✅ · P1 honesty half ✅ · fact-pipeline next** |
 | [`DATA-SOURCES.md`](DATA-SOURCES.md) | The free-data catalog behind the vision — **93 sources** across every domain, each tagged measured-vs-context with the statistic we'd own, auth, license, cadence, and license/cost caveats. | Reference (living) |
 | [`EXECUTION-PLAYBOOK.md`](EXECUTION-PLAYBOOK.md) | **How** the vision gets built with agents/ultracode: the gate-driven per-phase loop (scope → plan → build → review → verify → deploy → capture), the workflow patterns per phase type, the "add one layer" micro-loop, and the non-negotiables (verify receipts, CI is the gate). | Reference (living) |
 | [`ACCEPTANCE-HARNESS.md`](ACCEPTANCE-HARNESS.md) | **The oracle** — the test-against system that grades every change (agent or human) for correctness + improvement: invariants (honesty CI predicates) · golden masters (frozen audited outputs) · adversarial evals (must-refuse bait, held-out + rotating) · scorecard (metrics over time). Lands with P0/P1; it's why you can trust agents on everything after. | Reference (living) |
