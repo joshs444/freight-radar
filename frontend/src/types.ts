@@ -221,7 +221,15 @@ export interface Ships {
 }
 
 // toggleable globe overlays (the LayerPanel + the buildLayers visibility gate)
-export type LayerId = 'flags' | 'chokepoints' | 'ports' | 'ships' | 'storms' | 'lanes' | 'wind';
+export type LayerId =
+  | 'flags'
+  | 'chokepoints'
+  | 'ports'
+  | 'ships'
+  | 'storms'
+  | 'lanes'
+  | 'wind'
+  | 'satellite';
 export type LayerVisibility = Record<LayerId, boolean>;
 
 // ---- exposure.json ---------------------------------------------------------

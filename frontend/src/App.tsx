@@ -43,6 +43,7 @@ export default function App() {
       storms: true,
       lanes: true,
       wind: true,
+      satellite: false, // opt-in: real satellite imagery changes the clean light look
     };
     try {
       const saved = localStorage.getItem('fr_layers');

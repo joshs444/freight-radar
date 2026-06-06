@@ -39,6 +39,14 @@ const rgba = (c: readonly number[], a: number): RGBA => [c[0], c[1], c[2], a];
 // back-of-globe lanes stay hidden.
 const MARKER_PARAMETERS = { depthCompare: 'always', depthWriteEnabled: false } as const;
 
+// NASA GIBS VIIRS true-color is published ~a day behind; use 2 days back to be safe.
+// Computed at load, so the satellite layer is always recent + the date is honestly shown.
+export const GIBS_DATE = (() => {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 2);
+  return d.toISOString().slice(0, 10);
+})();
+
 // Clean, token-free LIGHT basemap (CARTO Positron) draped on the v5 globe.
 // 'light_nolabels' @2x drops the busy place labels + boundary clutter and serves
 // retina (512px) tiles, so the whole map reads sharp at every zoom.
@@ -57,11 +65,31 @@ const STYLE: StyleSpecification = {
       tileSize: 512,
       attribution: '© OpenStreetMap © CARTO · Wind: NOAA GFS',
     },
+    // real near-real-time satellite imagery (free, keyless) — actual cloud systems +
+    // storms over the chokepoints. Off by default (it changes the light aesthetic);
+    // toggled from the layer panel. WMTS REST is {z}/{y}/{x} (TileRow before TileCol).
+    gibs: {
+      type: 'raster',
+      tiles: [
+        `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${GIBS_DATE}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
+      ],
+      tileSize: 256,
+      maxzoom: 9,
+      attribution: 'Satellite: NASA EOSDIS GIBS · VIIRS',
+    },
   },
   layers: [
     { id: 'space', type: 'background', paint: { 'background-color': '#dfe5ee' } },
     // fully opaque basemap so the globe reads as a solid sphere (not washed-out)
     { id: 'carto', type: 'raster', source: 'carto', paint: { 'raster-opacity': 1 } },
+    // real satellite imagery, above the basemap, hidden until toggled on
+    {
+      id: 'gibs-satellite',
+      type: 'raster',
+      source: 'gibs',
+      layout: { visibility: 'none' },
+      paint: { 'raster-opacity': 1 },
+    },
   ],
   sky: {
     'sky-color': '#cfddf0',
@@ -464,6 +492,20 @@ export default function Globe({
     if (!overlay) return;
     overlay.setProps({ layers: windOn && wd ? [makeWindLayer(wd)] : [] });
   }, [windOn]);
+
+  // show/hide the NASA satellite raster (a maplibre layer, not a deck layer) from the panel
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => {
+      if (map.getLayer('gibs-satellite')) {
+        const vis = layers.satellite ? 'visible' : 'none';
+        map.setLayoutProperty('gibs-satellite', 'visibility', vis);
+      }
+    };
+    if (map.isStyleLoaded()) apply();
+    else map.once('load', apply);
+  }, [layers.satellite]);
 
   // Data/selection-driven layer push: rebuild the deck layers ONLY when the underlying
   // data or the current selection changes — never on a timer. In interleaved mode deck
