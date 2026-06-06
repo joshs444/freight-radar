@@ -558,6 +558,73 @@ body,
 .sw.sat {
   background: linear-gradient(135deg, #2e5e8c, #4a7c59);
 }
+/* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
+.sw.news {
+  background: conic-gradient(
+    #4f46e5 0 20%,
+    #0d9488 0 40%,
+    #a16207 0 60%,
+    #be185d 0 80%,
+    #7c3aed 0 100%
+  );
+}
+
+/* grouped layer sections (Freight = measured, Context = cited possibly-related signal) */
+.fr-layers-section + .fr-layers-section {
+  margin-top: 5px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+.fr-layers-section-head {
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  font-weight: 700;
+  padding: 1px 5px 2px;
+}
+.fr-layers-caption {
+  font-size: 8px;
+  line-height: 1.4;
+  color: var(--ink-faint);
+  padding: 0 5px 3px;
+}
+/* news topic key — only while the news layer is on */
+.fr-news-key {
+  padding: 2px 5px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fr-news-key-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 8.5px;
+  color: var(--ink-faint);
+}
+.fr-news-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.fr-news-key-lbl {
+  flex: 1;
+}
+.fr-news-key-n {
+  font-variant-numeric: tabular-nums;
+}
+/* the persistent anti-centrum provenance rail — a first-class element, not fine print */
+.fr-layers-foot {
+  margin: 6px 5px 1px;
+  padding-top: 5px;
+  border-top: 1px solid var(--line);
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
 /* GFS wind forecast scrubber — over the globe, bottom-center, only while wind is on */
 .fr-wind-scrub {
   position: absolute;
@@ -2323,6 +2390,14 @@ body,
 }
 .fr-tip b {
   color: var(--amber);
+}
+.fr-tip-cta {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
 }
 
 /* --- loading / fallback ------------------------------------------------- */

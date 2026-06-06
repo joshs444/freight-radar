@@ -47,6 +47,7 @@ export default function App() {
       lanes: true,
       wind: true,
       satellite: false, // opt-in: real satellite imagery changes the clean light look
+      news: true, // geo-tagged world-news coverage (context) — on by default
     };
     try {
       const saved = localStorage.getItem('fr_layers');
@@ -187,7 +188,7 @@ export default function App() {
   if (error) {
     return (
       <div className="fr-fallback">
-        <h1>Freight Radar</h1>
+        <h1>Standpoint</h1>
         <p>Could not load the snapshot ({error}).</p>
         <p className="dim">
           Run the exporter: <code>python -m freight_radar.publish</code>
@@ -210,13 +211,14 @@ export default function App() {
             ◐
           </span>
           <div>
-            <h1>FREIGHT RADAR</h1>
+            <h1>STANDPOINT</h1>
             <p className="fr-tag">
-              Ocean-freight chokepoints, monitored — disruptions auto-flagged from IMF PortWatch.
+              Real, cited world signals on one globe — freight throughput is the measured spine;
+              everything else is possibly-related context.
             </p>
             <span
               className="fr-provenance"
-              title="Every figure is computed in Python from IMF PortWatch and string-substituted into template prose — no model is in the number path."
+              title="Every figure is computed in Python from IMF PortWatch and string-substituted into template prose — no model is in the number path. Context layers (weather, news, hazards) are cited public data, never a stated cause and never a forecast of freight."
             >
               Computed in Python · IMF PortWatch · no model in the number path
             </span>
@@ -268,6 +270,7 @@ export default function App() {
                   flags={hist.mode ? hist.flags : globeView.flags}
                   ships={hist.mode ? null : data.ships}
                   storms={hist.mode ? [] : data.weather?.storms}
+                  newsDots={hist.mode ? [] : (data.newsGeo?.items ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -295,10 +298,12 @@ export default function App() {
                 ships: data.ships?.count ?? 0,
                 storms: data.weather?.counts?.active_storms ?? 0,
                 lanes: data.lanes?.length ?? 0,
+                news: data.newsGeo?.items?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}
               hasWind={!!data.wind}
+              newsGeo={data.newsGeo ?? null}
             />
           )}
           {!hist.mode && data?.wind && layers.wind && (

@@ -229,7 +229,8 @@ export type LayerId =
   | 'storms'
   | 'lanes'
   | 'wind'
-  | 'satellite';
+  | 'satellite'
+  | 'news';
 export type LayerVisibility = Record<LayerId, boolean>;
 
 // ---- exposure.json ---------------------------------------------------------
@@ -269,6 +270,34 @@ export interface News {
   generated_at: string;
   search_date: string;
   items: Record<string, NewsEntry>;
+}
+
+// ---- news_geo.json (GDELT geo-tagged world-news dots — a CONTEXT layer) -----
+// Distinct from news.json above: this is a standalone globe overlay, one dot per
+// real geo-located article in a recent GDELT window, categorised by topic. It carries
+// NO computed metric and is never a stated cause of a freight number — click a dot to
+// read the cited source.
+
+export interface NewsGeoItem {
+  lat: number;
+  lon: number;
+  category: string; // economy | energy | trade | conflict | disaster
+  category_label: string;
+  place: string;
+  domain: string;
+  url: string;
+  seen: string; // 'YYYY-MM-DD HH:MMZ'
+}
+
+export interface NewsGeo {
+  generated_at: string;
+  as_of: string;
+  window: string; // the GDELT slice timestamp this snapshot was pulled at
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  counts: Record<string, number>;
+  items: NewsGeoItem[];
 }
 
 // ---- market.json -----------------------------------------------------------
@@ -571,6 +600,7 @@ export interface AppData {
   ships: Ships | null;
   exposure: ExposureSummary | null;
   news: News | null;
+  newsGeo: NewsGeo | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;

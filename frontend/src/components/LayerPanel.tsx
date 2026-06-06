@@ -1,19 +1,34 @@
-import type { LayerId, LayerVisibility, Ships } from '../types.ts';
+import type { LayerId, LayerVisibility, Ships, NewsGeo } from '../types.ts';
+import { NEWS_CATEGORIES, rgbCss } from '../lib/colors.ts';
 
-// The globe layer control + key, replacing the old caption-only legend (where the wind
-// toggle hid among static text and nothing else could be turned off). Every overlay is a
-// labelled on/off with a live count. The vessels row carries the HONEST scope — a
-// point-in-time AIS sample near the 28 chokepoints, not all ships, not the ~2,000 ports.
+// The globe layer control + key. Layers are grouped into FREIGHT (the measured spine —
+// the only layers that carry a computed number) and CONTEXT (cited public data shown as
+// a possibly-related signal, never a stated cause). The category boundary itself is part
+// of the honesty rail, reinforced by the caption + the persistent provenance footer.
 
-const ROWS: { id: LayerId; label: string; sw: string }[] = [
-  { id: 'flags', label: 'flagged', sw: 'pulse' },
-  { id: 'chokepoints', label: 'chokepoints', sw: 'amber' },
-  { id: 'ports', label: 'ports', sw: 'port' },
-  { id: 'ships', label: 'vessels', sw: 'ship' },
-  { id: 'storms', label: 'storms', sw: 'storm' },
-  { id: 'lanes', label: 'lanes', sw: 'lane' },
-  { id: 'wind', label: 'wind', sw: 'wind' },
-  { id: 'satellite', label: 'satellite', sw: 'sat' },
+type Row = { id: LayerId; label: string; sw: string };
+
+const SECTIONS: { title: string; caption?: string; rows: Row[] }[] = [
+  {
+    title: 'Freight',
+    rows: [
+      { id: 'flags', label: 'flagged', sw: 'pulse' },
+      { id: 'chokepoints', label: 'chokepoints', sw: 'amber' },
+      { id: 'ports', label: 'ports', sw: 'port' },
+      { id: 'ships', label: 'vessels', sw: 'ship' },
+      { id: 'lanes', label: 'lanes', sw: 'lane' },
+    ],
+  },
+  {
+    title: 'Context',
+    caption: 'possibly-related context, not a stated cause',
+    rows: [
+      { id: 'news', label: 'news', sw: 'news' },
+      { id: 'storms', label: 'storms', sw: 'storm' },
+      { id: 'wind', label: 'wind', sw: 'wind' },
+      { id: 'satellite', label: 'satellite', sw: 'sat' },
+    ],
+  },
 ];
 
 // VIIRS true-color is published ~a day behind; matches Globe's GIBS_DATE (2 days back).
@@ -30,6 +45,7 @@ interface LayerPanelProps {
   ships: Ships | null;
   shipCoverage?: number;
   hasWind: boolean;
+  newsGeo: NewsGeo | null;
 }
 
 export default function LayerPanel({
@@ -39,45 +55,82 @@ export default function LayerPanel({
   ships,
   shipCoverage,
   hasWind,
+  newsGeo,
 }: LayerPanelProps) {
   const portsN = counts.ports ?? 0;
-  const rows = ROWS.filter((r) => {
+  const visible = (r: Row): boolean => {
     if (r.id === 'wind') return hasWind;
     if (r.id === 'storms') return (counts.storms ?? 0) > 0;
     if (r.id === 'ships') return (ships?.count ?? 0) > 0;
+    if (r.id === 'news') return (counts.news ?? 0) > 0;
     return true;
-  });
+  };
+
+  const title = (r: Row, on: boolean): string => {
+    if (r.id === 'ships' && ships) return ships.note;
+    if (r.id === 'satellite')
+      return `Real NASA VIIRS true-color satellite · ${SAT_DATE} (near-real-time)`;
+    if (r.id === 'news')
+      return newsGeo
+        ? `Geo-tagged GDELT news coverage · ${newsGeo.window} window · click a dot to read the source`
+        : 'Geo-tagged GDELT news coverage';
+    return `${on ? 'Hide' : 'Show'} the ${r.label} layer`;
+  };
 
   return (
     <div className="fr-layers" aria-label="Map layers">
       <div className="fr-layers-head">Layers</div>
-      {rows.map((r) => {
-        const on = layers[r.id];
-        const n = counts[r.id];
+
+      {SECTIONS.map((section) => {
+        const rows = section.rows.filter(visible);
+        if (!rows.length) return null;
         return (
-          <button
-            key={r.id}
-            type="button"
-            className={`fr-layer ${on ? 'on' : 'off'}`}
-            onClick={() => onToggle(r.id)}
-            aria-pressed={on}
-            title={
-              r.id === 'ships' && ships
-                ? ships.note
-                : r.id === 'satellite'
-                  ? `Real NASA VIIRS true-color satellite · ${SAT_DATE} (near-real-time)`
-                  : `${on ? 'Hide' : 'Show'} the ${r.label} layer`
-            }
-          >
-            <i className={`sw ${r.sw}`} />
-            <span className="fr-layer-label">{r.label}</span>
-            {n != null && r.id !== 'wind' && (
-              <span className="fr-layer-n">{n.toLocaleString()}</span>
-            )}
-            <span className="fr-layer-switch" aria-hidden="true" />
-          </button>
+          <div className="fr-layers-section" key={section.title}>
+            <div className="fr-layers-section-head">{section.title}</div>
+            {section.caption && <div className="fr-layers-caption">{section.caption}</div>}
+            {rows.map((r) => {
+              const on = layers[r.id];
+              const n = counts[r.id];
+              return (
+                <div key={r.id}>
+                  <button
+                    type="button"
+                    className={`fr-layer ${on ? 'on' : 'off'}`}
+                    onClick={() => onToggle(r.id)}
+                    aria-pressed={on}
+                    title={title(r, on)}
+                  >
+                    <i className={`sw ${r.sw}`} />
+                    <span className="fr-layer-label">{r.label}</span>
+                    {n != null && r.id !== 'wind' && (
+                      <span className="fr-layer-n">{n.toLocaleString()}</span>
+                    )}
+                    <span className="fr-layer-switch" aria-hidden="true" />
+                  </button>
+
+                  {/* news topic key — shows only while the news layer is on */}
+                  {r.id === 'news' && on && newsGeo && (
+                    <div className="fr-news-key" aria-label="News topics">
+                      {NEWS_CATEGORIES.map((c) => {
+                        const cn = newsGeo.counts?.[c.key] ?? 0;
+                        if (!cn) return null;
+                        return (
+                          <span className="fr-news-key-row" key={c.key} title={c.label}>
+                            <i className="fr-news-dot" style={{ background: rgbCss(c.color) }} />
+                            <span className="fr-news-key-lbl">{c.label}</span>
+                            <span className="fr-news-key-n">{cn}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         );
       })}
+
       {(ships?.count ?? 0) > 0 && (
         <p className="fr-layers-note">
           Vessels = a point-in-time AIS sample
@@ -87,6 +140,11 @@ export default function LayerPanel({
           — not all ships, not the {portsN.toLocaleString()} ports.
         </p>
       )}
+
+      <p className="fr-layers-foot">
+        Every number computed in Python from cited public data · context is possibly-related, never
+        a stated cause · no forecasts.
+      </p>
     </div>
   );
 }

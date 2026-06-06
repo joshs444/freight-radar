@@ -37,6 +37,25 @@ export const severityCss = (s: number | null | undefined): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
+// GDELT world-news dots, coloured by topic so "different types of news show
+// differently". Chosen to stay clear of the freight marks (amber chokepoints,
+// slate ports, storm-blue) and the severity reds — these read as a distinct
+// "context" family. Order = the legend order.
+export const NEWS_CATEGORIES: { key: string; label: string; color: [number, number, number] }[] = [
+  { key: 'economy', label: 'Economy & markets', color: [79, 70, 229] }, // indigo
+  { key: 'trade', label: 'Trade & logistics', color: [13, 148, 136] }, // teal
+  { key: 'energy', label: 'Energy', color: [161, 98, 7] }, // bronze
+  { key: 'conflict', label: 'Conflict & security', color: [190, 24, 93] }, // magenta-rose
+  { key: 'disaster', label: 'Disaster & hazard', color: [124, 58, 237] }, // violet
+];
+const NEWS_FALLBACK: [number, number, number] = [110, 100, 140];
+const NEWS_BY_KEY: Record<string, [number, number, number]> = Object.fromEntries(
+  NEWS_CATEGORIES.map((c) => [c.key, c.color])
+);
+export const newsCategoryColor = (key: string): [number, number, number] =>
+  NEWS_BY_KEY[key] ?? NEWS_FALLBACK;
+export const rgbCss = (c: [number, number, number]): string => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+
 // Stress-index level → color/tint, matching the backend's calm/elevated/high/severe.
 export const STRESS_LEVELS = {
   calm: { color: '#3f7a5a', tint: '#eef6f1', edge: '#cfe6d9' },
