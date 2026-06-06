@@ -1,36 +1,13 @@
 import type { LayerId, LayerVisibility, Ships, NewsGeo, Quakes } from '../types.ts';
 import { NEWS_CATEGORIES, rgbCss } from '../lib/colors.ts';
+import { LAYER_SECTIONS, type LayerRow } from '../lib/layers.gen.ts';
 
 // The globe layer control + key. Layers are grouped into FREIGHT (the measured spine —
 // the only layers that carry a computed number) and CONTEXT (cited public data shown as
 // a possibly-related signal, never a stated cause). The category boundary itself is part
 // of the honesty rail, reinforced by the caption + the persistent provenance footer.
-
-type Row = { id: LayerId; label: string; sw: string };
-
-const SECTIONS: { title: string; caption?: string; rows: Row[] }[] = [
-  {
-    title: 'Freight',
-    rows: [
-      { id: 'flags', label: 'flagged', sw: 'pulse' },
-      { id: 'chokepoints', label: 'chokepoints', sw: 'amber' },
-      { id: 'ports', label: 'ports', sw: 'port' },
-      { id: 'ships', label: 'vessels', sw: 'ship' },
-      { id: 'lanes', label: 'lanes', sw: 'lane' },
-    ],
-  },
-  {
-    title: 'Context',
-    caption: 'possibly-related context, not a stated cause',
-    rows: [
-      { id: 'news', label: 'news', sw: 'news' },
-      { id: 'quakes', label: 'earthquakes', sw: 'quake' },
-      { id: 'storms', label: 'storms', sw: 'storm' },
-      { id: 'wind', label: 'wind', sw: 'wind' },
-      { id: 'satellite', label: 'satellite', sw: 'sat' },
-    ],
-  },
-];
+// The sections + swatches are GENERATED from the Python registry (layers.gen.ts) so the
+// panel can't drift from what the backend actually publishes.
 
 // VIIRS true-color is published ~a day behind; matches Globe's GIBS_DATE (2 days back).
 const SAT_DATE = (() => {
@@ -61,7 +38,7 @@ export default function LayerPanel({
   quakes,
 }: LayerPanelProps) {
   const portsN = counts.ports ?? 0;
-  const visible = (r: Row): boolean => {
+  const visible = (r: LayerRow): boolean => {
     if (r.id === 'wind') return hasWind;
     if (r.id === 'storms') return (counts.storms ?? 0) > 0;
     if (r.id === 'ships') return (ships?.count ?? 0) > 0;
@@ -70,7 +47,7 @@ export default function LayerPanel({
     return true;
   };
 
-  const title = (r: Row, on: boolean): string => {
+  const title = (r: LayerRow, on: boolean): string => {
     if (r.id === 'ships' && ships) return ships.note;
     if (r.id === 'satellite')
       return `Real NASA VIIRS true-color satellite · ${SAT_DATE} (near-real-time)`;
@@ -89,7 +66,7 @@ export default function LayerPanel({
     <div className="fr-layers" aria-label="Map layers">
       <div className="fr-layers-head">Layers</div>
 
-      {SECTIONS.map((section) => {
+      {LAYER_SECTIONS.map((section) => {
         const rows = section.rows.filter(visible);
         if (!rows.length) return null;
         return (

@@ -220,19 +220,12 @@ export interface Ships {
   vessels: Vessel[];
 }
 
-// toggleable globe overlays (the LayerPanel + the buildLayers visibility gate)
-export type LayerId =
-  | 'flags'
-  | 'chokepoints'
-  | 'ports'
-  | 'ships'
-  | 'storms'
-  | 'lanes'
-  | 'wind'
-  | 'satellite'
-  | 'news'
-  | 'quakes';
-export type LayerVisibility = Record<LayerId, boolean>;
+// toggleable globe overlays (the LayerPanel + the buildLayers visibility gate).
+// The LayerId union, default visibility, panel sections, and the useData fetch
+// manifest are GENERATED from the Python registry (registry/layers.py -> layers.gen.ts),
+// so this contract can't drift from the backend. Re-exported here so existing
+// `import { LayerId } from '../types.ts'` callers keep working unchanged.
+export type { LayerId, LayerVisibility } from './lib/layers.gen.ts';
 
 // the two ways to read the same data: explore-by-poking globe, or scan-and-sort board
 export type AppView = 'globe' | 'board';

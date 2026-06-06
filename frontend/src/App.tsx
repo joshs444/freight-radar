@@ -30,6 +30,7 @@ import type {
   AppView,
 } from './types.ts';
 import LayerPanel from './components/LayerPanel.tsx';
+import { DEFAULT_LAYER_VISIBILITY } from './lib/layers.gen.ts';
 import type { AppliedExposure } from './components/Upload.tsx';
 
 // labels for the GFS wind forecast scrubber (matches backend wind.FHOURS = 0,24,48,72,96)
@@ -48,18 +49,9 @@ export default function App() {
   // which globe overlays are visible — a real layer-control map (the LayerPanel), migrating
   // the old single fr_wind_off flag. Persisted so the choice sticks.
   const [layers, setLayers] = useState<LayerVisibility>(() => {
-    const def: LayerVisibility = {
-      flags: true,
-      chokepoints: true,
-      ports: true,
-      ships: true,
-      storms: true,
-      lanes: true,
-      wind: true,
-      satellite: false, // opt-in: real satellite imagery changes the clean light look
-      news: true, // geo-tagged world-news coverage (context) — on by default
-      quakes: false, // USGS M4+ earthquakes (context) — opt-in
-    };
+    // Defaults come from the generated registry manifest (layers.gen.ts); copy so the
+    // fr_wind_off migration below can mutate this instance without touching the const.
+    const def: LayerVisibility = { ...DEFAULT_LAYER_VISIBILITY };
     try {
       const saved = localStorage.getItem('fr_layers');
       if (saved) return { ...def, ...(JSON.parse(saved) as Partial<LayerVisibility>) };

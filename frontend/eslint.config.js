@@ -12,7 +12,7 @@ import prettier from 'eslint-config-prettier';
 const unusedVars = ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }];
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'src/lib/layers.gen.ts'] },
   js.configs.recommended,
 
   // TypeScript-specific rules, only on .ts/.tsx

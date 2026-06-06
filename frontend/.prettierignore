@@ -2,3 +2,4 @@ dist
 node_modules
 public
 *.json
+src/lib/layers.gen.ts
