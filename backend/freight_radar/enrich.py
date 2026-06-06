@@ -52,6 +52,13 @@ def _news(ctx: EnrichCtx) -> dict:
     return {"name": "news", "sidecar": "news.json", "flags": len(p.get("items", {}))}
 
 
+def _news_geo(ctx: EnrichCtx) -> dict:
+    # CONTEXT-only world-news dots (GDELT GKG). Sidecar-only by design — it never reads
+    # the DB or writes flags.json, so a news signal can NEVER mutate a computed number.
+    from .gdelt_news import run as news_geo_run
+    return news_geo_run(ctx)
+
+
 def _timeseries(ctx: EnrichCtx) -> dict:
     from .export_timeseries import export_timeseries
     r = export_timeseries(db_path=ctx.db_path, out_dir=ctx.out_dir)
@@ -111,6 +118,7 @@ ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("hazards", _hazards, True),
     ("weather", _weather, True),       # live NHC+GDACS active storms -> flags' live_storm
     ("gatun", _gatun, False),
+    ("news_geo", _news_geo, False),    # CONTEXT: GDELT world-news dots, sidecar-only
     ("timeseries", _timeseries, False),
     ("ports_lookup", _ports_lookup, False),
     ("market", _market, True),

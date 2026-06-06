@@ -13,7 +13,7 @@ function download(name: string, text: string, type = 'text/plain') {
 
 export function exportBrief(brief: Brief | null | undefined) {
   if (!brief?.bullets) return;
-  const lines = [`FREIGHT RADAR — ${brief.headline}`, `as of ${brief.as_of}`, ''];
+  const lines = [`STANDPOINT — ${brief.headline}`, `as of ${brief.as_of}`, ''];
   brief.bullets.forEach((b) => lines.push(`• ${b.text.replace(/\*\*/g, '')}`));
   lines.push('', brief.source || 'IMF PortWatch');
   download(`freight-radar-brief-${brief.as_of}.txt`, lines.join('\n'));

@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
-import { AMBER, PORT, LANE, severityColor } from './lib/colors.ts';
+import { AMBER, PORT, LANE, severityColor, newsCategoryColor } from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
 import type {
@@ -13,6 +13,7 @@ import type {
   Vessel,
   Storm,
   Ships,
+  NewsGeoItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -123,6 +124,7 @@ interface LayerInputs {
   flags: GlobeFlag[];
   ships: Vessel[];
   storms: Storm[];
+  newsDots: NewsGeoItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -139,6 +141,7 @@ function buildLayers({
   flags,
   ships,
   storms,
+  newsDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -184,6 +187,31 @@ function buildLayers({
       getLineColor: rgba([255, 255, 255], 130),
       lineWidthMinPixels: 0.6,
       pickable: true,
+    }),
+
+    // GDELT world-news dots — one real geo-located article per dot, coloured by topic.
+    // CONTEXT, not freight: small, semi-transparent, drawn BELOW the freight marks so the
+    // measured layer always reads on top. Clicking a dot opens its cited source article.
+    new ScatterplotLayer({
+      id: 'news',
+      visible: layers.news,
+      parameters: MARKER_PARAMETERS,
+      data: newsDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 3.4,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 3.4,
+      radiusMaxPixels: 3.4,
+      getFillColor: (d) => rgba(newsCategoryColor(d.category), 200),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 150),
+      lineWidthMinPixels: 0.5,
+      pickable: true,
+      onClick: (info) => {
+        const url = (info.object as NewsGeoItem | undefined)?.url;
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      },
+      updateTriggers: { getFillColor: newsDots },
     }),
 
     // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
@@ -343,6 +371,7 @@ interface GlobeProps {
   flags: GlobeFlag[];
   ships: Ships | null;
   storms: Storm[] | undefined;
+  newsDots: NewsGeoItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -358,6 +387,7 @@ export default function Globe({
   flags,
   ships,
   storms,
+  newsDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -436,6 +466,16 @@ export default function Globe({
           const nm = object.name ? `<b>${object.name}</b>` : `<b>Vessel ${object.mmsi}</b>`;
           return {
             html: `${nm}<br/>${object.type} · heading ${object.heading}° · AIS`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'news') {
+          // a cited, geo-tagged article — a possibly-related signal near a place, not a
+          // stated cause. Click opens the source.
+          return {
+            html:
+              `<b>${object.category_label}</b> · ${object.place}<br/>` +
+              `${object.domain} · ${object.seen}<br/><span class="fr-tip-cta">click to read · GDELT</span>`,
             className: 'fr-tip',
           };
         }
@@ -534,6 +574,7 @@ export default function Globe({
         lanes: lanes ?? [],
         ships: ships?.vessels ?? [], // live AIS positions near the chokepoints
         storms: storms ?? [],
+        newsDots: newsDots ?? [], // GDELT geo-tagged world-news (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -541,14 +582,25 @@ export default function Globe({
         highlightIds,
       }),
     });
-  }, [snapshot, lanes, flags, ships, storms, selectedFlag, onSelectFlag, layers, highlightIds]);
+  }, [
+    snapshot,
+    lanes,
+    flags,
+    ships,
+    storms,
+    newsDots,
+    selectedFlag,
+    onSelectFlag,
+    layers,
+    highlightIds,
+  ]);
 
   return (
     <div
       ref={containerRef}
       className="fr-globe"
       role="img"
-      aria-label="Globe showing ocean-freight chokepoints, ports, sampled live vessel positions, active storms and animated wind"
+      aria-label="Globe showing ocean-freight chokepoints, ports, sampled live vessel positions, active storms, animated wind and geo-tagged world-news coverage"
     />
   );
 }

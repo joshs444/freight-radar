@@ -90,7 +90,7 @@ export default function Chat({ data, onPickEntity }: ChatProps) {
       <button
         className={`fr-chat-fab ${open ? 'is-open' : ''}`}
         onClick={() => setOpen((o) => !o)}
-        title="Ask Freight Radar"
+        title="Ask Standpoint"
       >
         {open ? '×' : '✦ Ask'}
       </button>
@@ -99,7 +99,7 @@ export default function Chat({ data, onPickEntity }: ChatProps) {
         <div className="fr-chat">
           <div className="fr-chat-head">
             <div>
-              <span className="fr-chat-title">Ask Freight Radar</span>
+              <span className="fr-chat-title">Ask Standpoint</span>
               <span className="fr-chat-sub">grounded in this data · every number is cited</span>
             </div>
             <button className="fr-chat-x" onClick={() => setOpen(false)}>
