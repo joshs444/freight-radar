@@ -1,15 +1,26 @@
 # Build plans — a retrospective index
 
-These are the planning artifacts behind Freight Radar, kept for provenance. Most
-are **shipped**; the app was built in waves, each plan ending committed, deployed,
-and verified live. They are preserved here as a record of how the project was
-reasoned about and built, not as live TODO lists.
+These are the planning artifacts behind the project. The plans below the divider are
+**shipped** — the app was built in waves, each plan ending committed, deployed, and
+verified live — and are kept for provenance, not as live TODO lists.
 
-The single **active** plan lives at the repo root:
-[`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md).
+The single **active, forward-looking** plan is the **year vision**:
+[`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) — evolving the app from a freight globe
+into an honest world-awareness platform, with its full free-source catalog in
+[`DATA-SOURCES.md`](DATA-SOURCES.md). It is **not yet built** (P0 is the next step). The
+prior root plan [`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md) is now shipped.
 
 For the distilled decisions (rather than the build sequence), see the
 [Architecture Decision Records](../adr/).
+
+### 🟢 Active — the forward plan (not yet built)
+
+| Plan | What it covers | Status |
+|---|---|---|
+| [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) | The **year roadmap** (P0–P6): typed `LayerDescriptor` registry → two-lane pipeline + capability firewall → full 2065-port spine → measured macro signals → context-ring breadth → honest cross-layer surface. Hub-and-spoke of ownership enforced by construction. From a 10-agent research pass + adversarial critic. | **Active · P0 next** |
+| [`DATA-SOURCES.md`](DATA-SOURCES.md) | The free-data catalog behind the vision — **93 sources** across every domain, each tagged measured-vs-context with the statistic we'd own, auth, license, cadence, and license/cost caveats. | Reference (living) |
+
+### ⚪ Shipped — the build history
 
 | Plan | What it covered | Status |
 |---|---|---|
