@@ -513,11 +513,16 @@ not bad design — it's overbuilding before the boring invariants are real._ Inc
   signals, cited context, and no fake causation. It shows what the world looked like, when we knew
   it, where it happened, and what evidence supports it."_ A one-pager (what · who-for · why-different
   · why-the-globe · why-the-substrate · what-ships-first) belongs up front.
-- **⚠ THE OPEN DECISION — primary user.** Humans *and* agents consume the store, but prioritization
-  needs **one primary human user** — it shapes the catalog, the UI defaults, the briefings, and what
-  counts as "relevant." Left unanswered, the layer catalog sprawls. **Recommended:** product
-  narrative = **supply-chain / geopolitical-disruption analyst**; near-term success measured by
-  **technical-evaluator** impact (this is the portfolio flagship). _Pending confirmation._
+- **THE PRIMARY-USER DECISION — resolved: don't narrow, keep it world-wide ("do it all").** The
+  call: the product stays **honest world situational-awareness** (the substrate is, by definition,
+  *every* free dataset) — it is **not** narrowed to a single analyst persona. The reviewer's
+  anti-sprawl goal is met a *different* way: discipline comes from the **curation rule + the hard
+  capacity cap + the retirement policy** above, **not** from a narrow audience. So "primary user"
+  decides **sequence + default emphasis, not scope**: lead with the freight **SPINE** (it's built,
+  and it's the most legible hook for any visitor — analyst, evaluator, or agent), then expand
+  outward through the catalog in priority order. **Freight is the front door, not the ceiling.**
+  "Do it all" = a long, gated, capacity-bounded march — never all-at-once; the cap + retirement are
+  what make breadth survivable for a single maintainer.
 
 ---
 
