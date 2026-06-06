@@ -555,6 +555,9 @@ body,
 .sw.lane {
   background: #8a93a6;
 }
+.sw.sat {
+  background: linear-gradient(135deg, #2e5e8c, #4a7c59);
+}
 .fr-legend {
   position: absolute;
   z-index: 5;

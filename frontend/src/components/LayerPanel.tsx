@@ -13,7 +13,15 @@ const ROWS: { id: LayerId; label: string; sw: string }[] = [
   { id: 'storms', label: 'storms', sw: 'storm' },
   { id: 'lanes', label: 'lanes', sw: 'lane' },
   { id: 'wind', label: 'wind', sw: 'wind' },
+  { id: 'satellite', label: 'satellite', sw: 'sat' },
 ];
+
+// VIIRS true-color is published ~a day behind; matches Globe's GIBS_DATE (2 days back).
+const SAT_DATE = (() => {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 2);
+  return d.toISOString().slice(0, 10);
+})();
 
 interface LayerPanelProps {
   layers: LayerVisibility;
@@ -56,7 +64,9 @@ export default function LayerPanel({
             title={
               r.id === 'ships' && ships
                 ? ships.note
-                : `${on ? 'Hide' : 'Show'} the ${r.label} layer`
+                : r.id === 'satellite'
+                  ? `Real NASA VIIRS true-color satellite · ${SAT_DATE} (near-real-time)`
+                  : `${on ? 'Hide' : 'Show'} the ${r.label} layer`
             }
           >
             <i className={`sw ${r.sw}`} />
