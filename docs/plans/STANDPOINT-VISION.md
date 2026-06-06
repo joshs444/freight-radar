@@ -317,7 +317,10 @@ and the heavy build stays in the weekly Action.
   a live flag (where "we never forecast" slips in the reader's head); a separate
   historical-archive view behind an interstitial, if at all.
 - **Build (agent, DERIVED tier):** the reasoner gets a **read-only** connection to the store and
-  may only **recombine and rank cited facts** — it performs no arithmetic that invents a figure
+  may only **retrieve, group, summarize, and order cited facts by *declared neutral keys*** —
+  time, distance, source, tier, freshness. It may **never** rank entities by risk, importance,
+  severity, causal likelihood, evidence density, or predicted disruption (per review pass 2:
+  "rank" silently becomes a risk score). It performs no arithmetic that invents a figure
   (ADR-0003 generalized). Every output is `{claim, tier:'DERIVED', cites:[lineage_run_ids],
   agent_model}` — **a claim with zero cites fails the grounding gate**, exactly as the chat does
   today. A shared **association-grammar lint** rejects `causes / drives / leads to / will /
@@ -456,6 +459,65 @@ adversarial critic's load-bearing corrections:
 - **Promote the structural firewall** from a P0/P1 line-item to **the gating invariant of the
   whole plan** — AI as a co-equal consumer raises the stakes from "CONTEXT can't write flags" to
   "nothing the reasoner emits can ever become a fact."
+
+## 11. Review pass 2 — tightening before execution (incorporated)
+
+A second external review. Its load-bearing message matches the critic's: _the biggest danger is
+not bad design — it's overbuilding before the boring invariants are real._ Incorporated:
+
+- **Minimum Viable Substrate (MVS) — the first real milestone, sharpening P0–P1.** A *smaller hard
+  target*: layer registry + source manifest + lineage model + bitemporal timestamps + tier
+  predicates + import firewall + deterministic sidecar export, **for the existing shipped layers,
+  with no new datasets.** The **exit condition is a loop, not "architecture exists":** _a
+  maintainer can add or modify one existing layer by editing one descriptor + one enricher, then
+  CI proves tier, source, timestamp, lineage, firewall, and TypeScript parity._ The core unlock is
+  that loop feeling **boring and safe**; everything else depends on it.
+- **The crosswalk gets even more ceremony.** A bad crosswalk is *worse* than a missing layer —
+  missing data is visible, **misjoined data looks authoritative.** P2 requires a **golden crosswalk
+  suite** before scaling: hand-audited known pairs (PortWatch id ↔ LOCODE ↔ coords; chokepoint ↔
+  geometry ↔ label; country ids across World Bank / OECD / EIA), **known _non_-joins** (look-alikes
+  that must NOT merge), and ambiguous cases that must **require manual override.** The gate includes
+  known non-joins, not just known joins — that's what stops fuzzy matching from becoming silent
+  fabrication.
+- **P2 is a pilot ladder, not a big jump:** registry+WAP generalized → 28 chokepoints migrated →
+  **50-port pilot → 200-port pilot →** full ~2065. The *operational* issues (naming, missingness,
+  churn, sparse histories, sidecar size, UI density, false-positive communication) surface before
+  the statistical ones. And FDR needs **plain-language UX**, not jargon: _"Many ports are monitored
+  at once, so a few unusual readings can occur by chance — Standpoint adjusts the flag threshold to
+  reduce false alarms."_
+- **P3: the SIGNAL bar stays brutal — signals are rare.** _"A SIGNAL is not 'important data' — it's
+  a number whose method we are willing to own."_ Credibility rises if **most datasets stay CONTEXT.**
+  (My refinement: keep the signal set **single-digit** for a long time, and capacity-bound P3 itself
+  — 2–3 promotions first, not 6–8, same logic as P2's ladder.)
+- **P4–P5 are menus, not commitments — capacity-bounded.** Ship the registry/catalog/drift
+  machinery, then onboard the highest-value context layers **until the maintenance budget is full**
+  — don't promise 15–20/phase. (My refinement: the capacity bound needs an actual **number** — a
+  steady-state layer cap — treated as a hard ceiling, or "until full" is unmeasurable.)
+- **Better success metric:** not _# layers live_ but **# layers still fresh, licensed,
+  lineage-stamped, discoverable, and passing contract checks after 8 weeks.** Freshness-after-time
+  beats launch count. (→ §8.)
+- **Curation rule + retirement policy + deletion discipline.** Before a context layer is added it
+  clears an explicit bar (relevance, license, cadence, coverage, provenance quality, maintenance
+  burden, UI usefulness). A source that breaks repeatedly, changes license, goes stale, or fails
+  attribution is **removed or frozen** — a serious data product needs deletion discipline.
+- **Source Ledger → operational dashboard** (not just a transparency page): last fetched, last
+  changed, freshness status, schema-contract status, license class, failure history. (Pairs with
+  the drift detector.)
+- **A tiny user-visible win baked into P0/P1.** Pure refactors are motivation-hostile; let the
+  registry emit something visible even with no new data — the **auto-generated Source Ledger /
+  layer catalog / provenance rail** — so the substrate work *feels* real.
+- **Cap near-term ambition:** **P0–P3 is the committed roadmap; P4–P6 stay directional** until the
+  substrate has survived production use.
+- **The positive promise (was missing — the doc only says what it refuses to do).** Plain-language:
+  _"A provenance-first world-state map for supply-chain disruption — measured freight stress, owned
+  signals, cited context, and no fake causation. It shows what the world looked like, when we knew
+  it, where it happened, and what evidence supports it."_ A one-pager (what · who-for · why-different
+  · why-the-globe · why-the-substrate · what-ships-first) belongs up front.
+- **⚠ THE OPEN DECISION — primary user.** Humans *and* agents consume the store, but prioritization
+  needs **one primary human user** — it shapes the catalog, the UI defaults, the briefings, and what
+  counts as "relevant." Left unanswered, the layer catalog sprawls. **Recommended:** product
+  narrative = **supply-chain / geopolitical-disruption analyst**; near-term success measured by
+  **technical-evaluator** impact (this is the portfolio flagship). _Pending confirmation._
 
 ---
 
