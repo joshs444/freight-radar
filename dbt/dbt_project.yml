@@ -1,0 +1,49 @@
+name: 'freight_radar'
+version: '1.0.0'
+config-version: 2
+
+# Driven by the backend uv venv (`uv sync --extra dbt`); the duckdb adapter points
+# at the SAME data/freight_radar.duckdb the Python pipeline writes. See ./README.md.
+profile: 'freight_radar'
+# >=1.10 for the generic-test `arguments:` property used throughout the schema YAML.
+require-dbt-version: ">=1.10.0"
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# --- knobs mirror the Python pipeline so the dbt re-expressions stay numerically
+# identical to it. Each maps to a named constant in the backend; the marts read
+# these via {{ var(...) }} rather than hard-coding magic numbers. ---------------
+vars:
+  baseline_days: 28           # export_snapshot._chokepoints 28-day rolling baseline
+  min_join_coverage: 0.95     # config.MIN_JOIN_COVERAGE — D1 ETL guard threshold
+  # Global Ocean Freight Stress Index (narrative/stress.py) constants:
+  stress_window_days: 120     # export_timeseries.WINDOW_DAYS / "120d history"
+  stress_normal_pctile: 0.80  # stress.NORMAL_PCTILE  (linear-interp = quantile_cont)
+  stress_dev_floor: 0.15      # stress.DEV_FLOOR
+  stress_dev_saturate: 1.00   # stress.DEV_SATURATE
+  stress_smooth_days: 3       # stress.SMOOTH_DAYS  (trailing causal mean)
+  stress_breadth_w: 0.60      # stress.BREADTH_W
+  stress_depth_w: 0.40        # stress.DEPTH_W
+  stress_disrupted_at: 0.30   # stress.DISRUPTED_AT
+
+# Staging cleans/standardizes the raw pipeline tables (views, cheap to rebuild);
+# marts are the materialized re-expressions the app's numbers trace to. Custom
+# schemas (main_staging / main_marts) keep dbt's relations OUT of `main` so they
+# never collide with the pipeline's own dim_*/fct_*/stg_* tables.
+models:
+  freight_radar:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts

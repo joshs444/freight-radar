@@ -1,0 +1,45 @@
+# Committed on purpose: this profile holds NO secrets — only a local DuckDB file
+# path — so the dbt layer is reproducible from a clean checkout. The path honors
+# the same FREIGHT_RADAR_DB env var the Python app uses (config.db_path), so dbt
+# and the pipeline always target one file.
+#
+#   dev  — the real warehouse the pipeline builds (default).
+#   ci   — a small fixture DB the hermetic CI job builds from committed CSVs.
+#   bq   — BigQuery portability target (commented; see the note at the bottom).
+#
+# Run from the backend venv, e.g.:
+#   cd backend && uv run dbt build --project-dir ../dbt --profiles-dir ../dbt
+# (cwd = backend, so the default relative path resolves to repo-root/data.)
+freight_radar:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('FREIGHT_RADAR_DB', '../data/freight_radar.duckdb') }}"
+      schema: main
+      threads: 4
+
+    ci:
+      type: duckdb
+      path: "{{ env_var('FREIGHT_RADAR_DB', 'freight_radar_ci.duckdb') }}"
+      schema: main
+      threads: 4
+
+    # --- BigQuery portability target (bonus) ---------------------------------------
+    # The models are plain SQL on the standard source()/ref() lineage, so the same
+    # dbt project runs on a cloud warehouse by swapping the adapter — no model edits.
+    # DuckDB is the live, tested target; this is committed (uncommented + credentialed)
+    # as a demonstration of portability, not a live run. To use it:
+    #   1) uv add dbt-bigquery   (or add to the `dbt` extra in backend/pyproject.toml)
+    #   2) load the same sources into a `main` dataset (e.g. `bq load` the fixtures)
+    #   3) `gcloud auth application-default login`, then `dbt build --target bq`
+    # DuckDB's round_even() -> BigQuery's round(x, n, 'ROUND_HALF_EVEN') for parity.
+    #
+    # bq:
+    #   type: bigquery
+    #   method: oauth                       # ADC; or method: service-account + keyfile:
+    #   project: "{{ env_var('GCP_PROJECT', 'freight-radar') }}"
+    #   dataset: main                       # sources live here; staging/marts -> main_staging/main_marts
+    #   location: US
+    #   threads: 4
+    #   priority: interactive

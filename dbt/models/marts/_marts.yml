@@ -1,0 +1,130 @@
+version: 2
+
+# Schema tests on the marts — the materialized re-expressions the app's numbers
+# trace to. Generic tests (not_null/unique/relationships/accepted_range/
+# accepted_values) cover the structural invariants; the singular tests in ../tests
+# carry the heavier ETL-guard logic (join coverage, cargo reconciliation, index range).
+models:
+  - name: mart_chokepoint_pressure
+    description: >
+      Per-chokepoint latest transit count vs its {{ var('baseline_days') }}-day rolling
+      baseline (pct_change / z-score / avg vessel size). Re-expresses
+      export_snapshot._chokepoints — one row per chokepoint.
+    columns:
+      - name: portid
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_chokepoints')
+                field: portid
+      - name: n_total
+        description: "Latest daily transit count."
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: as_of
+        data_tests: [not_null]
+
+  - name: mart_port_activity
+    description: >
+      Per-port latest daily port-call snapshot + IMF national-dependence shares, for
+      ports that carry geometry. Re-expresses export_snapshot._ports — one row per port.
+    columns:
+      - name: portid
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_ports')
+                field: portid
+      - name: portcalls
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: share_import
+        description: "Port's share of its country's maritime imports (0-100%); NULL when absent."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: share_export
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+
+  - name: mart_freight_stress_index
+    description: >
+      The Global Ocean Freight Stress Index (0-100), one row per day. Re-expresses
+      narrative/stress.py compute(): 100 · (BREADTH_W·breadth + DEPTH_W·depth).
+    columns:
+      - name: date
+        data_tests: [not_null, unique]
+      - name: index_value
+        description: "0-100 blended index."
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: breadth
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: depth
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: label
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [calm, elevated, high, severe]
+      - name: n_chokepoints
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+
+  - name: mart_active_flags
+    description: >
+      The "current issues" feed — live detected anomalies (lifecycle <> resolved)
+      ranked by severity. A serving re-expression of fct_flags; no dbt model sits in
+      the detection number path.
+    columns:
+      - name: flag_id
+        data_tests: [not_null, unique]
+      - name: severity
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: severity_rank
+        data_tests: [not_null, unique]
+      - name: lifecycle
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [new, ongoing, escalated]
+      - name: metric
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [n_total, portcalls_total, portcalls_container, avg_vessel_size_dwt]

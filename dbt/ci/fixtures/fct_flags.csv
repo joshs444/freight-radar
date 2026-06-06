@@ -1,0 +1,114 @@
+flag_id,kind,entity,portid,lat,lon,severity,headline,brief_md,metric,value,baseline,pct_change,zscore,as_of,detected_date,source,method,lifecycle,computed_at
+25f4a760f2f91733,port_activity_drop,Santos,port1160,-23.91706787,-46.33656353,10,[Resolved] Santos activity 17% below its 28-day norm,"**Santos** port calls fell to **13 port calls** on 2026-05-20, **17% below** its 28-day norm of ~16/day (z = -3.7).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,13.0,15.64,-16.9,-3.67,2026-05-20,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+2e09304a8b7af880,port_activity_drop,Immingham,port493,53.64188521,-0.226276065,13,[Resolved] Immingham activity 23% below its 28-day norm,"**Immingham** port calls fell to **11 port calls** on 2026-05-29, **23% below** its 28-day norm of ~14/day (z = -4.4).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,11.0,14.32,-23.2,-4.36,2026-05-29,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+46b5cae2d229216d,port_activity_drop,Shanghai (Yangshan),port2027,30.6150855074278,122.074785341805,10,[Resolved] Shanghai (Yangshan) activity 54% below its 28-day norm,"**Shanghai (Yangshan)** port calls fell to **7 port calls** on 2026-05-23, **54% below** its 28-day norm of ~15/day (z = -3.8).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,7.0,15.29,-54.2,-3.78,2026-05-23,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+5f8dfd5f87bb1c6e,port_cargo_type_spike,Xiamen,port1404,24.46593394,118.0205536,23,Xiamen container calls 24% above 28-day norm,"**Xiamen** **container** port calls surged to **18/day** on 2026-05-21, **24% above** their 28-day norm of ~14/day (z = +3.8) — by type: dry-bulk +14%, general-cargo -100%.
+
+_Container is this port's dominant type (~71% of calls). The blended port-calls total didn't trip the detector here (total +7% vs norm); isolating the dominant stream surfaces the move. ""Drop/surge"" is inferred from daily port calls, not vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",portcalls_container,18.0,14.46,24.4,3.75,2026-05-21,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+64b7d3d2d1359f7b,port_congestion_spike,Qiwei,port1073,31.99831756,120.6176242,15,[Resolved] Qiwei activity 184% above its 28-day norm,"**Qiwei** port calls surged to **29 port calls** on 2026-05-27, **184% above** its 28-day norm of ~10/day (z = +6.9).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,29.0,10.21,183.9,6.93,2026-05-27,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+6e0f51e8d4f5c49a,port_cargo_type_drop,Port Klang,port960,2.972594826,101.3403063,35,Port Klang container calls 39% below 28-day norm,"**Port Klang** **container** port calls fell to **13/day** on 2026-05-17, **39% below** their 28-day norm of ~21/day (z = -5.2) — by type: tanker +21%, general-cargo +112%.
+
+_Container is this port's dominant type (~59% of calls). The blended port-calls total didn't trip the detector here (total -12% vs norm); isolating the dominant stream surfaces the move. ""Drop/surge"" is inferred from daily port calls, not vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_**Port Klang** handles ~44% of Malaysia's maritime imports and ~46% of its exports (IMF national-dependence share). disruption here is systemically significant for Malaysia._",portcalls_container,13.0,21.18,-38.6,-5.18,2026-05-17,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+7ac1f3a953931378,port_activity_drop,Saigon,port1291,10.73624058,106.766152,14,[Resolved] Saigon activity 21% below its 28-day norm,"**Saigon** port calls fell to **21 port calls** on 2026-05-21, **21% below** its 28-day norm of ~27/day (z = -3.9).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,21.0,26.61,-21.1,-3.88,2026-05-21,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+8e4b4bfda2c11a49,port_activity_drop,Shanghai (Pudong),port1188,31.19179536,121.6441968,36,Shanghai (Pudong) activity 79% below its 28-day norm,"**Shanghai (Pudong)** port calls fell to **18 port calls** on 2026-05-25, **79% below** its 28-day norm of ~86/day (z = -7.1).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",portcalls_total,18.0,85.96,-79.1,-7.12,2026-05-25,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+a7c82277206395e4,port_activity_drop,Las Palmas (de Gran Canaria),port635,28.14804985,-15.41136132,8,[Resolved] Las Palmas (de Gran Canaria) activity 39% below its 28-day norm,"**Las Palmas (de Gran Canaria)** port calls fell to **10 port calls** on 2026-05-21, **39% below** its 28-day norm of ~16/day (z = -3.1).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,10.0,16.36,-38.9,-3.07,2026-05-21,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+b1d50dee582d95d2,port_activity_drop,Ningbo,port824,29.92076897,121.8818408,18,[Resolved] Ningbo activity 59% below its 28-day norm,"**Ningbo** port calls fell to **22 port calls** on 2026-05-23, **59% below** its 28-day norm of ~53/day (z = -4.7).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,22.0,53.29,-58.7,-4.68,2026-05-23,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+b34e04d7a651a706,port_activity_drop,Taichung,port1252,24.25457118,120.5049668,29,Taichung activity 33% below its 28-day norm,"**Taichung** port calls fell to **10 port calls** on 2026-05-28, **33% below** its 28-day norm of ~15/day (z = -6.3).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",portcalls_total,10.0,15.0,-33.3,-6.31,2026-05-28,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+b3729b17446dc9df,chokepoint_transit_spike,Oresund Strait,chokepoint10,55.50784043,12.85079477,24,Oresund Strait transit 29% above its 28-day norm,"**Oresund Strait** transit surged to **54 vessels** on 2026-05-18, **29% above** its 28-day norm of ~42/day (z = +3.6).
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",n_total,54.0,41.71,29.5,3.64,2026-05-18,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+b4d1ce0765b0e3d4,port_cargo_type_drop,Hong Kong,port474,22.33510926,114.0966519,39,Hong Kong container calls 38% below 28-day norm,"**Hong Kong** **container** port calls fell to **21/day** on 2026-05-24, **38% below** their 28-day norm of ~34/day (z = -7.3) — by type: tanker +32%, general-cargo +10%.
+
+_Container is this port's dominant type (~80% of calls). The blended port-calls total didn't trip the detector here (total -28% vs norm); isolating the dominant stream surfaces the move. ""Drop/surge"" is inferred from daily port calls, not vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_**Hong Kong** handles ~100% of Hong Kong SAR's maritime imports and ~100% of its exports (IMF national-dependence share). A single-port dependency — disruption here is systemically significant for Hong Kong SAR._",portcalls_container,21.0,33.71,-37.7,-7.28,2026-05-24,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+b74be045769441ea,chokepoint_persistent_collapse,Strait of Hormuz,chokepoint6,26.29685349,56.85984844,83,Strait of Hormuz transit ~92% below its pre-disruption norm (sustained),"**Strait of Hormuz** has run at **~6 vessels/day** since around **2026-03-01**, **~92% below** its prior norm of **~75/day** — a level shift sustained for **~91 days**.
+
+_This is a persistent disruption, not a fresh blip. A 28-day rolling baseline has since adapted to the new level, which is why a same-day anomaly detector reads it as 'normal'; it is flagged by comparing today's level to the pre-shift norm._
+
+_Method: sustained level-shift vs pre-disruption norm. Source: IMF PortWatch — daily granularity, refreshed weekly._",n_total,5.67,74.87,-92.4,0.0,2026-03-01,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly",sustained level-shift vs pre-disruption norm,ongoing,2026-06-04 11:32:50.553067
+bb17b4b10357fb5e,port_cargo_type_drop,Kaohsiung,port541,22.5615278,120.3226847,37,Kaohsiung container calls 27% below 28-day norm,"**Kaohsiung** **container** port calls fell to **13/day** on 2026-05-24, **27% below** their 28-day norm of ~18/day (z = -5.8) — by type: tanker -24%, dry-bulk -45%.
+
+_Container is this port's dominant type (~61% of calls). The blended port-calls total didn't trip the detector here (total -31% vs norm); isolating the dominant stream surfaces the move. ""Drop/surge"" is inferred from daily port calls, not vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_**Kaohsiung** handles ~48% of Taiwan Province of China's maritime imports and ~65% of its exports (IMF national-dependence share). disruption here is systemically significant for Taiwan Province of China._",portcalls_container,13.0,17.75,-26.8,-5.85,2026-05-24,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+bce0e2fdd63be992,chokepoint_transit_spike,Kerch Strait,chokepoint28,45.26676309041701,36.54390169965004,29,Kerch Strait transit 579% above its 28-day norm,"**Kerch Strait** transit surged to **49 vessels** on 2026-05-18, **579% above** its 28-day norm of ~7/day (z = +9.6).
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",n_total,49.0,7.21,579.2,9.56,2026-05-18,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+be619c5cfc526bbe,chokepoint_vessel_size_shift,Yucatan Channel,chokepoint22,21.8152541926988,-85.6472792223515,28,Yucatan Channel avg vessel size 34% above norm — larger ships,"**Yucatan Channel** average transiting **vessel size** rose to **~34,567 DWT** on 2026-05-28, **34% above** its 28-day norm of ~25,874 DWT (z = +4.6) — larger ships on average — while the **transit count** stayed near normal (+3%). The count detector can't see this; ship-size is orthogonal to ship-count.
+
+_Average size = transiting capacity (DWT) ÷ vessel count — a fleet-mix shift, **not** capacity utilisation (capacity here is a flow, not a ceiling)._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._",avg_vessel_size_dwt,34566.55,25873.55,33.6,4.61,2026-05-28,2026-06-04,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",ongoing,2026-06-04 11:32:50.553067
+e5adc8a1a22b0e6e,chokepoint_transit_collapse,Ombai Strait,chokepoint16,-8.39854120024364,125.090981399512,9,[Resolved] Ombai Strait transit 42% below its 28-day norm,"**Ombai Strait** transit fell to **5 vessels** on 2026-05-20, **42% below** its 28-day norm of ~9/day (z = -3.0).
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",n_total,5.0,8.61,-41.9,-3.03,2026-05-20,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
+f8737eb4788d8104,port_activity_drop,Hong Kong,port474,22.33510926,114.0966519,20,[Resolved] Hong Kong activity 28% below its 28-day norm,"**Hong Kong** port calls fell to **30 port calls** on 2026-05-24, **28% below** its 28-day norm of ~42/day (z = -6.9).
+
+_""Congestion"" here is inferred from a surge/drop in daily port calls, not from direct vessel dwell-time data._
+
+_Method: STL(7,robust) residual + 28d rolling z. Source: IMF PortWatch — daily granularity, refreshed weekly._
+
+_Resolved: this anomaly no longer trips detection; severity decaying._",portcalls_total,30.0,41.64,-28.0,-6.89,2026-05-24,2026-06-03,"IMF PortWatch — daily granularity, refreshed weekly","STL(7,robust) residual + 28d rolling z",resolved,2026-06-03 13:18:34.616227
