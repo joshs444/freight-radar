@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 // query engine; StressDetail is modal-gated. React paints the shell while they stream in.
 const Globe = lazy(() => import('./Globe.tsx'));
 const Board = lazy(() => import('./components/Board.tsx'));
+const StoreQuery = lazy(() => import('./components/StoreQuery.tsx'));
 const Chat = lazy(() => import('./components/Chat.tsx'));
 const StressDetail = lazy(() => import('./components/StressDetail.tsx'));
 const HistoryTimeline = lazy(() => import('./components/HistoryTimeline.tsx'));
@@ -75,12 +76,14 @@ export default function App() {
   const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef<MapApi | null>(null);
 
-  // globe (explore) vs board (scan/sort) — same data, two reads. Persisted + deep-linked.
+  // globe (explore) vs board (scan/sort) vs data (in-browser SQL) — same store, three reads.
+  // Persisted + deep-linked.
   const [view, setView] = useState<AppView>(() => {
     try {
-      const h = new URLSearchParams(window.location.hash.slice(1));
-      if (h.get('v') === 'board') return 'board';
-      if (localStorage.getItem('fr_view') === 'board') return 'board';
+      const fromHash = new URLSearchParams(window.location.hash.slice(1)).get('v');
+      if (fromHash === 'board' || fromHash === 'data') return fromHash;
+      const saved = localStorage.getItem('fr_view');
+      if (saved === 'board' || saved === 'data') return saved;
     } catch {
       /* ignore */
     }
@@ -200,7 +203,7 @@ export default function App() {
     if (selected?.id) p.set('e', selected.id);
     if (filter !== 'all') p.set('f', filter);
     if (scrubIndex != null) p.set('t', String(scrubIndex));
-    if (view === 'board') p.set('v', 'board');
+    if (view !== 'globe') p.set('v', view);
     const s = p.toString();
     window.history.replaceState(
       null,
@@ -300,6 +303,11 @@ export default function App() {
                 watched={watched}
                 onToggleWatch={toggleWatch}
               />
+            </Suspense>
+          )}
+          {view === 'data' && data && (
+            <Suspense fallback={<div className="fr-globe-fallback">loading the SQL engine…</div>}>
+              <StoreQuery />
             </Suspense>
           )}
           {view === 'globe' && data && (

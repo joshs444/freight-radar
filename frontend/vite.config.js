@@ -14,7 +14,7 @@ function deferHeavyModulepreload() {
     name: 'defer-heavy-modulepreload',
     transformIndexHtml(html) {
       return html.replace(
-        /\s*<link rel="modulepreload"[^>]*(?:maplibre|deck|weather|geotiff)[^>]*>/g,
+        /\s*<link rel="modulepreload"[^>]*(?:maplibre|deck|weather|geotiff|duckdb)[^>]*>/g,
         ''
       );
     },
@@ -40,6 +40,9 @@ export default defineConfig({
             if (/[\\/](deck|luma|math|loaders|probe)\.gl[\\/]/.test(id) || id.includes('@deck.gl'))
               return 'deck';
             if (/[\\/]react(-dom)?[\\/]/.test(id) || id.includes('scheduler')) return 'react';
+            // duckdb-wasm (the in-browser SQL engine) is reached ONLY via the lazy Data view's
+            // dynamic import — keep it out of the boot-critical vendor chunk.
+            if (id.includes('@duckdb') || id.includes('duckdb-wasm')) return 'duckdb';
             return 'vendor';
           }
         },
@@ -49,7 +52,7 @@ export default defineConfig({
     // the HTML-level strip above is what actually keeps maplibre off the boot critical path.
     modulepreload: {
       resolveDependencies: (_file, deps) =>
-        deps.filter((d) => !/maplibre|deck|weather|geotiff/.test(d)),
+        deps.filter((d) => !/maplibre|deck|weather|geotiff|duckdb/.test(d)),
     },
   },
 });

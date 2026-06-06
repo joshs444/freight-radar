@@ -228,7 +228,7 @@ export interface Ships {
 export type { LayerId, LayerVisibility } from './lib/layers.gen.ts';
 
 // the two ways to read the same data: explore-by-poking globe, or scan-and-sort board
-export type AppView = 'globe' | 'board';
+export type AppView = 'globe' | 'board' | 'data';
 
 // ---- exposure.json ---------------------------------------------------------
 
