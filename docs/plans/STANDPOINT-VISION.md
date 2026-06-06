@@ -1,31 +1,55 @@
 # Standpoint — The Year Vision
 
 _A dependency-ordered, year-horizon plan to evolve Standpoint (the repo still slugged
-`freight-radar`) from a ~10-layer ocean-freight globe into an **honest world
-situational-awareness platform** — every relevant **free** data source on one globe + one
-analytical board, toggled, cited, and read together._
+`freight-radar`) from a ~10-layer ocean-freight globe into an **honest, unified,
+lineage-complete model of world state** — every relevant **free** dataset normalized into one
+tier-stamped, **agent-legible** store, with the globe + board + chat + AI agents as its lenses.
+The globe is the flagship view; **the store is the product** ([§1](#1-north-star),
+[§10](#10-the-substrate-reframe-north-star-correction--and-its-critic))._
 
-Produced by a multi-agent research pass (5 data scouts → architecture / UI / governance
-design → roadmap → an **adversarial critic**). The critic's corrections are folded into the
-roadmap below and listed verbatim in [§9](#9-what-the-adversarial-review-changed). The full
-source catalog is [DATA-SOURCES.md](DATA-SOURCES.md) (93 sources). **This is a map, not a
-sprint** — we execute one shippable phase at a time, however long it takes.
+Produced by multi-agent research passes (data scouts → architecture / UI / governance → roadmap
+→ an **adversarial critic**), then a second pass that reframed it around the data substrate. The
+critics' corrections are folded in below and recorded in [§9](#9-what-the-adversarial-review-changed)
+and [§10](#10-the-substrate-reframe-north-star-correction--and-its-critic). The full source
+catalog is [DATA-SOURCES.md](DATA-SOURCES.md) (93 sources). **This is a map, not a sprint** — we
+execute one shippable phase at a time, however long it takes.
 
 ---
 
 ## 1. North star
 
-One globe + one board where every relevant **free** dataset is placed, toggled, cited, and
-read together — with a **hub-and-spoke of ownership** that is **enforced by construction, not
-by prose**. One measured **freight SPINE**, N self-owned measured **SIGNALS**, and a ring of
-pure cited **CONTEXT**, scaled from ~10 layers to 50+ across a year **without ever asserting
-causation between layers and without fabricating a forecast** — the deliberate opposite of
-centrum-ai's "99.7% deterministic cascade."
+**The product is not the globe — it's the substrate beneath it.** One queryable, tier-stamped,
+**lineage-complete model of world state**: every relevant *free* dataset ingested, connected,
+and normalized into one store where **any number traces back to the exact observation and
+method that produced it.** The globe, the board, the chat, and **AI agents** are all *lenses*
+that read **from** the store — none owns data, none can write a fact the store didn't compute.
 
-The year's work makes the brand an **invariant**: a single typed `LayerDescriptor` registry
-(Python authoritative, TS generated) where `kind ∈ {SPINE, SIGNAL, CONTEXT}` drives the
-pipeline lane, the capability firewall, the CI honesty predicates, and every UI affordance —
-so a layer that bridges into the freight detector **literally cannot merge.**
+Why this is the real north star, not the map: a human can hold maybe 3–5 of ~93 connected
+series in working memory; an **agent** querying a clean, uniformly-keyed, provenance-stamped
+store can reason across **all** of them at once — *breadth of simultaneous grounding* no human
+eye reaches. So the substrate must be **agent-legible** (uniform grain, keys, tier, lineage),
+not merely human-visual. And the honesty brand is exactly what makes the store worth more to an
+agent than a pile of CSVs: clean epistemic tiers, no cross-layer causation or forecast baked in
+**as fact**, complete lineage → **trustworthy ground truth for humans and machines alike.**
+
+**The globe stays the flagship** — visual, impressive, relevant, and trusted *because
+everything on it derives from that substrate.* It is the most legible proof the store is
+correct. But the store is what ships. The honesty model stays the spine of it all: one measured
+freight **SPINE**, N self-owned measured **SIGNALS**, a ring of cited **CONTEXT** — and a
+fourth, strictly-downstream **DERIVED** tier for agent commentary ([§2](#2-the-honesty-model-made-structural)) —
+all **enforced by construction, not by prose**: a layer (or an agent) that tries to bridge into
+the freight detector **literally cannot merge**.
+
+> **Build-order discipline (the critic's load-bearing warning).** The substrate's value lives
+> in the *boring 80%* — the typed registry (which **does not exist yet**), the **structural**
+> firewall (still a comment, not a test), crosswalk correctness, and freshness enforced as a
+> hard gate across ~93 scrapers. **Not** the exciting 20% — a grand unified schema, a reasoning
+> agent. Those are *earned*, built downstream and **last**. A maintainer who starts at the
+> cathedral ends with a beautiful empty store and a globe that stopped getting layers. We earn
+> the substrate through **P0–P1**; the reasoning agent is the **capstone**. Separate
+> *substrate-for-agents* (a correct, tier-stamped, lineage-complete **read** store — earn it
+> now) from *the agent that reasons* (build dead last, hardened like nothing else), and never
+> let the second masquerade as the first.
 
 ## 2. The honesty model, made structural
 
@@ -36,6 +60,14 @@ so a layer that bridges into the freight detector **literally cannot merge.**
 | **SPINE** (exactly 1) | We own the *full chain*: ingest → fact tables → change-point detection → gated flags → the 0–100 stress index. Carries the product thesis ("disruption shows up in throughput weeks before the press"). | Ocean-freight throughput (28 chokepoints) |
 | **SIGNAL** (small, vetted N) | We compute a defensible Python scalar over **raw observed** inputs and own the method. Stands alone; **never** wired into the spine or a forecast. | Gatún draft, business exposure/cost |
 | **CONTEXT** (the broad ring) | Someone else's cited raw value shown as-is — fetched, filtered, geo-placed, labelled by us, but **not** transformed into a number we claim. "Possibly-related, not a stated cause." | GDELT news, USGS quakes, GDACS, storms, GFS wind, GIBS |
+| **DERIVED** (agent · downstream · the capstone) | What a non-deterministic reasoner *said about* the facts — **commentary the store quotes, never a number it owns** (`metric = null`, always; if it could own a number it would have to walk the SIGNAL gates instead). Read-only; every claim **cited** to the facts it used; association-grammar only; born in a quarantined namespace. Can never mutate the store or feed the detector. | (built last, P6) |
+
+**Every record carries its tier + four timestamps + a `lineage_run_id`** — so
+SPINE-vs-SIGNAL-vs-CONTEXT-vs-DERIVED is a **per-row** epistemic fact, not a per-file
+convention. **The store never carries a cross-layer coefficient, correlation, lag, or forecast
+as a fact** — those are forbidden by construction. That per-row discipline is exactly what lets
+an agent reason over the *whole* store without ever being handed an un-tiered or untraceable
+number.
 
 The world is connected — which is **exactly why we never assert the connection in the
 numbers.** Connectedness asserted = fabricated causation = the centrum failure mode. The only
@@ -89,6 +121,45 @@ LayerDescriptor {
 - **Honest cross-layer surface** ([§6](#6-ui-evolution), built *last*): co-location / co-timing
   shown; correlation, lag, "drives", and any coefficient **never** computed.
 
+### The substrate — one *thin fact index*, not one giant schema
+
+The store generalizes today's `dim_*`/`fct_*`/`meta_*` (real on disk) into a star around four
+canonical dimensions + **one long, tier-stamped fact**. Crucially, `fct_observation` is a **thin
+unifying index**, *not* the place all data lives — per-layer sidecars stay the payload; the
+index is what makes the whole thing joinable and agent-queryable.
+
+- **`dim_entity`** — the join glue: a stable `entity_key` for any *thing a number can be about*
+  (chokepoint, port, country, gauge, lake, grid-cell, lane, basin), with crosswalk columns
+  (LOCODE, FIPS, H3, `source_native_id`) so a US-Census port-id, a PortWatch portid, and a
+  UN/LOCODE resolve to **one** entity. **This crosswalk is where the honesty brand quietly dies
+  if it's wrong** — a bad join silently mis-attributes a number — so it ships behind a
+  **correctness gate, not just a coverage gate.**
+- **`dim_geo` / `dim_metric` / `dim_layer`** — geometry side-table (point/line/polygon/raster
+  footprint); the measure dictionary (name, unit, direction, **tier-by-construction**); and the
+  materialized `LayerDescriptor` (the single registry Python + TS generate from).
+- **`fct_observation`** — `(entity_key, date_key, grain, metric_key, layer_key, value, tier,
+  method, source_observed_at, fetched_at, transformed_at, lineage_run_id)`. Today's
+  `fct_chokepoint_daily`/`fct_port_daily` become rows here; the five data shapes
+  (point/series/flow/region/raster) all collapse onto it — and **rasters never enter DuckDB**:
+  only the offline-precomputed *zonal scalar* lands as a row, the tile PNG ships as a sidecar.
+- **`agent_inference`** — **separate, append-only, never joined in as fact.** Agent claims live
+  here (`tier='DERIVED'`, `cites[]` of `lineage_run_id`s, `agent_model`, `prompt_hash`). This is
+  the structural firewall for AI: the same boundary that keeps a CONTEXT sidecar from writing
+  `flags.json`, extended to the reasoner.
+
+**Every surface is a pure read** of this store; none can write a fact. `snapshot.json` /
+`flags.json` / `lanes.json` become **materialized views** over `fct_observation`; the board's
+measured/context split is a `GROUP BY tier`; the chat grounds by `SELECT`-ing rows and quoting
+their `method` + `source` + timestamps.
+
+**Storage reality (zero-cost, single-maintainer, static).** The DuckDB file *is* the substrate,
+built **server-side in the weekly Action** (never shipped whole, never on the page-load path).
+The client still gets the **same per-layer sidecar JSON** it does today — now regenerated as
+deterministic `SELECT … WHERE layer_key=?` exports of the store. And the agent lens needs **no
+backend**: ship a compact **read-only Parquet/DuckDB export to Pages**, queryable in-browser via
+**DuckDB-WASM** at zero marginal cost — so an agent gets the *whole uniform store* client-side,
+and the heavy build stays in the weekly Action.
+
 ## 5. The roadmap (P0 → P6, ~12 months)
 
 > Sequenced for **value + dependencies**, single-maintainer + free/static throughout. Two
@@ -98,9 +169,15 @@ LayerDescriptor {
 > zonal-stats run **off** the weekly Action (precompute, commit only the scalar); no multi-GB
 > GeoTIFF/NetCDF in CI, ever.
 
+> **This is where the substrate is earned.** P0–P1 are not "prep for the globe" — they *are*
+> the product (the correct, tier-stamped, lineage-complete store). The grand schema and the
+> reasoning agent are downstream of them, not the starting point.
+
 ### P0 — Typed `LayerDescriptor` + mirrored registry  · _Month 0–1.5_ · effort L
-- **Goal:** make hub-and-spoke *structural*. Re-express the existing ~10 layers through one
-  descriptor + authoritative Python registry, TS generated.
+- **Goal:** make hub-and-spoke *structural* — and lay the substrate's foundation: the registry
+  **does not exist yet** (verified: no `registry/`, no `layers.py`), and everything else rests
+  on it. Re-express the existing ~10 layers through one descriptor + authoritative Python
+  registry, TS generated.
 - **Build:** `registry/layers.py`; codegen for `types.ts`/`useData`/`LayerPanel`; the
   **import-graph firewall test lands here** (per critic, not P1).
 - **Exit:** every current layer runs through the registry with **byte-identical** sidecars;
@@ -108,13 +185,30 @@ LayerDescriptor {
   sidecars — `ships`/`disruptions`/`dwell`/`hazards`, not `gatun`/`weather`.)_
 
 ### P1 — Two-lane pipeline + CI honesty predicates + capability firewall  · _Month 1.5–3_ · effort L
-- **Goal:** generalize WAP to N measured layers; make honesty machine-checked.
+- **Goal:** generalize WAP to N measured layers; make honesty machine-checked; land the
+  **per-row tier + 4-timestamp + `lineage_run_id` stamp.** The **structural import-graph
+  firewall is promoted from a line-item to THE gating invariant of the whole plan** — today it's
+  a *comment* ("never reads the DB or writes flags"), not a test; with AI as a co-equal consumer
+  the stakes rise, so the boundary must be a capability/import-graph **CI fact** before any agent
+  ever reads the store.
 - **Build:** per-layer WAP `CHECKS` + lineage; tier-scoped read-only ctx for CONTEXT;
   `source_manifest.yaml` (one validated row/layer: tier, url, license, auth, cost_class) gated
   by a pydantic model in CI; the **5 honesty suites** (tier predicates, causal-verb *lexicon*,
   import-graph firewall, freshness, zero-cost). **Causal-verb lint → advisory** (per critic);
   the structural firewall is the real guarantee.
 - **Exit:** a deliberately-malicious branch (a CONTEXT layer writing `flags.json`) **fails CI**.
+
+### P1.5 — The agent-legible *read* surface (export only — NOT reasoning)  · _Month 3_ · effort S–M
+- **Goal:** make the store queryable by a machine **without building a reasoner** — the
+  critic's key split: *substrate-for-agents* now, *the agent that reasons* much later.
+- **Build:** one export step emits **both** the per-layer sidecars **and** a compact, read-only
+  **Parquet/DuckDB export** of `fct_observation` + dims to Pages (queryable in-browser via
+  **DuckDB-WASM**, zero marginal cost); plus a read-only **Standpoint Knowledge MCP server**
+  (the generalization of the chat's `buildIndex()`) exposing `list_layers` / `get_facts` /
+  `nearby` — every tool returns **facts-with-provenance**, there is **no write tool**.
+- **Exit:** an agent (or the maintainer) can run cross-source SQL over the whole uniform store
+  client-side; a test proves the MCP surface exposes no mutation; **no narrative agent exists
+  yet.**
 
 ### P2 — Full ~2065-port measured spine + matrix-sharded refresh + lazy fetch  · _Month 3–4.5_ · effort L
 - **Goal:** the single highest-impact measured extension — run the spine method across **all
@@ -124,9 +218,15 @@ LayerDescriptor {
   (weekly spine / daily fast-context / on-demand) — *moved before the spine* (critic: the heavy
   spine must not breach the lock first); **manifest-gated lazy fetch** (toggling a layer fetches
   on demand) — tiling reserved for `snapshot.json` + 1–2 dense layers only; **grounded-chat
-  re-architecture for lazy data** scheduled here (critic).
+  re-architecture for lazy data** scheduled here (critic); **introduce `fct_observation` as the
+  thin unifying index + the `dim_entity` crosswalk** (LOCODE/FIPS/H3/native-id → one
+  `entity_key`) behind a **correctness gate, not a coverage gate** — they share the WAP audit
+  machinery with the 2065-port extension, so the substrate spine and the data spine land
+  together.
 - **Exit:** all ~2065 ports carry our flags with FDR correction (UI states "tested N series,
-  expect ≤k noise"); white-noise CI test holds; first-paint payload held flat.
+  expect ≤k noise"); white-noise CI test holds; first-paint payload held flat; the crosswalk
+  passes its correctness gate (known entity pairs resolve to one `entity_key`, zero silent
+  mis-joins).
 
 ### P3 — Measured commodity / energy / macro signal cluster  · _Month 4.5–6_ · effort M–L
 - **Goal:** the cleanest, highest-value **promotions** — raw observed input + a defensible
@@ -169,18 +269,34 @@ LayerDescriptor {
 - **Exit:** ~15 human-impact/climate layers live; exposure scalars pass within-footprint tests;
   lenses one-click load + share.
 
-### P6 — The honest cross-layer surface (deliberately LAST)  · _Month 10–12_ · effort L
-- **Goal:** the brand's sharpest knife, built as the anti-centrum statement: a **proximity-only
-  "Nearby" panel** + comparison matrix that show co-location/co-timing and **stop** — no
-  coefficient, no lag, no "drives".
-- **Build:** `nearby.json` (itself CONTEXT-tier, `compute==passthrough`, `metric==null`): for a
-  selected SPINE/SIGNAL entity, the set of CONTEXT items within a declared space/time window,
-  ordered **only** by distance. **Per critic — the historical base-rate is quarantined:** it is
-  **never rendered adjacent to a live flag** (that's where "we never forecast" slips in the
-  reader's head); if shown at all, only in a separate historical-archive view behind an
-  interstitial.
-- **Exit:** Nearby + matrix live, proximity-only, no-causation stamp; CI proves `nearby.json` is
-  CONTEXT-tier and contains no computed correlation; the elevated weekly **Briefing** ships.
+### P6 — The honest cross-layer surface **+ the reasoning agent** (the capstone, LAST)  · _Month 10–12_ · effort L
+- **Goal:** the brand's two sharpest knives, built as the anti-centrum statement and the most
+  honesty-hardened things in the project: a **proximity-only "Nearby" panel** + comparison
+  matrix, and — fused here, **dead last** — the **DERIVED reasoning agent** that narrates over
+  the substrate.
+- **Build (surface):** `nearby.json` (CONTEXT-tier, `compute==passthrough`, `metric==null`): for
+  a selected SPINE/SIGNAL entity, the CONTEXT items within a declared space/time window, ordered
+  **only** by distance. The historical base-rate is **quarantined** — never rendered adjacent to
+  a live flag (where "we never forecast" slips in the reader's head); a separate
+  historical-archive view behind an interstitial, if at all.
+- **Build (agent, DERIVED tier):** the reasoner gets a **read-only** connection to the store and
+  may only **recombine and rank cited facts** — it performs no arithmetic that invents a figure
+  (ADR-0003 generalized). Every output is `{claim, tier:'DERIVED', cites:[lineage_run_ids],
+  agent_model}` — **a claim with zero cites fails the grounding gate**, exactly as the chat does
+  today. A shared **association-grammar lint** rejects `causes / drives / leads to / will /
+  predicts / because-of` before surfacing; candidate relationships are emitted as fenced
+  **HYPOTHESES routed to the G0–G5 promotion pipeline**, never stated as findings. **The agent
+  reasons over everything (leverage) but every utterance is read-only, tier-stamped, cited,
+  association-only, and physically downstream of — unable to mutate — the store (honesty).**
+- **⚠ Two traps the critic flagged, both forbidden:** (1) **"rank by evidence density" is a risk
+  score wearing a count's clothes** — "Hormuz 6, Panama 4, Suez 3" reads as a *risk ranking*; if
+  ordering is shown it is a neutral roster of cited co-located receipts, not a leaderboard of
+  "how much bad stuff is near you." (2) the agent must **never** render a historical co-occurrence
+  rate next to a live flag.
+- **Exit:** Nearby + matrix + the DERIVED agent live; CI proves `nearby.json` is CONTEXT-tier
+  with no computed correlation, the agent surface has no write tool, and no fact table/enricher
+  imports the `derived/` namespace (the AI firewall is structural, acyclic); the elevated weekly
+  **Briefing** ships.
 
 ## 6. UI evolution
 
@@ -196,6 +312,7 @@ Surfaces, each arriving with the phase that earns it:
 | **Per-domain dashboards** | When a domain crosses ~3 layers it earns a focused panel (hydrology first). | P5 |
 | **Briefing** (elevated) | The once-a-week narrative read, standalone + linkable. | P6 |
 | **Comparison / Co-occurrence** | Proximity-only comparator — the honesty-hardened knife, last. | P6 |
+| **Agent lens** (Knowledge MCP + DERIVED layer) | A machine reads the *whole* uniform store (DuckDB-WASM in-browser, zero backend); its labeled, cited, association-only commentary renders as a distinct **DERIVED** layer. Read surface in P1.5; the *reasoner* last (P6). | P1.5 → P6 |
 | **Source Ledger** | One public "show your work" page: every source, tier, cadence, license, last-fetched. | P4 |
 
 **Navigation** scales via a three-layer model: *manage* (active-layers tray) in the persistent
@@ -266,8 +383,44 @@ above:
   an explicit **curation rubric** (an impact threshold + a stopping rule — "why these ~50 and not
   200").
 
+## 10. The substrate reframe (north-star correction) — and its critic
+
+A second pass reframed the whole vision (§1–§2, §4): **the product is the honest substrate; the
+globe is its flagship *view*; AI agents are a co-equal consumer.** A human can't connect 93
+datasets — an agent over a clean, tier-stamped, lineage-complete store can. And the honesty
+brand is what makes the store worth more to a machine than a pile of CSVs. Folded in above; its
+adversarial critic's load-bearing corrections:
+
+- **Don't invert the build order.** The reframe is the right north star *and the reason P0–P1
+  matter* — but the substrate's value is the boring 80% (the registry that **doesn't exist
+  yet**, the firewall that's a **comment not a test**, crosswalk **correctness**, freshness as a
+  hard gate). Start at the cathedral and you get "a beautiful empty `fct_observation` and a
+  clever agent confidently citing a wrong-crosswalked, two-weeks-stale number in fluent
+  association-free prose — **centrum with better manners**."
+- **`fct_observation` is a *thin index*, not a giant schema.** "One optimal unified schema" is
+  the **end state** of a multi-month refactor, not a thing to build up front. Per-layer sidecars
+  stay the payload; the fact table is the join glue. Introduced in P2, not P0.
+- **Separate the two "agents".** *Substrate-for-agents* (a read-only, correct, tier-stamped
+  store + a Parquet/DuckDB-WASM lens + read-only MCP) is earned **now** → new **P1.5**. *The
+  agent that reasons* is the **P6 capstone**, hardened like nothing else. Never let the second
+  masquerade as the first.
+- **New `DERIVED` tier** for agent commentary — read-only, `metric=null`, every claim cited,
+  born in a quarantined `derived/` namespace, structurally unable to mutate the store or feed
+  the detector (the CONTEXT firewall extended to AI; one-directional + acyclic, CI-proven).
+- **The crosswalk is where the brand quietly dies** — `entity_key` resolution across 93 sources
+  ships behind a **correctness gate, not a coverage gate**; a silent mis-join mis-attributes a
+  number.
+- **Two agent traps forbidden:** "rank by evidence density" is a **risk score in disguise**; and
+  the agent may never render a historical co-occurrence rate next to a live flag.
+- **Promote the structural firewall** from a P0/P1 line-item to **the gating invariant of the
+  whole plan** — AI as a co-equal consumer raises the stakes from "CONTEXT can't write flags" to
+  "nothing the reasoner emits can ever become a fact."
+
 ---
 
-_Execution note: P0 and P1 are pure refactors of what already ships — no new data, no user-
-visible change — but they convert the honesty brand from prose into a machine-checked invariant,
-which is what makes the other five phases safe to build. Start there._
+_Execution note: P0 and P1 are pure refactors of what already ships — no new data, no
+user-visible change — but they **earn the substrate**: they convert the honesty brand from prose
+into a machine-checked invariant, which is what makes the store trustworthy enough to hand a
+human eye **or an agent**. Start there. The grand schema and the reasoning agent are the most
+exciting and the **least urgent** — they're downstream of, and must remain unable to corrupt,
+the honest store. Build the boring 80% first._
