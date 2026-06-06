@@ -277,7 +277,7 @@ and the heavy build stays in the weekly Action.
   client-side; a test proves the MCP surface exposes no mutation; **no narrative agent exists
   yet.**
 
-### P2 — Full ~2065-port measured spine + matrix-sharded refresh + lazy fetch  · _Month 3–4.5_ · effort L · 🟡 **substrate + FDR keystones SHIPPED 2026-06-06**
+### P2 — Full ~2065-port measured spine + matrix-sharded refresh + lazy fetch  · _Month 3–4.5_ · effort L · ✅ **the 2065-port spine is LIVE (2026-06-06)**
 - **✅ Shipped (the keystones the spine plugs into):** **(a)** the **FDR multiplicity gate** —
   Benjamini-Hochberg over a flag-candidate family (`detect/multiplicity.py`) with the §8
   white-noise CI predicate (pure noise → ~0 flags vs a naive cut; genuine z=7.5-10 anomalies
@@ -285,9 +285,14 @@ and the heavy build stays in the weekly Action.
   measured shapes collapsed onto it, bitemporal valid+knowledge-time, tier-stamped) + the
   `dim_entity` **crosswalk behind a correctness gate** (entity_key ⇄ source-id bijection; known
   LOCODE joins resolve; known non-joins stay separate; no silent merge), built server-side, the
-  per-layer sidecars still the payload. _Remaining: the actual 2065-port detection run (needs the
-  multi-year PortWatch backfill — a real-data step via the Action that reshapes the live site),
-  matrix-sharding the Action, lazy-fetch, and wiring FDR into per-port detection._
+  per-layer sidecars still the payload. **(c) ✅ THE SPINE WENT WIDE + LIVE:** detection now runs
+  across the full PortWatch port set (`top_n_ports` 75 → 3000) with **per-domain FDR** gating the
+  ~2065-port family (the chokepoints stay a small pre-registered family, uncorrected). Dispatched
+  the refresh Action (full backfill → detect+FDR → deploy, 9 min): **271 flags live across ~2065
+  ports** (was 28 chokepoints + top-75). Going wide surfaced + we fixed a real **degenerate-z bug**
+  (near-constant/sparse ports → ~1e-15 residual std → z≈6e31; now a std floor + a |z|>50 backstop →
+  max live |z| 28, all sane). _Remaining for P2: matrix-sharding the Action (still one weekly job)
+  + lazy-fetch + the "tested N, expect ≤k noise" UI line + the FDR family-of-tests refinement._
 - **Goal:** the single highest-impact measured extension — run the spine method across **all
   ~2065 PortWatch ports**, not just 28.
 - **Build:** per-port owned scalar under generalized WAP; **per-domain FDR** (multiplicity
