@@ -7,17 +7,18 @@ verified live — and are kept for provenance, not as live TODO lists.
 The single **active, forward-looking** plan is the **year vision**:
 [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) — evolving the app from a freight globe
 into an honest world-awareness platform, with its full free-source catalog in
-[`DATA-SOURCES.md`](DATA-SOURCES.md). **P0 shipped** + **P1's honesty half shipped**
-(2026-06-06 — the typed `LayerDescriptor` registry, golden masters, the structural
-import-graph firewall, the registry-driven honesty predicates + scorecard, Python↔dbt
-parity); the P1/P2 **fact-pipeline** work (generalized WAP · `fct_observation` · the
-2065-port spine) is the next decision. The prior root plan
+[`DATA-SOURCES.md`](DATA-SOURCES.md). Shipped 2026-06-06: **P0** (typed `LayerDescriptor`
+registry + golden masters + structural firewall + Python↔dbt parity), **P1's honesty half**
+(registry-driven honesty predicates + scorecard), and **P1.5's read surface** (the read-only
+store API + `catalog.json` + the Standpoint Knowledge **MCP server**, no write tool). Next:
+the DuckDB-WASM in-browser SQL console (the P1.5 flourish), then the **P2 fact-pipeline**
+(generalized WAP · `fct_observation` · the 2065-port spine). The prior root plan
 [`../../BEST-IN-CLASS-PLAN.md`](../../BEST-IN-CLASS-PLAN.md) is now shipped.
 
 For the distilled decisions (rather than the build sequence), see the
 [Architecture Decision Records](../adr/).
 
-### 🟢 Active — the forward plan (P0 ✅ · P1 honesty half ✅ · fact-pipeline next)
+### 🟢 Active — the forward plan (P0 ✅ · P1 honesty ✅ · P1.5 read surface + MCP ✅ · fact-pipeline next)
 
 | Plan | What it covers | Status |
 |---|---|---|
