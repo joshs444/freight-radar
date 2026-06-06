@@ -209,16 +209,26 @@ and the heavy build stays in the weekly Action.
 > the product (the correct, tier-stamped, lineage-complete store). The grand schema and the
 > reasoning agent are downstream of them, not the starting point.
 
-### P0 — Typed `LayerDescriptor` + mirrored registry  · _Month 0–1.5_ · effort L
-- **Goal:** make hub-and-spoke *structural* — and lay the substrate's foundation: the registry
-  **does not exist yet** (verified: no `registry/`, no `layers.py`), and everything else rests
-  on it. Re-express the existing ~10 layers through one descriptor + authoritative Python
-  registry, TS generated.
+### P0 — Typed `LayerDescriptor` + mirrored registry  · _Month 0–1.5_ · effort L · ✅ **SHIPPED 2026-06-06 (PR #5)**
+- **Goal:** make hub-and-spoke *structural* — and lay the substrate's foundation. Re-express the
+  existing ~10 layers through one descriptor + authoritative Python registry, TS generated.
 - **Build:** `registry/layers.py`; codegen for `types.ts`/`useData`/`LayerPanel`; the
   **import-graph firewall test lands here** (per critic, not P1).
 - **Exit:** every current layer runs through the registry with **byte-identical** sidecars;
   `ENRICHERS`/hand-typed `LayerId` deleted; parity test green. _(Also fix the real orphan
   sidecars — `ships`/`disruptions`/`dwell`/`hazards`, not `gatun`/`weather`.)_
+- **✅ Shipped:** `backend/freight_radar/registry/layers.py` — **22 `LayerDescriptor`s**, one source
+  of truth; `enrich.ENRICHERS` + `publish._SIDECARS` now derived (byte-identical; the `dwell`
+  orphan dropped — the registry's first reconciliation); `registry/codegen.py` →
+  `frontend/src/lib/layers.gen.ts` drives the `LayerId` union, defaults, `LayerPanel` sections,
+  and the `useData` fetch manifest (hand union + sections deleted). **Acceptance-harness Layers
+  1–2 landed with it:** golden masters (11 deterministic sidecars frozen vs the hermetic dbt
+  fixture, proving *no number moved*), the **structural import-graph firewall** (SIGNAL/CONTEXT
+  can't reach the detector/ingest/WAP — with a teeth-check), registry parity (TS id-set == Python),
+  and the **Python↔dbt stress-index parity** (`narrative/stress.py` == `mart_freight_stress_index`
+  to the decimal across all 120 fixture days). The `feat/dbt-layer` work folded in as that parity
+  gate. _Deviation from the sketch above: `useData` keeps its typed fetches (a registry **drift
+  test** enforces the manifest) rather than being fully generated — preserves per-file types._
 
 ### P1 — Two-lane pipeline + CI honesty predicates + capability firewall  · _Month 1.5–3_ · effort L
 - **Goal:** generalize WAP to N measured layers; make honesty machine-checked; land the
