@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
-import { AMBER, PORT, LANE, severityColor, newsCategoryColor } from './lib/colors.ts';
+import { AMBER, PORT, LANE, QUAKE, severityColor, newsCategoryColor } from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
 import type {
@@ -14,6 +14,7 @@ import type {
   Storm,
   Ships,
   NewsGeoItem,
+  QuakeItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -125,6 +126,7 @@ interface LayerInputs {
   ships: Vessel[];
   storms: Storm[];
   newsDots: NewsGeoItem[];
+  quakeDots: QuakeItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -142,6 +144,7 @@ function buildLayers({
   ships,
   storms,
   newsDots,
+  quakeDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -212,6 +215,30 @@ function buildLayers({
         if (url) window.open(url, '_blank', 'noopener,noreferrer');
       },
       updateTriggers: { getFillColor: newsDots },
+    }),
+
+    // USGS earthquakes (M4+, past 7 days) — terracotta dots SIZED BY MAGNITUDE so a M7
+    // reads bigger than a M4. CONTEXT, below the freight marks; click opens the USGS
+    // event page. A co-located physical fact, never a stated cause.
+    new ScatterplotLayer({
+      id: 'quakes',
+      visible: layers.quakes,
+      parameters: MARKER_PARAMETERS,
+      data: quakeDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: (d) => 2 + Math.max(0, d.mag - 4) * 1.5,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 2,
+      radiusMaxPixels: 9,
+      getFillColor: rgba(QUAKE, 190),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 150),
+      lineWidthMinPixels: 0.5,
+      pickable: true,
+      onClick: (info) => {
+        const url = (info.object as QuakeItem | undefined)?.url;
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      },
     }),
 
     // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
@@ -372,6 +399,7 @@ interface GlobeProps {
   ships: Ships | null;
   storms: Storm[] | undefined;
   newsDots: NewsGeoItem[];
+  quakeDots: QuakeItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -388,6 +416,7 @@ export default function Globe({
   ships,
   storms,
   newsDots,
+  quakeDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -476,6 +505,17 @@ export default function Globe({
             html:
               `<b>${object.category_label}</b> · ${object.place}<br/>` +
               `${object.domain} · ${object.seen}<br/><span class="fr-tip-cta">click to read · GDELT</span>`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'quakes') {
+          // an observed seismic event the reader can weigh — never a stated cause.
+          const ts = object.tsunami ? ' · 🌊 tsunami flag' : '';
+          const dep = object.depth_km != null ? ` · ${object.depth_km} km deep` : '';
+          return {
+            html:
+              `<b>M${object.mag.toFixed(1)} earthquake</b> · ${object.place}<br/>` +
+              `${object.time}${dep}${ts}<br/><span class="fr-tip-cta">click for USGS event</span>`,
             className: 'fr-tip',
           };
         }
@@ -575,6 +615,7 @@ export default function Globe({
         ships: ships?.vessels ?? [], // live AIS positions near the chokepoints
         storms: storms ?? [],
         newsDots: newsDots ?? [], // GDELT geo-tagged world-news (context)
+        quakeDots: quakeDots ?? [], // USGS M4+ earthquakes (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -589,6 +630,7 @@ export default function Globe({
     ships,
     storms,
     newsDots,
+    quakeDots,
     selectedFlag,
     onSelectFlag,
     layers,

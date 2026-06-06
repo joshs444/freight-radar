@@ -59,6 +59,13 @@ def _news_geo(ctx: EnrichCtx) -> dict:
     return news_geo_run(ctx)
 
 
+def _quakes(ctx: EnrichCtx) -> dict:
+    # CONTEXT-only earthquake dots (USGS M4+). Sidecar-only — same structural guarantee:
+    # it never touches the DB or flags, so a quake can never move a computed number.
+    from .quakes import run as quakes_run
+    return quakes_run(ctx)
+
+
 def _timeseries(ctx: EnrichCtx) -> dict:
     from .export_timeseries import export_timeseries
     r = export_timeseries(db_path=ctx.db_path, out_dir=ctx.out_dir)
@@ -119,6 +126,7 @@ ENRICHERS: list[tuple[str, Callable[[EnrichCtx], dict], bool]] = [
     ("weather", _weather, True),       # live NHC+GDACS active storms -> flags' live_storm
     ("gatun", _gatun, False),
     ("news_geo", _news_geo, False),    # CONTEXT: GDELT world-news dots, sidecar-only
+    ("quakes", _quakes, False),        # CONTEXT: USGS M4+ earthquakes, sidecar-only
     ("timeseries", _timeseries, False),
     ("ports_lookup", _ports_lookup, False),
     ("market", _market, True),

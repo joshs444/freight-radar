@@ -230,7 +230,8 @@ export type LayerId =
   | 'lanes'
   | 'wind'
   | 'satellite'
-  | 'news';
+  | 'news'
+  | 'quakes';
 export type LayerVisibility = Record<LayerId, boolean>;
 
 // ---- exposure.json ---------------------------------------------------------
@@ -298,6 +299,34 @@ export interface NewsGeo {
   disclaimer: string;
   counts: Record<string, number>;
   items: NewsGeoItem[];
+}
+
+// ---- quakes.json (USGS M4+ earthquakes — a CONTEXT layer) ------------------
+// One dot per observed M4.0+ event in the past 7 days, sized by magnitude. Carries no
+// computed metric and is never a stated cause of a freight number — click to open the
+// USGS event page.
+
+export interface QuakeItem {
+  id: string;
+  mag: number;
+  place: string;
+  lat: number;
+  lon: number;
+  depth_km: number | null;
+  time: string;
+  tsunami: boolean;
+  url: string;
+}
+
+export interface Quakes {
+  generated_at: string;
+  as_of: string;
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  min_mag: number;
+  counts: { total: number; m5plus: number };
+  items: QuakeItem[];
 }
 
 // ---- market.json -----------------------------------------------------------
@@ -601,6 +630,7 @@ export interface AppData {
   exposure: ExposureSummary | null;
   news: News | null;
   newsGeo: NewsGeo | null;
+  quakes: Quakes | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;

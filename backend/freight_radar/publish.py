@@ -22,9 +22,9 @@ from .export_snapshot import LANES, SOURCE, export
 
 # Optional signal sidecars; the manifest reports which are present + fresh so the
 # UI and /api/health can show freshness per layer (honest "what's loaded").
-_SIDECARS = ("exposure", "news", "news_geo", "timeseries", "ports_lookup", "ships", "market",
-             "stress", "world", "events", "brief", "disruptions", "gatun", "weather", "wind",
-             "dwell")
+_SIDECARS = ("exposure", "news", "news_geo", "quakes", "timeseries", "ports_lookup", "ships",
+             "market", "stress", "world", "events", "brief", "disruptions", "gatun", "weather",
+             "wind", "dwell")
 
 
 def read_lineage(db: Path) -> dict:
