@@ -9,16 +9,26 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 // Globe pulls maplibre + deck + weatherlayers (~480KB gz); Chat pulls the in-browser
 // query engine; StressDetail is modal-gated. React paints the shell while they stream in.
 const Globe = lazy(() => import('./Globe.tsx'));
+const Board = lazy(() => import('./components/Board.tsx'));
 const Chat = lazy(() => import('./components/Chat.tsx'));
 const StressDetail = lazy(() => import('./components/StressDetail.tsx'));
 const HistoryTimeline = lazy(() => import('./components/HistoryTimeline.tsx'));
 import StormIndicator from './components/StormIndicator.tsx';
 import Onboarding from './components/Onboarding.tsx';
+import ViewToggle from './components/ViewToggle.tsx';
 import { useData } from './lib/useData.ts';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.ts';
 import { useMonitorModel } from './lib/useMonitorModel.ts';
 import { useHistory } from './lib/useHistory.ts';
-import type { MonitorEntity, MapApi, Flag, GlobeFlag, LayerId, LayerVisibility } from './types.ts';
+import type {
+  MonitorEntity,
+  MapApi,
+  Flag,
+  GlobeFlag,
+  LayerId,
+  LayerVisibility,
+  AppView,
+} from './types.ts';
 import LayerPanel from './components/LayerPanel.tsx';
 import type { AppliedExposure } from './components/Upload.tsx';
 
@@ -72,6 +82,26 @@ export default function App() {
   }, []);
   const { watched, toggle: toggleWatch } = useWatchlist();
   const mapApiRef = useRef<MapApi | null>(null);
+
+  // globe (explore) vs board (scan/sort) — same data, two reads. Persisted + deep-linked.
+  const [view, setView] = useState<AppView>(() => {
+    try {
+      const h = new URLSearchParams(window.location.hash.slice(1));
+      if (h.get('v') === 'board') return 'board';
+      if (localStorage.getItem('fr_view') === 'board') return 'board';
+    } catch {
+      /* ignore */
+    }
+    return 'globe';
+  });
+  const changeView = useCallback((v: AppView) => {
+    setView(v);
+    try {
+      localStorage.setItem('fr_view', v);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // cross-highlight: a hovered feed row and/or a multi-field search light their marks on
   // the globe (a cyan ring). The Globe gets the union of both.
@@ -178,13 +208,14 @@ export default function App() {
     if (selected?.id) p.set('e', selected.id);
     if (filter !== 'all') p.set('f', filter);
     if (scrubIndex != null) p.set('t', String(scrubIndex));
+    if (view === 'board') p.set('v', 'board');
     const s = p.toString();
     window.history.replaceState(
       null,
       '',
       s ? `#${s}` : window.location.pathname + window.location.search
     );
-  }, [data, selected, filter, scrubIndex]);
+  }, [data, selected, filter, scrubIndex, view]);
 
   if (error) {
     return (
@@ -256,7 +287,30 @@ export default function App() {
             wind. It is a visual aid — the Monitor feed has the same data and is fully
             keyboard-navigable.
           </h2>
-          {data && (
+          {data && <ViewToggle view={view} onChange={changeView} />}
+          {view === 'board' && data && (
+            <Suspense fallback={<div className="fr-globe-fallback">building the board…</div>}>
+              <Board
+                rows={rows}
+                snapshot={data.snapshot}
+                timeseries={data.timeseries}
+                stress={data.stress}
+                newsGeo={data.newsGeo}
+                quakes={data.quakes}
+                disruptions={data.disruptions}
+                gatun={data.gatun}
+                asOf={asOf}
+                source={source}
+                selected={selected}
+                onPickEntity={pickByPortid}
+                onHover={setHoveredId}
+                highlightIds={highlightIds}
+                watched={watched}
+                onToggleWatch={toggleWatch}
+              />
+            </Suspense>
+          )}
+          {view === 'globe' && data && (
             <ErrorBoundary
               fallback={
                 <div className="fr-globe-fallback">
@@ -284,12 +338,12 @@ export default function App() {
               </Suspense>
             </ErrorBoundary>
           )}
-          {data && !hist.mode && (
+          {view === 'globe' && data && !hist.mode && (
             <button className="fr-history-enter" onClick={hist.enter}>
               ▸ History · play 2019→now
             </button>
           )}
-          {!hist.mode && data && (
+          {view === 'globe' && !hist.mode && data && (
             <LayerPanel
               layers={layers}
               onToggle={toggleLayer}
@@ -310,7 +364,7 @@ export default function App() {
               quakes={data.quakes ?? null}
             />
           )}
-          {!hist.mode && data?.wind && layers.wind && (
+          {view === 'globe' && !hist.mode && data?.wind && layers.wind && (
             <div className="fr-wind-scrub" role="group" aria-label="GFS wind forecast hour">
               <span className="fr-wind-scrub-lbl">GFS wind forecast</span>
               <input
@@ -325,7 +379,7 @@ export default function App() {
               <span className="fr-wind-scrub-val">{WIND_FRAMES[windFrame]}</span>
             </div>
           )}
-          {hist.mode && hist.event && (
+          {view === 'globe' && hist.mode && hist.event && (
             <div className="fr-hist-caption" role="status">
               <div className="fr-hist-caption-title">{hist.event.title}</div>
               <p className="fr-hist-caption-blurb">{hist.event.blurb}</p>
@@ -339,7 +393,7 @@ export default function App() {
               </a>
             </div>
           )}
-          {hist.mode && hist.history ? (
+          {view === 'globe' && hist.mode && hist.history ? (
             <Suspense fallback={null}>
               <HistoryTimeline
                 history={hist.history}
@@ -367,7 +421,7 @@ export default function App() {
             )
           )}
           {loading && <div className="fr-loading">acquiring signal…</div>}
-          {data && !hist.mode && <Onboarding />}
+          {view === 'globe' && data && !hist.mode && <Onboarding />}
         </section>
 
         {data && (

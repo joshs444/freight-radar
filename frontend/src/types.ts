@@ -234,6 +234,9 @@ export type LayerId =
   | 'quakes';
 export type LayerVisibility = Record<LayerId, boolean>;
 
+// the two ways to read the same data: explore-by-poking globe, or scan-and-sort board
+export type AppView = 'globe' | 'board';
+
 // ---- exposure.json ---------------------------------------------------------
 
 export interface ExposureSummary {
