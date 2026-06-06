@@ -71,6 +71,12 @@ jobs:
       - name: dbt build — models materialize + ETL-guard tests pass
         working-directory: backend
         run: uv run dbt build --project-dir ../dbt --profiles-dir ../dbt --target ci
+      - name: Python↔dbt parity — the stress index agrees in both implementations
+        working-directory: backend
+        # The strongest numeric-correctness gate: narrative/stress.py compute() and the
+        # dbt mart_freight_stress_index, computed independently from the same fixture,
+        # must agree to the published decimal across every day, or CI fails.
+        run: uv run python ../dbt/ci/check_parity.py
 
   frontend-checks:
     name: grounding + parity + bundle budget
