@@ -18,13 +18,13 @@ from pathlib import Path
 
 from .config import db_path, publish_dir
 from .export_snapshot import LANES, SOURCE, export
+from .registry.layers import SIDECARS as _SIDECARS  # the optional-sidecar freshness set
 
-
-# Optional signal sidecars; the manifest reports which are present + fresh so the
-# UI and /api/health can show freshness per layer (honest "what's loaded").
-_SIDECARS = ("exposure", "news", "news_geo", "quakes", "timeseries", "ports_lookup", "ships",
-             "market", "stress", "world", "events", "brief", "disruptions", "gatun", "weather",
-             "wind", "dwell")
+# `_SIDECARS` is now DERIVED from the registry (registry/layers.py): every layer with
+# `manifest_sidecar=True`. This killed the hand-maintained tuple — and with it the
+# `dwell` orphan it used to list (nothing produces dwell.json), the registry's first
+# reconciliation. The manifest reports which sidecars are present + fresh so the UI and
+# /api/health can show freshness per layer (honest "what's loaded").
 
 
 def read_lineage(db: Path) -> dict:
