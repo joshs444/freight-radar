@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import random
 
-from freight_radar.detect.multiplicity import benjamini_hochberg, control_z, two_sided_p
+from freight_radar.multiplicity import benjamini_hochberg, control_z, two_sided_p
 
 
 def test_pure_white_noise_manufactures_almost_no_flags() -> None:

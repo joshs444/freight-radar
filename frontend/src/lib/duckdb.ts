@@ -75,6 +75,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW news AS SELECT unnest(items, recursive := true) FROM read_json_auto('news_geo.json')",
     note: 'GDELT geo-news dots (CONTEXT — cited, association only)',
   },
+  {
+    view: 'commodities',
+    file: 'commodities.json',
+    sql: "CREATE OR REPLACE VIEW commodities AS SELECT unnest(items, recursive := true) FROM read_json_auto('commodities.json')",
+    note: 'commodity anomalies — OUR 12-mo z-score, FDR-gated (SIGNAL)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */

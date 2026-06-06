@@ -216,6 +216,12 @@ def _gatun(ctx: EnrichCtx) -> dict:
     return gatun_run(ctx)
 
 
+def _commodities(ctx: EnrichCtx) -> dict:
+    from ..commodities import run as commodities_run
+
+    return commodities_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -468,6 +474,24 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         fetch_file="data/brief.json",
         appdata_key="brief",
+    ),
+    LayerDescriptor(
+        id="commodities",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.commodities",
+        run=_commodities,
+        enrich_order=14,
+        output="commodities",
+        manifest_sidecar=True,
+        # not in AppData — queryable via the read surface (catalog / MCP / SQL console).
+        metric="12-month rolling z-score of a cited commodity price (the anomaly we compute)",
+        source=Source(
+            "FRED (public domain · IMF Primary Commodity Prices)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(

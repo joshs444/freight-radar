@@ -23,6 +23,10 @@ const EXAMPLES: { label: string; sql: string }[] = [
     label: 'Cited earthquakes (context), strongest',
     sql: 'SELECT round(mag, 1) AS mag, place, time\nFROM quakes\nORDER BY mag DESC\nLIMIT 12;',
   },
+  {
+    label: 'Commodity anomalies (our z, FDR-gated)',
+    sql: 'SELECT name, our_zscore, fdr_significant, latest_price, unit\nFROM commodities\nORDER BY abs(our_zscore) DESC;',
+  },
 ];
 
 export default function StoreQuery() {
