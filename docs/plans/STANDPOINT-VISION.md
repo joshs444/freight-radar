@@ -277,7 +277,17 @@ and the heavy build stays in the weekly Action.
   client-side; a test proves the MCP surface exposes no mutation; **no narrative agent exists
   yet.**
 
-### P2 — Full ~2065-port measured spine + matrix-sharded refresh + lazy fetch  · _Month 3–4.5_ · effort L
+### P2 — Full ~2065-port measured spine + matrix-sharded refresh + lazy fetch  · _Month 3–4.5_ · effort L · 🟡 **substrate + FDR keystones SHIPPED 2026-06-06**
+- **✅ Shipped (the keystones the spine plugs into):** **(a)** the **FDR multiplicity gate** —
+  Benjamini-Hochberg over a flag-candidate family (`detect/multiplicity.py`) with the §8
+  white-noise CI predicate (pure noise → ~0 flags vs a naive cut; genuine z=7.5-10 anomalies
+  survive). **(b)** the **thin unifying index** — `fct_observation` (narrow long table, two
+  measured shapes collapsed onto it, bitemporal valid+knowledge-time, tier-stamped) + the
+  `dim_entity` **crosswalk behind a correctness gate** (entity_key ⇄ source-id bijection; known
+  LOCODE joins resolve; known non-joins stay separate; no silent merge), built server-side, the
+  per-layer sidecars still the payload. _Remaining: the actual 2065-port detection run (needs the
+  multi-year PortWatch backfill — a real-data step via the Action that reshapes the live site),
+  matrix-sharding the Action, lazy-fetch, and wiring FDR into per-port detection._
 - **Goal:** the single highest-impact measured extension — run the spine method across **all
   ~2065 PortWatch ports**, not just 28.
 - **Build:** per-port owned scalar under generalized WAP; **per-domain FDR** (multiplicity

@@ -19,7 +19,7 @@ backend). Next: the **P2 fact-pipeline** (generalized WAP · `fct_observation` �
 For the distilled decisions (rather than the build sequence), see the
 [Architecture Decision Records](../adr/).
 
-### 🟢 Active — the forward plan (P0 ✅ · P1 honesty ✅ · P1.5 ✅ (read surface + MCP + SQL console) · P2 fact-pipeline next)
+### 🟢 Active — the forward plan (P0 ✅ · P1 honesty ✅ · P1.5 ✅ · P2 keystones ✅ (FDR + fct_observation) · 2065-port spine next)
 
 | Plan | What it covers | Status |
 |---|---|---|
