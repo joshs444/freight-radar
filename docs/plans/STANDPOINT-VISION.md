@@ -121,6 +121,42 @@ LayerDescriptor {
 - **Honest cross-layer surface** ([§6](#6-ui-evolution), built *last*): co-location / co-timing
   shown; correlation, lag, "drives", and any coefficient **never** computed.
 
+### The right model — five canonical axes, **time first** (the keystone)
+
+Getting the *data model* right is the foundation; every surface is just a lens on it. The store
+rests on five canonical axes, and **time is the keystone** — the one axis *every* source shares
+(not all have a clean entity or geometry), co-occurrence is fundamentally a *temporal*
+intersection, and **every honesty rule the brand makes is a temporal rule.**
+
+1. **Time — bitemporal + grained.** Two clocks on every fact: **valid-time** (when it happened /
+   was measured in the world — `source_observed_at`) and **knowledge-time** (when *we* learned it
+   — `fetched_at`/`generated_at`). Plus **grain** (`day|week|month|quarter|year|instant|window`)
+   and shape (**instant** quake vs **interval** daily value vs **window** GDELT slice). Stored
+   canonical UTC ISO-8601; time zones live only at the render edge.
+2. **Entity** — what a number is *about* (the crosswalk; the second-most-dangerous axis — a
+   silent mis-join mis-attributes a number).
+3. **Metric** — what is measured (unit, direction, **tier-by-construction**).
+4. **Provenance / tier** — *who* computed it, over what, with the full lineage chain.
+5. **Geometry** — *where* (point/line/polygon/footprint), downstream of entity.
+
+**The core primitive is the bitemporal as-of query:** _"the value for (entity, metric) at
+**valid-time T**, as **known at knowledge-time K**."_ Globe-now, the board, the time-scrubber,
+the 2019→now replay, and an agent's *"what did we know about Hormuz on 2026-05-25"* are all **one
+query shape** — get the temporal model right and every surface falls out of it.
+
+**This is where honesty lives or dies:**
+- **No fake-live** = freshness is `now − valid_time` ("N days old"), never `now − fetched_at`
+  dressed up as "now."
+- **No-hindsight history** = the replay must filter to `knowledge_time ≤ scrub_date` and show the
+  value **as it was known then** — sources *revise* the past (World Bank, OECD, even PortWatch),
+  so a naive replay paints today's hindsight onto 2020 and lies. Bitemporality keeps
+  *as-reported-then* and *as-known-now* both, each lineage-stamped.
+- **Grain discipline** = a daily number and a monthly number are never compared as same-day; a
+  join across grains without explicit resampling is a **typed/CI error, not a silent one.**
+- **Forecast** = the *only* rows with a **future valid-time** are a model layer's own output (GFS
+  `f024` = a value *for* +24h, generated now) — clearly tiered, never a freight forecast; an agent
+  may never emit a future-valid-time fact at all.
+
 ### The substrate — one *thin fact index*, not one giant schema
 
 The store generalizes today's `dim_*`/`fct_*`/`meta_*` (real on disk) into a star around four
@@ -186,7 +222,8 @@ and the heavy build stays in the weekly Action.
 
 ### P1 — Two-lane pipeline + CI honesty predicates + capability firewall  · _Month 1.5–3_ · effort L
 - **Goal:** generalize WAP to N measured layers; make honesty machine-checked; land the
-  **per-row tier + 4-timestamp + `lineage_run_id` stamp.** The **structural import-graph
+  **per-row bitemporal stamp** — tier + **valid-time** + **knowledge-time** + **grain** +
+  `lineage_run_id` (the temporal model is the keystone, [§4](#4-architecture--the-typed-descriptor-the-unlock)). The **structural import-graph
   firewall is promoted from a line-item to THE gating invariant of the whole plan** — today it's
   a *comment* ("never reads the DB or writes flags"), not a test; with AI as a co-equal consumer
   the stakes rise, so the boundary must be a capability/import-graph **CI fact** before any agent
@@ -329,8 +366,12 @@ hand-written per layer.
 3. **Multiplicity / FDR** — per **declared, frozen** domain family (the family definition is
    itself reviewed — it can launder honesty if gerrymandered); realized false-flag rate under
    injected white noise stays ≤ the family's declared budget.
-4. **No-fake-live** — four timestamps per layer (`source_observed_at ≤ fetched_at ≤
-   generated_at`), UI reads "N days old (cited)", never "now".
+4. **Temporal honesty (bitemporal)** — two clocks per fact (valid-time vs knowledge-time) + an
+   explicit grain. Enforces three things in CI: **no fake-live** (freshness = `now − valid_time`,
+   "N days old", never "now"); **no-hindsight history** (the replay filters to `knowledge_time ≤
+   scrub_date`, showing values as known *then*, not post-revision); **grain discipline** (a join
+   across grains without explicit resampling fails). Future valid-times are allowed **only** for a
+   model layer's own output (e.g. GFS `f024`), never a freight forecast.
 5. **Zero-marginal-cost gate** — `source_manifest` `cost_class==free`, `auth_model ∈
    {none, free_key, oauth_free}`; CI fails on a metered source.
 
