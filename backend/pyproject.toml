@@ -34,6 +34,10 @@ dbt = ["dbt-core>=1.8", "dbt-duckdb>=1.9"]
 # Python bindings; eccodeslib ships the prebuilt libeccodes binary, so the layer
 # installs clean on CI (and locally) with no apt-get / system library.
 wind = ["cfgrib>=0.9.12", "eccodes>=2.43", "eccodeslib>=2.47", "xarray>=2024.0", "Pillow>=10"]
+# read-only Knowledge MCP server (freight_radar.mcp.server): exposes the store's read
+# surface to agents over MCP. The tool CONTRACT (mcp/tools.py) has NO SDK dependency and
+# is CI-tested; only running the server needs the SDK. Install with `uv sync --extra mcp`.
+mcp = ["mcp>=1.0"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
