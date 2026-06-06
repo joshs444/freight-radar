@@ -305,7 +305,17 @@ and the heavy build stays in the weekly Action.
   passes its correctness gate (known entity pairs resolve to one `entity_key`, zero silent
   mis-joins).
 
-### P3 — Measured commodity / energy / macro signal cluster  · _Month 4.5–6_ · effort M–L
+### P3 — Measured commodity / energy / macro signal cluster  · _Month 4.5–6_ · effort M–L · 🟡 **first signal SHIPPED 2026-06-06**
+- **✅ Shipped (the loop, proven end-to-end):** the **commodity-price anomaly** SIGNAL
+  (`commodities.py`) — an allowlisted set of FRED public-domain series (IMF Primary Commodity
+  Prices, keyless) → **our** 12-month rolling z-score, enrolled in the FDR gate (the price stays
+  cited context, never restated as ours). Added as **one descriptor**, and the honesty gates
+  (SIGNAL-owns-a-metric · zero-cost · source-coverage), the structural firewall, the catalog, and
+  the SQL console all **auto-covered it**. Live: 6 series, 3 FDR-significant on real data
+  (Wheat/Brent/Soybeans), queryable in the store (catalog + MCP + a `commodities` view in the
+  in-browser console). _(The firewall caught a real layering bug — a SIGNAL importing the FDR
+  helper from `detect/` — so `multiplicity.py` was relocated out of the detector namespace.)_
+  Remaining: more series-families (energy / macro CLI) toward the 6–8 exit + the board signals band.
 - **Goal:** the cleanest, highest-value **promotions** — raw observed input + a defensible
   Python anomaly we own.
 - **Data:** World Bank Pink Sheet (keyless, ~70 commodities → our 12-mo rolling z); FRED
