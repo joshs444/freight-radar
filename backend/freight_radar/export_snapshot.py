@@ -155,6 +155,7 @@ def _ports(con) -> list[dict]:
         SELECT d.portid, d.portname AS name, d.country, d.lat, d.lon,
                d.vessel_count_total,
                d.share_country_maritime_import, d.share_country_maritime_export,
+               r.latest_date,
                r.portcalls,
                r.portcalls_container, r.portcalls_tanker, r.portcalls_dry_bulk,
                r.portcalls_general_cargo, r.portcalls_roro
@@ -171,6 +172,9 @@ def _ports(con) -> list[dict]:
             "country": r["country"],
             "lat": float(r["lat"]),
             "lon": float(r["lon"]),
+            # the port's own latest date — port data trails the chokepoint half by the
+            # upstream publish lag, so don't let the snapshot's headline as_of imply it.
+            "as_of": str(r["latest_date"])[:10],
             "vessels": int(r["vessel_count_total"]) if r["vessel_count_total"] is not None else 0,
             "portcalls": int(r["portcalls"]) if r["portcalls"] is not None else 0,
             "cargo_mix": _cargo_mix(r, "portcalls_"),

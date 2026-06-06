@@ -21,6 +21,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+from datetime import datetime
 from pathlib import Path
 
 import duckdb
@@ -78,6 +79,14 @@ def _parse_projection(text: str) -> list[dict]:
     return out
 
 
+def _proj_date(p: dict) -> datetime:
+    """Sort key for a projection row (ACP dates are MM/DD/YYYY, in arbitrary order)."""
+    try:
+        return datetime.strptime(p["date"], "%m/%d/%Y")
+    except (ValueError, KeyError):
+        return datetime.max
+
+
 def _pctile_of(value: float, values: list[float]) -> float:
     if not values:
         return 0.0
@@ -103,10 +112,16 @@ def build(client: httpx.Client | None = None) -> dict:
     change_30d = round(current - levels[-31], 2) if len(levels) >= 31 else None
     change_365d = round(current - levels[-366], 2) if len(levels) >= 366 else None
 
+    # ACP lists the projection rows in arbitrary order and the file can run past our old
+    # 12-row cut, so the min-draft (the leading restriction signal — the whole point of this
+    # indicator) could sit in a row we truncated away, making min_projected_* untraceable to
+    # a published row. Sort chronologically and publish the WHOLE projection, so every cited
+    # number (min draft, current surcharge) traces to a visible row.
+    proj.sort(key=_proj_date)
     drafts = [p["neopanamax_draft_ft"] for p in proj] or [NORMAL_MAX_DRAFT_FT]
     min_neo = min(drafts)
     restricted = min_neo < NORMAL_MAX_DRAFT_FT
-    surcharge_now = proj[0]["surcharge_pct"] if proj else 0.0
+    surcharge_now = proj[0]["surcharge_pct"] if proj else 0.0  # earliest (nearest) date
 
     return {
         "available": True,
@@ -122,7 +137,7 @@ def build(client: httpx.Client | None = None) -> dict:
         "min_projected_neopanamax_draft_ft": round(min_neo, 1),
         "draft_restricted": restricted,
         "surcharge_pct_now": surcharge_now,
-        "projection": proj[:12],
+        "projection": proj,  # full + chronological, so the min-draft row is always present
         "source": "Panama Canal Authority (ACP)",
         "source_url": "https://pancanal.com/en/maritime-services/water-level/",
         "disclaimer": "Projected drafts are ACP estimates for reference only; official drafts come via Advisories to Shipping.",
