@@ -347,6 +347,7 @@ interface GlobeProps {
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
   windOn: boolean;
+  windFrame: number;
   layers: LayerVisibility;
   highlightIds: string[];
 }
@@ -361,6 +362,7 @@ export default function Globe({
   onSelectFlag,
   mapApiRef,
   windOn,
+  windFrame,
   layers,
   highlightIds,
 }: GlobeProps) {
@@ -372,6 +374,8 @@ export default function Globe({
   // read the live toggle inside the async wind load without re-running the mount effect
   const windOnRef = useRef(windOn);
   windOnRef.current = windOn;
+  const windFrameRef = useRef(windFrame);
+  windFrameRef.current = windFrame;
 
   // Create the map, the interleaved marker overlay, and the separate self-animating
   // wind overlay exactly once. mapApiRef is the only external value used (a stable ref
@@ -453,8 +457,11 @@ export default function Globe({
       .then((wd) => {
         if (!wd || windCancelled) return;
         windDataRef.current = wd;
-        // honour the current toggle when the data finishes loading
-        windOverlay.setProps({ layers: windOnRef.current ? [makeWindLayer(wd)] : [] });
+        // honour the current toggle + forecast frame when the data finishes loading
+        const i = Math.min(windFrameRef.current, wd.frames.length - 1);
+        windOverlay.setProps({
+          layers: windOnRef.current ? [makeWindLayer(wd.frames[i].image, wd.meta)] : [],
+        });
       })
       .catch(() => {});
 
@@ -484,14 +491,18 @@ export default function Globe({
     };
   }, [mapApiRef]);
 
-  // Show/hide the wind when the toggle flips. Re-enabling builds a FRESH ParticleLayer
-  // (deck can't re-add one it has already finalized), disabling drops it entirely.
+  // Show/hide the wind when the toggle flips, and swap to the chosen forecast frame when the
+  // scrubber moves. Each change builds a FRESH ParticleLayer (deck can't re-add a finalized
+  // one); disabling drops it entirely.
   useEffect(() => {
     const overlay = windOverlayRef.current;
     const wd = windDataRef.current;
     if (!overlay) return;
-    overlay.setProps({ layers: windOn && wd ? [makeWindLayer(wd)] : [] });
-  }, [windOn]);
+    const i = wd ? Math.min(windFrame, wd.frames.length - 1) : 0;
+    overlay.setProps({
+      layers: windOn && wd ? [makeWindLayer(wd.frames[i].image, wd.meta)] : [],
+    });
+  }, [windOn, windFrame]);
 
   // show/hide the NASA satellite raster (a maplibre layer, not a deck layer) from the panel
   useEffect(() => {

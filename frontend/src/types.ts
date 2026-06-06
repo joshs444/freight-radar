@@ -509,12 +509,18 @@ export interface Weather {
 
 // ---- wind.json (NOAA GFS ambient wind layer) -------------------------------
 
+export interface WindFrame {
+  fhour: number;
+  valid: string;
+  image: string;
+}
 export interface Wind {
   generated_at: string;
   as_of: string;
   source: string;
   cycle: string;
   image: string;
+  frames?: WindFrame[];
   width: number;
   height: number;
   imageUnscale: [number, number];

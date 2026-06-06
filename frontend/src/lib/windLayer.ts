@@ -10,13 +10,20 @@ import type { Wind } from '../types.ts';
 // drop the layer entirely and rebuild a FRESH instance when re-enabled — a ParticleLayer
 // can't be re-added once deck has finalized it.
 
+type Texture = Awaited<ReturnType<typeof loadTextureData>>;
+
+export interface WindFrameData {
+  fhour: number;
+  valid: string;
+  image: Texture;
+}
 export interface WindData {
-  image: Awaited<ReturnType<typeof loadTextureData>>;
+  frames: WindFrameData[]; // GFS forecast hours (now -> +N days), scrubbable
   meta: Wind;
 }
 
-/** Fetch wind.json + decode the texture. Returns null when wind is absent (layer hidden,
- *  the rest of the globe unaffected). */
+/** Fetch wind.json + decode every forecast-frame texture. Returns null when wind is absent
+ *  (layer hidden, the rest of the globe unaffected). Falls back to the single legacy image. */
 export async function loadWind(base = '/'): Promise<WindData | null> {
   let meta: Wind | null;
   try {
@@ -26,12 +33,24 @@ export async function loadWind(base = '/'): Promise<WindData | null> {
     meta = null;
   }
   if (!meta?.image) return null;
-  const image = await loadTextureData(`${base}data/${meta.image}`);
-  return { image, meta };
+  const list = meta.frames?.length
+    ? meta.frames
+    : [{ fhour: 0, valid: meta.cycle, image: meta.image }];
+  const frames: WindFrameData[] = [];
+  for (const f of list) {
+    try {
+      const image = await loadTextureData(`${base}data/${f.image}`);
+      frames.push({ fhour: f.fhour, valid: f.valid, image });
+    } catch {
+      /* skip a frame that fails to decode; the others still scrub */
+    }
+  }
+  if (!frames.length) return null;
+  return { frames, meta };
 }
 
-/** A fresh ParticleLayer from already-loaded wind data (call again to re-enable). */
-export function makeWindLayer({ image, meta }: WindData): ParticleLayer {
+/** A fresh ParticleLayer for one forecast frame's texture (call again to re-enable/swap). */
+export function makeWindLayer(image: Texture, meta: Wind): ParticleLayer {
   // respect prefers-reduced-motion: render a static field instead of flowing particles
   const reduceMotion =
     typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
