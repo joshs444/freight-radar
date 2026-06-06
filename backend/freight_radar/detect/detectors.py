@@ -67,6 +67,7 @@ class DetectionConfig:
     persistence_window: int = 7
     persistence_z: float = 2.0
     top_n_ports: int = 75
+    fdr_q: float = 0.10  # Benjamini-Hochberg false-discovery budget for the PORT family
     min_history_days: int = 35
     # Wave 5: change-point gate (CUSUM + ruptures PELT). See changepoint.py.
     use_changepoint_gate: bool = True

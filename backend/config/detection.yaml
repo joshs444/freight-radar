@@ -9,7 +9,11 @@ collapse_z: -3.0       # z <= this -> transit collapse / port activity drop
 spike_z: 3.5           # z >= this -> transit spike / port congestion spike
 persistence_window: 7  # how many trailing days feed the persistence factor
 persistence_z: 2.0     # a day counts as "anomalous" for persistence when |z| >= this
-top_n_ports: 75        # only the busiest ports (by vessel_count_total) are scanned
+top_n_ports: 3000      # the full PortWatch port set (~2065) — the measured spine goes wide
+fdr_q: 0.10            # Benjamini-Hochberg false-discovery budget over the port family:
+                       # at ~2065 ports a base z-gate alone manufactures ~5-6 noise flags;
+                       # BH keeps only the genuinely-significant anomalies (chokepoints,
+                       # a small pre-registered family, are NOT FDR-corrected). See P2.
 min_history_days: 35   # need at least this many points to trust STL + a 28d window
 
 # --- Wave 5: change-point gate (CUSUM + ruptures PELT) ---------------------

@@ -11,6 +11,7 @@ receipt (counts by kind + the top-5 flags with their real numbers).
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import asdict, replace
 from datetime import date, datetime
 from pathlib import Path
@@ -20,6 +21,9 @@ import numpy as np
 import pandas as pd
 
 from ..config import DEFAULT_DB_PATH, REPO_ROOT
+from ..multiplicity import control_z
+
+log = logging.getLogger(__name__)
 from .cape_reroute import detect_cape_reroute
 from .detectors import (
     DetectionConfig,
@@ -285,9 +289,11 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
     ).df()
 
     flags: list[Flag] = []
+    n_tested = 0  # the FDR family size — every port we actually run the detector over
     for portid, grp in daily.groupby("portid"):
         if portid not in dims.index:
             continue
+        n_tested += 1
         d = dims.loc[portid]
         name = str(d["portname"]) if pd.notna(d["portname"]) else str(d["fullname"])
         lat, lon = float(d["lat"]), float(d["lon"])
@@ -318,6 +324,24 @@ def _detect_ports(con: duckdb.DuckDBPyConnection, cfg: DetectionConfig) -> list[
         )
         if cargo:
             flags.append(replace(cargo, brief_md=cargo.brief_md + note) if note else cargo)
+
+    # Per-domain FDR (multiplicity control). Across ~2065 ports, a base |z|-gate alone
+    # would manufacture ~5-6 pure-noise flags. Benjamini-Hochberg over the PORT family at
+    # cfg.fdr_q keeps only the genuinely-significant anomalies — so going wide doesn't break
+    # "these are real". The 28 chokepoints are a small, pre-registered family and are NOT
+    # corrected here (a |z|≥3 there is meaningful; among 2065 ports it is likely noise).
+    if flags:
+        keep, fdr = control_z([abs(f.zscore) for f in flags], q=cfg.fdr_q, m=n_tested)
+        kept = [f for f, k in zip(flags, keep) if k]
+        log.info(
+            "port FDR: tested %d ports, %d candidates, %d significant (q=%.2f, expect <=%.1f false)",
+            n_tested,
+            len(flags),
+            len(kept),
+            cfg.fdr_q,
+            fdr.expected_false,
+        )
+        return kept
     return flags
 
 

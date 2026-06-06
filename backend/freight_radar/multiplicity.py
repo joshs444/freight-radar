@@ -32,36 +32,48 @@ class FDRResult:
     expected_false: float  # q · n_significant — the honest "expect ≤k of these are noise"
 
 
-def benjamini_hochberg(pvalues: list[float], q: float = 0.10) -> list[bool]:
+def benjamini_hochberg(pvalues: list[float], q: float = 0.10, m: int | None = None) -> list[bool]:
     """Return a keep-mask (True = survives FDR) for each p-value, controlling FDR at q.
 
     Standard step-up BH: sort ascending, find the largest rank k with p(k) ≤ (k/m)·q, and
     reject every candidate at rank ≤ k (i.e. with the k smallest p-values).
+
+    `m` is the size of the FULL test family. Pass it when `pvalues` is only the *candidate*
+    subset (the smallest p-values — e.g. the ports that already cleared a base z-gate) of a
+    larger family: BH then still controls FDR over all `m` tests, not just the candidates.
+    Defaults to len(pvalues).
     """
-    m = len(pvalues)
-    if m == 0:
+    n = len(pvalues)
+    if n == 0:
         return []
-    order = sorted(range(m), key=lambda i: pvalues[i])
+    family = m if m is not None else n
+    order = sorted(range(n), key=lambda i: pvalues[i])
     kmax = 0
     for rank, idx in enumerate(order, start=1):
-        if pvalues[idx] <= (rank / m) * q:
+        if pvalues[idx] <= (rank / family) * q:
             kmax = rank
-    keep = [False] * m
+    keep = [False] * n
     for rank, idx in enumerate(order, start=1):
         if rank <= kmax:
             keep[idx] = True
     return keep
 
 
-def control_z(zscores: list[float], q: float = 0.10) -> tuple[list[bool], FDRResult]:
-    """Apply BH-FDR to a family of z-scores. Returns (keep-mask, summary)."""
+def control_z(
+    zscores: list[float], q: float = 0.10, m: int | None = None
+) -> tuple[list[bool], FDRResult]:
+    """Apply BH-FDR to a family of z-scores. Returns (keep-mask, summary).
+
+    `m` (the full family size) lets a caller pass only the flag *candidates* while still
+    correcting for the whole family — e.g. ~2065 ports tested, a handful past the z-gate.
+    """
     pvals = [two_sided_p(z) for z in zscores]
-    keep = benjamini_hochberg(pvals, q)
+    keep = benjamini_hochberg(pvals, q, m=m)
     n_sig = sum(keep)
     threshold_p = max((pvals[i] for i in range(len(pvals)) if keep[i]), default=0.0)
     return keep, FDRResult(
         q=q,
-        n_tested=len(zscores),
+        n_tested=m if m is not None else len(zscores),
         n_significant=n_sig,
         threshold_p=threshold_p,
         expected_false=round(q * n_sig, 3),

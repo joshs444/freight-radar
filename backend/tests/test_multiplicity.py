@@ -41,6 +41,18 @@ def test_realized_false_rate_under_budget_across_trials() -> None:
     assert total_false <= 5, f"realized false flags {total_false} over {trials} noise trials"
 
 
+def test_family_size_makes_bh_stricter() -> None:
+    # the 2065-port point: a handful of z=3.5 candidates all survive when they ARE the family,
+    # but in a 2065-test family BH (correctly) rejects them — they're likely noise at that width.
+    z = [3.5, 3.6, 3.7]
+    p = [two_sided_p(x) for x in z]
+    assert sum(benjamini_hochberg(p, q=0.10, m=3)) == 3  # they are the whole family
+    assert sum(benjamini_hochberg(p, q=0.10, m=2065)) == 0  # corrected over the full family
+    # control_z threads m through + reports it as the family size
+    _, res = control_z(z, q=0.10, m=2065)
+    assert res.n_tested == 2065 and res.n_significant == 0
+
+
 def test_bh_edges() -> None:
     assert benjamini_hochberg([], 0.1) == []
     assert all(benjamini_hochberg([1e-12] * 10, 0.1))  # all genuinely significant
