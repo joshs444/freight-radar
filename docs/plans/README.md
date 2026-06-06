@@ -20,6 +20,7 @@ For the distilled decisions (rather than the build sequence), see the
 | [`STANDPOINT-VISION.md`](STANDPOINT-VISION.md) | The **year roadmap** (P0–P6): typed `LayerDescriptor` registry → two-lane pipeline + capability firewall → full 2065-port spine → measured macro signals → context-ring breadth → honest cross-layer surface. Hub-and-spoke of ownership enforced by construction. From a 10-agent research pass + adversarial critic. | **Active · P0 next** |
 | [`DATA-SOURCES.md`](DATA-SOURCES.md) | The free-data catalog behind the vision — **93 sources** across every domain, each tagged measured-vs-context with the statistic we'd own, auth, license, cadence, and license/cost caveats. | Reference (living) |
 | [`EXECUTION-PLAYBOOK.md`](EXECUTION-PLAYBOOK.md) | **How** the vision gets built with agents/ultracode: the gate-driven per-phase loop (scope → plan → build → review → verify → deploy → capture), the workflow patterns per phase type, the "add one layer" micro-loop, and the non-negotiables (verify receipts, CI is the gate). | Reference (living) |
+| [`ACCEPTANCE-HARNESS.md`](ACCEPTANCE-HARNESS.md) | **The oracle** — the test-against system that grades every change (agent or human) for correctness + improvement: invariants (honesty CI predicates) · golden masters (frozen audited outputs) · adversarial evals (must-refuse bait, held-out + rotating) · scorecard (metrics over time). Lands with P0/P1; it's why you can trust agents on everything after. | Reference (living) |
 
 ### ⚪ Shipped — the build history
 
