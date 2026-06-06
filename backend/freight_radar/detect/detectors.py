@@ -178,9 +178,18 @@ def rolling_zscore(resid: pd.Series, window: int, end: int | None = None) -> flo
     trailing = resid.iloc[end - win : end]
     mu = float(trailing.mean())
     sd = float(trailing.std(ddof=1))
-    if not np.isfinite(sd) or sd == 0.0:
+    # A near-constant baseline has sd ≈ 0 (down to ~1e-15 of floating-point noise from the STL
+    # residual); dividing by it manufactures an astronomical, meaningless z. Going wide to all
+    # ~2065 ports surfaces these degenerate/sparse series, so the floor is relative + absolute:
+    # below it there is no statistical basis for a z (a |z|>50 freight anomaly isn't real, it's
+    # a broken baseline). Such series simply don't flag here (a level-shift gate may still catch).
+    floor = max(1e-6, 1e-4 * (abs(mu) + 1.0))
+    if not np.isfinite(sd) or sd < floor:
         return 0.0
-    return (latest - mu) / sd
+    z = (latest - mu) / sd
+    if not np.isfinite(z) or abs(z) > 50.0:
+        return 0.0
+    return z
 
 
 def pct_vs_baseline(

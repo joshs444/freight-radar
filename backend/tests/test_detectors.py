@@ -16,10 +16,23 @@ from freight_radar.detect.detectors import (
     DetectionConfig,
     detect_series,
     make_flag_id,
+    rolling_zscore,
     severity_score,
 )
 
 CFG = DetectionConfig()
+
+
+def test_rolling_zscore_rejects_degenerate_baseline() -> None:
+    # Going wide to ~2065 ports surfaces near-constant/sparse series whose STL residual has a
+    # ~1e-15 std — dividing by it once manufactured a z of ~4e15 (and a live flag). A degenerate
+    # baseline must yield 0.0 (no statistical basis), never an astronomical z.
+    assert rolling_zscore(pd.Series([5.0] * 28 + [9.0]), 28) == 0.0
+    assert rolling_zscore(pd.Series([0.0] * 28 + [1.0]), 28) == 0.0
+    # a genuinely varied baseline + a real spike still gives a finite, sane z
+    rng = np.random.RandomState(0)
+    z = rolling_zscore(pd.Series(list(rng.normal(0, 1, 28)) + [5.0]), 28)
+    assert 3.0 < abs(z) < 50.0
 
 
 def _series(values, start="2026-01-01") -> pd.Series:
