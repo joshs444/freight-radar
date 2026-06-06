@@ -54,6 +54,7 @@ export interface SnapshotPort {
   country: string | null;
   lat: number;
   lon: number;
+  as_of?: string;
   vessels: number;
   portcalls: number;
   cargo_mix: CargoMix | null;

@@ -108,7 +108,17 @@ def run(ctx) -> dict:
             existing = json.loads(ledger_path.read_text()).get("events", [])
         except json.JSONDecodeError:
             existing = []
-    ledger = (existing + new_events)[-LEDGER_CAP:]
+    # dedup by (flag_id, type, at) so a re-run — or a state-persistence hiccup that
+    # re-"appears" every flag — can't inflate event_count with duplicate rows.
+    seen: set = set()
+    deduped = []
+    for e in existing + new_events:
+        k = (e.get("flag_id"), e.get("type"), e.get("at"))
+        if k in seen:
+            continue
+        seen.add(k)
+        deduped.append(e)
+    ledger = deduped[-LEDGER_CAP:]
     new_last_seq = max([last_seq] + [e["seq"] for e in new_events])
 
     payload = {
