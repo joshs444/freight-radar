@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-06-05T17:51:52+00:00",
+  "generated_at": "2026-06-06T14:34:58+00:00",
   "indicators": {
     "brent": {
-      "value": 92.9,
-      "change_pct": -2.54,
-      "change_basis": "intraday",
+      "value": 93.09,
+      "change_pct": -1.99,
+      "change_basis": "prev_close",
       "as_of": "2026-06-05",
-      "source": "Stooq",
-      "source_url": "https://stooq.com/q/?s=cb.f",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/BZ=F",
       "name": "Brent crude",
       "unit": "$/bbl",
       "stale": false
     },
     "wti": {
-      "value": 90.25,
-      "change_pct": -2.07,
+      "value": 90.54,
+      "change_pct": -1.76,
       "change_basis": "prev_close",
       "as_of": "2026-06-05",
       "source": "Yahoo Finance",
@@ -25,18 +25,18 @@
     },
     "natgas": {
       "value": 3.229,
-      "change_pct": -3.67,
-      "change_basis": "intraday",
+      "change_pct": 1.57,
+      "change_basis": "prev_close",
       "as_of": "2026-06-05",
-      "source": "Stooq",
-      "source_url": "https://stooq.com/q/?s=ng.f",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/NG=F",
       "name": "Henry Hub gas",
       "unit": "$/MMBtu",
       "stale": false
     },
     "eurusd": {
-      "value": 1.1525,
-      "change_pct": -1.06,
+      "value": 1.1527,
+      "change_pct": -1.05,
       "change_basis": "prev_close",
       "as_of": "2026-06-05",
       "source": "Yahoo Finance",
@@ -46,10 +46,10 @@
       "stale": false
     },
     "usdcny": {
-      "value": 6.765,
-      "change_pct": -0.02,
+      "value": 6.766,
+      "change_pct": -0.0,
       "change_basis": "prev_close",
-      "as_of": "2026-06-05",
+      "as_of": "2026-06-06",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/CNY=X",
       "name": "USD/CNY",
@@ -59,8 +59,8 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 697,
-      "change_pct": -2.54,
+      "value": 698,
+      "change_pct": -1.99,
       "change_basis": "modeled",
       "as_of": "2026-06-05",
       "source": "modeled from Brent (~7.5x)",

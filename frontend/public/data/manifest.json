@@ -1,9 +1,9 @@
 {
-  "version": 27,
+  "version": 28,
   "as_of": "2026-05-31",
-  "generated_at": "2026-06-05T17:51:52+00:00",
+  "generated_at": "2026-06-06T14:34:58+00:00",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
-  "flag_count": 9,
+  "flag_count": 12,
   "chokepoints": 28,
   "ports": 2065,
   "lanes": 10,
@@ -11,15 +11,15 @@
     "verdict": "pass",
     "runs": [
       {
-        "lineage_run_id": "stg_chokepoint_daily-2026-05-31-r4928",
+        "lineage_run_id": "stg_chokepoint_daily-2026-05-31-r4900",
         "verdict": "pass",
-        "rows_promoted": 4928,
+        "rows_promoted": 4900,
         "checks_run": 4
       },
       {
-        "lineage_run_id": "stg_port_daily-2026-05-29-r359310",
+        "lineage_run_id": "stg_port_daily-2026-05-29-r357245",
         "verdict": "pass",
-        "rows_promoted": 359310,
+        "rows_promoted": 357245,
         "checks_run": 4
       }
     ]
@@ -31,12 +31,12 @@
     },
     "news": {
       "present": true,
-      "kb": 17.4,
-      "generated_at": "2026-06-05T17:49:30+00:00"
+      "kb": 24.1,
+      "generated_at": "2026-06-06T14:33:20+00:00"
     },
     "timeseries": {
       "present": true,
-      "kb": 48.1
+      "kb": 49.2
     },
     "ports_lookup": {
       "present": true,
@@ -44,53 +44,53 @@
     },
     "ships": {
       "present": true,
-      "kb": 10.2,
-      "generated_at": "2026-06-05T03:43:04+00:00"
+      "kb": 10.6,
+      "generated_at": "2026-06-05T17:53:11+00:00"
     },
     "market": {
       "present": true,
       "kb": 2.5,
-      "generated_at": "2026-06-05T17:51:52+00:00"
+      "generated_at": "2026-06-06T14:34:58+00:00"
     },
     "stress": {
       "present": true,
       "kb": 4.3,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "world": {
       "present": true,
       "kb": 2.0,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "events": {
       "present": true,
-      "kb": 10.6,
-      "generated_at": "2026-06-05"
+      "kb": 3.2,
+      "generated_at": "2026-06-06"
     },
     "brief": {
       "present": true,
       "kb": 1.5,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "disruptions": {
       "present": true,
       "kb": 2.8,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "gatun": {
       "present": true,
-      "kb": 2.6,
-      "generated_at": "2026-06-05"
+      "kb": 7.8,
+      "generated_at": "2026-06-06"
     },
     "weather": {
       "present": true,
       "kb": 0.6,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "wind": {
       "present": true,
       "kb": 0.2,
-      "generated_at": "2026-06-05"
+      "generated_at": "2026-06-06"
     },
     "dwell": {
       "present": false
