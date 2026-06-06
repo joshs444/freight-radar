@@ -173,6 +173,6 @@ Kill the worker mid-run and restart it — Temporal re-drives the in-flight work
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
 
-See [`docs/plans/`](docs/plans/) for the full wave-by-wave build plans and verified data contracts, and [`docs/adr/`](docs/adr/) for the architecture decision records. The active plan is [`BEST-IN-CLASS-PLAN.md`](BEST-IN-CLASS-PLAN.md).
+See [`docs/plans/`](docs/plans/) for the full wave-by-wave build plans and verified data contracts, and [`docs/adr/`](docs/adr/) for the architecture decision records. The shipped waves (including [`BEST-IN-CLASS-PLAN.md`](BEST-IN-CLASS-PLAN.md)) are done + deployed.
 
 **The year vision** — evolving Standpoint from a freight globe into an honest world-awareness platform (every relevant *free* dataset, one globe + board, hub-and-spoke of ownership enforced by construction) — is mapped in [`docs/plans/STANDPOINT-VISION.md`](docs/plans/STANDPOINT-VISION.md), with the full free-source catalog (93 sources, each tagged measured-vs-context) in [`docs/plans/DATA-SOURCES.md`](docs/plans/DATA-SOURCES.md). Both came out of a multi-agent research pass with an adversarial critic; we execute it one shippable phase at a time.
