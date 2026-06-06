@@ -48,6 +48,7 @@ export default function App() {
       wind: true,
       satellite: false, // opt-in: real satellite imagery changes the clean light look
       news: true, // geo-tagged world-news coverage (context) — on by default
+      quakes: false, // USGS M4+ earthquakes (context) — opt-in
     };
     try {
       const saved = localStorage.getItem('fr_layers');
@@ -271,6 +272,7 @@ export default function App() {
                   ships={hist.mode ? null : data.ships}
                   storms={hist.mode ? [] : data.weather?.storms}
                   newsDots={hist.mode ? [] : (data.newsGeo?.items ?? [])}
+                  quakeDots={hist.mode ? [] : (data.quakes?.items ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -299,11 +301,13 @@ export default function App() {
                 storms: data.weather?.counts?.active_storms ?? 0,
                 lanes: data.lanes?.length ?? 0,
                 news: data.newsGeo?.items?.length ?? 0,
+                quakes: data.quakes?.items?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}
               hasWind={!!data.wind}
               newsGeo={data.newsGeo ?? null}
+              quakes={data.quakes ?? null}
             />
           )}
           {!hist.mode && data?.wind && layers.wind && (

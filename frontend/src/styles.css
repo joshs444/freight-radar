@@ -558,6 +558,10 @@ body,
 .sw.sat {
   background: linear-gradient(135deg, #2e5e8c, #4a7c59);
 }
+/* earthquakes — terracotta dot (matches the QUAKE marker colour) */
+.sw.quake {
+  background: #8c5e58;
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(

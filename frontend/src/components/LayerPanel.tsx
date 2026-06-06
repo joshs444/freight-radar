@@ -1,4 +1,4 @@
-import type { LayerId, LayerVisibility, Ships, NewsGeo } from '../types.ts';
+import type { LayerId, LayerVisibility, Ships, NewsGeo, Quakes } from '../types.ts';
 import { NEWS_CATEGORIES, rgbCss } from '../lib/colors.ts';
 
 // The globe layer control + key. Layers are grouped into FREIGHT (the measured spine —
@@ -24,6 +24,7 @@ const SECTIONS: { title: string; caption?: string; rows: Row[] }[] = [
     caption: 'possibly-related context, not a stated cause',
     rows: [
       { id: 'news', label: 'news', sw: 'news' },
+      { id: 'quakes', label: 'earthquakes', sw: 'quake' },
       { id: 'storms', label: 'storms', sw: 'storm' },
       { id: 'wind', label: 'wind', sw: 'wind' },
       { id: 'satellite', label: 'satellite', sw: 'sat' },
@@ -46,6 +47,7 @@ interface LayerPanelProps {
   shipCoverage?: number;
   hasWind: boolean;
   newsGeo: NewsGeo | null;
+  quakes: Quakes | null;
 }
 
 export default function LayerPanel({
@@ -56,6 +58,7 @@ export default function LayerPanel({
   shipCoverage,
   hasWind,
   newsGeo,
+  quakes,
 }: LayerPanelProps) {
   const portsN = counts.ports ?? 0;
   const visible = (r: Row): boolean => {
@@ -63,6 +66,7 @@ export default function LayerPanel({
     if (r.id === 'storms') return (counts.storms ?? 0) > 0;
     if (r.id === 'ships') return (ships?.count ?? 0) > 0;
     if (r.id === 'news') return (counts.news ?? 0) > 0;
+    if (r.id === 'quakes') return (counts.quakes ?? 0) > 0;
     return true;
   };
 
@@ -74,6 +78,10 @@ export default function LayerPanel({
       return newsGeo
         ? `Geo-tagged GDELT news coverage · ${newsGeo.window} window · click a dot to read the source`
         : 'Geo-tagged GDELT news coverage';
+    if (r.id === 'quakes')
+      return quakes
+        ? `USGS M${quakes.min_mag.toFixed(1)}+ earthquakes, past 7 days · dot size = magnitude · click for the USGS event`
+        : 'USGS earthquakes (M4+, past 7 days)';
     return `${on ? 'Hide' : 'Show'} the ${r.label} layer`;
   };
 
