@@ -106,7 +106,9 @@ def get_layer(layer_id: str, out_dir=None) -> dict:
     if d is None:
         raise KeyError(layer_id)
     out = _store_dir(out_dir)
-    payload = _read(out, d.output) if d.output else None
+    # read the layer's sidecar by its output stem, or by its id (so core layers like flags /
+    # snapshot, which carry no enricher `output`, are still groundable from <id>.json)
+    payload = _read(out, d.output or d.id)
     return {
         "id": d.id,
         "kind": d.kind.value,
@@ -180,7 +182,7 @@ def verify(claim_layer: str, entity_id: Optional[str] = None, out_dir=None) -> d
             "disclaimer": VERIFY_DISCLAIMER,
         }
     out = _store_dir(out_dir)
-    payload = _read(out, d.output) if d.output else None
+    payload = _read(out, d.output or d.id)  # core layers (flags/snapshot) ground from <id>.json
     if payload is None:
         return {
             "result": "abstain",

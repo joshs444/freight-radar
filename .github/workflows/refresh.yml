@@ -58,6 +58,14 @@ jobs:
           python -m freight_radar.publish
           python -m freight_radar.history || echo "history skipped (PortWatch unavailable)"
 
+      - name: Regenerate the DERIVED briefing (offline reasoner, gate fail-closed)
+        working-directory: backend
+        # the reasoner reads the freshly-published store, grounds every claim, and is GATE-
+        # validated (attribution + abstention + language firewall) before ai_briefing.json is
+        # written — a hallucinated/ungrounded number FAILS this step (red), never ships. Run as
+        # a subprocess (not a Python import) so the AI firewall — nothing imports derived/ — holds.
+        run: python -m freight_radar.derived.reason ../frontend/public/data
+
       - name: Snapshot real AIS vessel positions near the chokepoints
         working-directory: backend
         env:
