@@ -118,6 +118,12 @@ export const VIEWS: ViewDef[] = [
     note: 'metals/bulk-energy anomalies — OUR 12-mo z, FDR-gated (SIGNAL)',
   },
   {
+    view: 'freight_rate',
+    file: 'freight_rate.json',
+    sql: "CREATE OR REPLACE VIEW freight_rate AS SELECT unnest(items, recursive := true) FROM read_json_auto('freight_rate.json')",
+    note: 'freight transport-cost anomalies by mode — OUR 12-mo z, FDR-gated (SIGNAL)',
+  },
+  {
     view: 'tides',
     file: 'tides.json',
     sql: "CREATE OR REPLACE VIEW tides AS SELECT unnest(items, recursive := true) FROM read_json_auto('tides.json')",

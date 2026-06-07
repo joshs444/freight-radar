@@ -117,6 +117,18 @@ SIDECAR_CONTRACTS: dict[str, Contract] = {
     ),
 }
 
+# the measured SIGNAL families share one shape (FRED-z): an items array where each row owns a
+# z-score + its FDR verdict. Contracting them drift-checks that our anomaly math still has the
+# fields the store + ledger read — and that the upstream FRED feed didn't go empty.
+_SIGNAL_CONTRACT = Contract(
+    requires=frozenset({"generated_at", "source", "source_url", "method", "items", "counts"}),
+    items_key="items",
+    item_requires=frozenset({"id", "name", "our_zscore", "fdr_significant"}),
+    min_items=1,
+)
+for _sig in ("commodities", "macro", "metals", "freight_rate"):
+    SIDECAR_CONTRACTS[_sig] = _SIGNAL_CONTRACT
+
 # how many items to spot-check for missing keys (catches partial drift without scanning all)
 _ITEM_SAMPLE = 12
 

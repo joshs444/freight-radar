@@ -260,6 +260,12 @@ def _metals(ctx: EnrichCtx) -> dict:
     return metals_run(ctx)
 
 
+def _freight_rate(ctx: EnrichCtx) -> dict:
+    from ..freight_rate import run as freight_rate_run
+
+    return freight_rate_run(ctx)
+
+
 def _tides(ctx: EnrichCtx) -> dict:
     from ..tides import run as tides_run
 
@@ -628,6 +634,23 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
             "public domain",
         ),
         honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="freight_rate",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.freight_rate",
+        run=_freight_rate,
+        enrich_order=22,
+        output="freight_rate",
+        manifest_sidecar=True,
+        metric="12-month rolling z-score of a cited freight-mode PPI (the cost anomaly we compute)",
+        source=Source(
+            "FRED (public domain · BLS Producer Price Index)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the rate index stays cited context, never restated as ours.",
     ),
     LayerDescriptor(
         id="tides",
