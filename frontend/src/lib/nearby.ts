@@ -159,3 +159,29 @@ export function computeNearby(
   hits.sort((a, b) => a.km - b.km); // distance only — never by severity / evidence density
   return hits;
 }
+
+export interface FamilyCount {
+  layer: string;
+  label: string;
+  count: number;
+}
+
+// Per-FAMILY counts of co-located cited context within a radius — deliberately NOT summed
+// into one number. A single "nearby total" you could sort by is a risk score wearing a
+// count's clothes ("Hormuz 6, Suez 3" reads as a ranking); keeping the families separate +
+// unsorted keeps it an honest roster of cited receipts, never a leaderboard.
+export function nearbyFamilyCounts(
+  lat: number,
+  lon: number,
+  radiusKm: number,
+  data: AppData
+): FamilyCount[] {
+  const items = computeNearby(lat, lon, radiusKm, data);
+  const byLayer = new Map<string, FamilyCount>();
+  for (const s of SOURCES) byLayer.set(s.layer, { layer: s.layer, label: s.label, count: 0 });
+  for (const it of items) {
+    const f = byLayer.get(it.layer);
+    if (f) f.count += 1;
+  }
+  return [...byLayer.values()].filter((f) => f.count > 0);
+}

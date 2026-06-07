@@ -4664,3 +4664,59 @@ a.fr-nearby-link:hover {
 .fr-nearby-row.sw-disruptions {
   border-left-color: #c63434;
 }
+
+/* P6 cross-layer comparison: per-family cited-context counts in the Board (assoc only) */
+.fr-chk-table th.ctx,
+.fr-chk-table td.ctx {
+  text-align: left;
+  white-space: nowrap;
+}
+.fr-board-ctxfoot {
+  margin: 4px 0 0;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+  max-width: 64ch;
+}
+.fr-ctxchips {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.fr-ctxchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.fr-ctxdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.fr-ctxchip.sw-quakes .fr-ctxdot {
+  background: #8c5e58;
+}
+.fr-ctxchip.sw-news_geo .fr-ctxdot {
+  background: #6e6490;
+}
+.fr-ctxchip.sw-eonet .fr-ctxdot {
+  background: #c87828;
+}
+.fr-ctxchip.sw-marine .fr-ctxdot {
+  background: #286eaa;
+}
+.fr-ctxchip.sw-tides .fr-ctxdot {
+  background: #389a9c;
+}
+.fr-ctxchip.sw-streamflow .fr-ctxdot {
+  background: #468250;
+}
+.fr-ctxchip.sw-disruptions .fr-ctxdot {
+  background: #c63434;
+}

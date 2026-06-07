@@ -377,6 +377,7 @@ export default function App() {
             <Suspense fallback={<div className="fr-globe-fallback">building the board…</div>}>
               <Board
                 rows={rows}
+                data={data}
                 snapshot={data.snapshot}
                 timeseries={data.timeseries}
                 stress={data.stress}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type {
+  AppData,
   MonitorEntity,
   Snapshot,
   Timeseries,
@@ -12,7 +13,10 @@ import type {
 } from '../types.ts';
 import { Sparkline } from './Sparkline.tsx';
 import { severityCss, stressLevel } from '../lib/colors.ts';
+import { nearbyFamilyCounts } from '../lib/nearby.ts';
 import SignalsRail from './SignalsRail.tsx';
+
+const CTX_RADIUS_KM = 750;
 
 // The Standpoint Board — the non-globe analytical view. A sphere can't be sorted; this is
 // where you READ the data: rank the 28 measured chokepoints (+ flagged ports) by any
@@ -23,6 +27,7 @@ import SignalsRail from './SignalsRail.tsx';
 
 interface BoardProps {
   rows: MonitorEntity[];
+  data: AppData;
   snapshot: Snapshot | null;
   timeseries: Timeseries | null;
   stress: Stress | null;
@@ -71,6 +76,7 @@ export default function Board({
   snapshot,
   timeseries,
   stress,
+  data,
   newsGeo,
   quakes,
   disruptions,
@@ -86,6 +92,19 @@ export default function Board({
 }: BoardProps) {
   const [sortKey, setSortKey] = useState<SortKey>('sev');
   const [asc, setAsc] = useState(false);
+
+  // The cross-layer dimension (P6 comparison matrix): per entity, the cited CONTEXT within
+  // 750 km, kept as SEPARATE per-family counts. Deliberately never summed into one sortable
+  // number — a "total nearby" column is a risk score in disguise. Co-located, association
+  // only, never a stated cause; the measured columns stay the only sortable signal.
+  const ctxByEntity = useMemo(() => {
+    const m = new Map<string, ReturnType<typeof nearbyFamilyCounts>>();
+    for (const e of rows) {
+      if (e.lat != null && e.lon != null)
+        m.set(e.id, nearbyFamilyCounts(e.lat, e.lon, CTX_RADIUS_KM, data));
+    }
+    return m;
+  }, [rows, data]);
 
   // z-score lookup: a flagged row carries its flag's z; an unflagged chokepoint reads the
   // snapshot's z. (Both are Python-computed in the same pipeline.)
@@ -190,6 +209,12 @@ export default function Board({
                     </button>
                   </th>
                 ))}
+                <th
+                  className="ctx"
+                  title={`Cited context within ${CTX_RADIUS_KM} km — co-located, association only, never a score. Not sortable by design.`}
+                >
+                  cited context · {CTX_RADIUS_KM}km
+                </th>
                 <th className="t">trend · 120d</th>
                 <th className="w" aria-label="watch" />
               </tr>
@@ -231,6 +256,26 @@ export default function Board({
                       {fmtPct(e.metric)}
                     </td>
                     <td className={`n ${z != null && Math.abs(z) >= 2 ? 'hot' : ''}`}>{fmtZ(z)}</td>
+                    <td className="ctx">
+                      {(() => {
+                        const fams = ctxByEntity.get(e.id) ?? [];
+                        if (!fams.length) return <span className="fr-dim">—</span>;
+                        return (
+                          <span className="fr-ctxchips">
+                            {fams.map((f) => (
+                              <span
+                                key={f.layer}
+                                className={`fr-ctxchip sw-${f.layer}`}
+                                title={`${f.count} ${f.label}${f.count === 1 ? '' : 's'} within ${CTX_RADIUS_KM} km — association only`}
+                              >
+                                <i className="fr-ctxdot" />
+                                {f.count}
+                              </span>
+                            ))}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="t">
                       {sparkVals && sparkVals.length > 1 ? (
                         <Sparkline
@@ -262,7 +307,7 @@ export default function Board({
               })}
               {!sorted.length && (
                 <tr>
-                  <td colSpan={8} className="fr-board-empty">
+                  <td colSpan={9} className="fr-board-empty">
                     No rows for this filter.
                   </td>
                 </tr>
@@ -270,8 +315,13 @@ export default function Board({
             </tbody>
           </table>
           <p className="fr-board-foot">
-            src {source} · as of <b>{asOf}</b> · every column computed in Python · click a row to
-            open its cited brief
+            src {source} · as of <b>{asOf}</b> · every measured column computed in Python · click a
+            row to open its cited brief
+          </p>
+          <p className="fr-board-ctxfoot">
+            <b>cited context</b> = cited public-data items co-located within {CTX_RADIUS_KM} km,
+            kept as separate per-family counts — association only, never a stated cause and never
+            summed into a score. Sort stays on the measured columns.
           </p>
         </div>
 
