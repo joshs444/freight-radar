@@ -32,7 +32,10 @@ import type {
   AppView,
 } from './types.ts';
 import LayerPanel from './components/LayerPanel.tsx';
+import CommandPalette from './components/CommandPalette.tsx';
 import { DEFAULT_LAYER_VISIBILITY } from './lib/layers.gen.ts';
+import { LENS_BY_ID, lensVisibility } from './lib/lenses.ts';
+import type { Lens } from './lib/lenses.ts';
 import type { AppliedExposure } from './components/Upload.tsx';
 
 // labels for the GFS wind forecast scrubber (matches backend wind.FHOURS = 0,24,48,72,96)
@@ -99,6 +102,45 @@ export default function App() {
     }
   }, []);
 
+  // load a curated lens: set the exact layer scene + view, persist it, and stamp ?lens=<id>
+  // on the URL so the scene is shareable. Manual toggles afterward just clear the stamp.
+  const applyLens = useCallback(
+    (lens: Lens) => {
+      const next = lensVisibility(lens);
+      setLayers(next);
+      try {
+        localStorage.setItem('fr_layers', JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      changeView(lens.view);
+      try {
+        const p = new URLSearchParams(window.location.hash.slice(1));
+        p.set('lens', lens.id);
+        window.history.replaceState(null, '', `#${p.toString()}`);
+      } catch {
+        /* ignore */
+      }
+    },
+    [changeView]
+  );
+
+  // a deep-linked ?lens=<id> (shared scene) loads that lens once on first mount
+  const lensApplied = useRef(false);
+  useEffect(() => {
+    if (lensApplied.current) return;
+    try {
+      const id = new URLSearchParams(window.location.hash.slice(1)).get('lens');
+      const lens = id ? LENS_BY_ID[id] : null;
+      if (lens) {
+        lensApplied.current = true;
+        applyLens(lens);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [applyLens]);
+
   // cross-highlight: a hovered feed row and/or a multi-field search light their marks on
   // the globe (a cyan ring). The Globe gets the union of both.
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -132,6 +174,24 @@ export default function App() {
     [userExposure, data]
   );
   const exposureSummary = userExposure?.summary ?? data?.exposure ?? null;
+
+  // which layers actually have data right now (mirrors LayerPanel's row-visibility rule) —
+  // the ⌘K palette only offers toggles that would change something.
+  const availableLayers = useMemo<Set<LayerId>>(() => {
+    const always: LayerId[] = ['flags', 'chokepoints', 'ports', 'lanes', 'wind', 'satellite'];
+    const s = new Set<LayerId>(always);
+    const has = (n: number | undefined) => (n ?? 0) > 0;
+    if (has(data?.ships?.count)) s.add('ships');
+    if (has(data?.newsGeo?.items?.length)) s.add('news');
+    if (has(data?.quakes?.items?.length)) s.add('quakes');
+    if (has(data?.weather?.counts?.active_storms)) s.add('storms');
+    if (has(data?.eonet?.items?.length)) s.add('eonet');
+    if (has(data?.marine?.items?.length)) s.add('marine');
+    if (has(data?.tides?.items?.length)) s.add('tides');
+    if (has(data?.streamflow?.items?.length)) s.add('streamflow');
+    if (has(data?.disruptions?.events?.length)) s.add('hazards');
+    return s;
+  }, [data]);
 
   const selectEntity = useCallback((e: MonitorEntity | null) => {
     setSelected(e);
@@ -284,6 +344,26 @@ export default function App() {
             keyboard-navigable.
           </h2>
           {data && <ViewToggle view={view} onChange={changeView} />}
+          {data && (
+            <button
+              type="button"
+              className="fr-cmdk-chip"
+              onClick={() => window.dispatchEvent(new Event('fr:open-palette'))}
+              title="Command palette — jump to a view, toggle a layer, or load a lens"
+            >
+              <span aria-hidden>⌘</span>K
+            </button>
+          )}
+          {data && (
+            <CommandPalette
+              layers={layers}
+              onToggleLayer={toggleLayer}
+              view={view}
+              onChangeView={changeView}
+              availableLayers={availableLayers}
+              onApplyLens={applyLens}
+            />
+          )}
           {view === 'board' && data && (
             <Suspense fallback={<div className="fr-globe-fallback">building the board…</div>}>
               <Board
