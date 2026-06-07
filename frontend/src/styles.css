@@ -565,6 +565,10 @@ body,
 .sw.event {
   background: #c87828;
 }
+/* marine wave height — steel blue dot (matches the WAVE marker colour) */
+.sw.wave {
+  background: #286eaa;
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(

@@ -4,7 +4,16 @@ import maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
-import { AMBER, PORT, LANE, QUAKE, EVENT, severityColor, newsCategoryColor } from './lib/colors.ts';
+import {
+  AMBER,
+  PORT,
+  LANE,
+  QUAKE,
+  EVENT,
+  WAVE,
+  severityColor,
+  newsCategoryColor,
+} from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
 import type {
@@ -16,6 +25,7 @@ import type {
   NewsGeoItem,
   QuakeItem,
   EonetItem,
+  MarineItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -129,6 +139,7 @@ interface LayerInputs {
   newsDots: NewsGeoItem[];
   quakeDots: QuakeItem[];
   eonetDots: EonetItem[];
+  marineDots: MarineItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -148,6 +159,7 @@ function buildLayers({
   newsDots,
   quakeDots,
   eonetDots,
+  marineDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -265,6 +277,24 @@ function buildLayers({
         const url = (info.object as EonetItem | undefined)?.url;
         if (url) window.open(url, '_blank', 'noopener,noreferrer');
       },
+    }),
+
+    // Open-Meteo marine wave height at the chokepoints — steel-blue dots SIZED BY wave
+    // height. CONTEXT, below the freight marks; the sea-state backdrop, association-only.
+    new ScatterplotLayer({
+      id: 'marine',
+      visible: layers.marine,
+      parameters: MARKER_PARAMETERS,
+      data: marineDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: (d) => 2 + Math.max(0, d.wave_height_m) * 1.6,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 2,
+      radiusMaxPixels: 10,
+      getFillColor: rgba(WAVE, 170),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 130),
+      lineWidthMinPixels: 0.5,
     }),
 
     // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
@@ -427,6 +457,7 @@ interface GlobeProps {
   newsDots: NewsGeoItem[];
   quakeDots: QuakeItem[];
   eonetDots: EonetItem[];
+  marineDots: MarineItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -445,6 +476,7 @@ export default function Globe({
   newsDots,
   quakeDots,
   eonetDots,
+  marineDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -645,6 +677,7 @@ export default function Globe({
         newsDots: newsDots ?? [], // GDELT geo-tagged world-news (context)
         quakeDots: quakeDots ?? [], // USGS M4+ earthquakes (context)
         eonetDots: eonetDots ?? [], // NASA EONET natural events (context)
+        marineDots: marineDots ?? [], // Open-Meteo wave height at chokepoints (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -660,6 +693,7 @@ export default function Globe({
     storms,
     newsDots,
     eonetDots,
+    marineDots,
     quakeDots,
     selectedFlag,
     onSelectFlag,

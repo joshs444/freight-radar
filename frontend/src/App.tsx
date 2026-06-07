@@ -336,6 +336,7 @@ export default function App() {
                   newsDots={hist.mode ? [] : (data.newsGeo?.items ?? [])}
                   quakeDots={hist.mode ? [] : (data.quakes?.items ?? [])}
                   eonetDots={hist.mode ? [] : (data.eonet?.items ?? [])}
+                  marineDots={hist.mode ? [] : (data.marine?.items ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -366,6 +367,7 @@ export default function App() {
                 news: data.newsGeo?.items?.length ?? 0,
                 quakes: data.quakes?.items?.length ?? 0,
                 eonet: data.eonet?.items?.length ?? 0,
+                marine: data.marine?.items?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}

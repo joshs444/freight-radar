@@ -635,6 +635,25 @@ export interface Eonet {
   items: EonetItem[];
 }
 
+// ---- marine.json (Open-Meteo wave height at chokepoints — a CONTEXT globe layer) ----
+export interface MarineItem {
+  name: string;
+  lat: number;
+  lon: number;
+  wave_height_m: number;
+  wave_period_s: number | null;
+  observed_at: string;
+}
+export interface Marine {
+  generated_at: string;
+  as_of: string;
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  counts: { chokepoints: number };
+  items: MarineItem[];
+}
+
 // ---- the full payload useData() resolves -----------------------------------
 
 export interface AppData {
@@ -648,6 +667,7 @@ export interface AppData {
   newsGeo: NewsGeo | null;
   quakes: Quakes | null;
   eonet: Eonet | null;
+  marine: Marine | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;
