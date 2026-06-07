@@ -122,6 +122,94 @@ def get_layer(layer_id: str, out_dir=None) -> dict:
     }
 
 
+VERIFY_DISCLAIMER = (
+    "verify() returns a lineage lookup or ABSTAINS — never a true/false verdict on a claim, "
+    "never a confidence. The honest 'no' is the answer; an adjudicating boolean is centrum."
+)
+
+
+def _observation_for(payload: object, entity_id: Optional[str]) -> object:
+    """The cited value to return as grounding. If the layer carries items and an entity is
+    named, return the matching item; otherwise the layer-level fields (items elided to a
+    count so the lineage stays compact)."""
+    if not isinstance(payload, dict):
+        return payload
+    items = None
+    for key in ("items", "events"):
+        if isinstance(payload.get(key), list):
+            items = payload[key]
+            break
+    if entity_id and items:
+        for it in items:
+            if isinstance(it, dict) and entity_id in (
+                it.get("portid"),
+                it.get("id"),
+                it.get("entity"),
+                it.get("port"),
+                it.get("site"),
+            ):
+                return it
+    # layer-level: keep the scalar provenance fields, summarise any big array to a count
+    return {
+        k: (f"[{len(v)} items]" if isinstance(v, list) else v)
+        for k, v in payload.items()
+        if k not in ("disclaimer",)
+    }
+
+
+def verify(claim_layer: str, entity_id: Optional[str] = None, out_dir=None) -> dict:
+    """The honest grounding check an agent calls BEFORE asserting a claim.
+
+    Does the Standpoint store hold a CITED OBSERVATION for ``claim_layer`` (optionally narrowed
+    to ``entity_id``)? Returns the observation **with full provenance** when grounded, else
+    ABSTAINS. It never returns a true/false verdict and never a confidence — the honest "no"
+    ("no measured observation supports this") is the product. An agent uses an abstain to
+    **suppress** an ungrounded claim. A claim referencing something the store does not measure
+    (a geopolitics narrative, a forecast) abstains with ``in_scope=False`` — Standpoint refuses
+    the judgment seat rather than adjudicating it.
+    """
+    d = next((x for x in REGISTRY if x.id == claim_layer), None)
+    if d is None:
+        return {
+            "result": "abstain",
+            "grounded": False,
+            "in_scope": False,
+            "reason": (
+                f"no layer '{claim_layer}' in the store — no measured observation supports this"
+            ),
+            "disclaimer": VERIFY_DISCLAIMER,
+        }
+    out = _store_dir(out_dir)
+    payload = _read(out, d.output) if d.output else None
+    if payload is None:
+        return {
+            "result": "abstain",
+            "grounded": False,
+            "in_scope": True,
+            "reason": (
+                f"layer '{claim_layer}' is in scope but currently absent (degraded-to-dark) — "
+                "nothing to cite"
+            ),
+            "disclaimer": VERIFY_DISCLAIMER,
+        }
+    return {
+        "result": "grounded",
+        "grounded": True,
+        "in_scope": True,
+        "layer": d.id,
+        "tier": d.kind.value,
+        "metric": d.metric,
+        "source": (
+            {"name": d.source.name, "url": d.source.url, "license": d.source.license}
+            if d.source
+            else None
+        ),
+        "as_of": (payload.get("as_of") or payload.get("generated_at")) if isinstance(payload, dict) else None,
+        "observation": _observation_for(payload, entity_id),
+        "disclaimer": VERIFY_DISCLAIMER,
+    }
+
+
 def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     r = 6371.0
     p1, p2 = math.radians(lat1), math.radians(lat2)

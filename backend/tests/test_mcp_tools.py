@@ -11,8 +11,8 @@ from freight_radar import store
 from freight_radar.mcp import tools
 
 
-def test_exactly_the_three_read_tools() -> None:
-    assert {t.name for t in tools.TOOLS} == {"list_layers", "get_layer_facts", "nearby"}
+def test_exactly_the_four_read_tools() -> None:
+    assert {t.name for t in tools.TOOLS} == {"list_layers", "get_layer_facts", "nearby", "verify"}
 
 
 def test_all_tools_declared_read_only() -> None:
@@ -47,3 +47,14 @@ def test_nearby_tool_is_association_only_and_distance_ordered() -> None:
     assert r["disclaimer"] == store.ASSOCIATION_ONLY
     kms = [i["km"] for i in r["items"]]
     assert kms == sorted(kms)  # distance only, never a severity/evidence ranking
+
+
+def test_verify_tool_grounds_or_abstains_never_a_verdict() -> None:
+    # a real layer grounds with provenance
+    g = tools.verify("stress")
+    assert g["result"] == "grounded" and g["grounded"] is True and "as_of" in g
+    # a claim the store doesn't measure ABSTAINS — never returns true/false on the claim
+    a = tools.verify("geopolitical_tension")
+    assert a["result"] == "abstain" and a["grounded"] is False and a["in_scope"] is False
+    assert "no measured observation" in a["reason"]
+    assert "verdict" not in {a["result"], g["result"]}  # the result is grounded/abstain, never a verdict

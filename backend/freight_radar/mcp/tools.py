@@ -46,11 +46,21 @@ def nearby(lat: float, lon: float, radius_km: float = 750.0) -> dict:
     return store.nearby(lat, lon, radius_km)
 
 
+def verify(claim_layer: str, entity_id: str | None = None) -> dict:
+    """Ground a claim before asserting it. Returns the store's cited observation for
+    `claim_layer` (optionally narrowed to `entity_id`) WITH provenance, or ABSTAINS. It never
+    returns a true/false verdict — if the store doesn't measure what the claim is about (a
+    geopolitics narrative, a forecast), it returns result='abstain'. Call this before stating
+    anything about the world and SUPPRESS the claim on abstain: the honest 'no' is the answer."""
+    return store.verify(claim_layer, entity_id)
+
+
 # The registered tools. ALL read-only — there is intentionally no write/ingest/mutate tool.
 TOOLS: list[ToolSpec] = [
     ToolSpec("list_layers", list_layers.__doc__ or "", list_layers),
     ToolSpec("get_layer_facts", get_layer_facts.__doc__ or "", get_layer_facts),
     ToolSpec("nearby", nearby.__doc__ or "", nearby),
+    ToolSpec("verify", verify.__doc__ or "", verify),
 ]
 
 # Substrings that would indicate a mutation surface — must never appear in a tool name.
