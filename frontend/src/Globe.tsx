@@ -673,6 +673,55 @@ export default function Globe({
             className: 'fr-tip',
           };
         }
+        if (layer?.id === 'eonet') {
+          // a cited NASA natural-event marker the reader can weigh — never a stated cause.
+          return {
+            html:
+              `<b>${object.title}</b> · ${object.category}<br/>` +
+              `${object.date}<br/><span class="fr-tip-cta">click for NASA EONET</span>`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'marine') {
+          // an observed model wave height shown as Open-Meteo reports it — context, not a cause.
+          const per = object.wave_period_s != null ? ` · ${object.wave_period_s}s period` : '';
+          return {
+            html:
+              `<b>${object.name}</b><br/>wave height ${object.wave_height_m} m${per}<br/>` +
+              `<span class="fr-tip-cta">observed ${object.observed_at} · Open-Meteo</span>`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'tides') {
+          // an observed water level shown as NOAA CO-OPS publishes it — context, not a cause.
+          return {
+            html:
+              `<b>${object.port}</b><br/>water level ${object.water_level_ft} ft (MLLW)<br/>` +
+              `observed ${object.observed_at}<br/><span class="fr-tip-cta">click for NOAA station</span>`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'streamflow') {
+          // an observed river stage shown as USGS publishes it — context, not a cause.
+          return {
+            html:
+              `<b>${object.river}</b> · ${object.place}<br/>stage ${object.stage_ft} ft<br/>` +
+              `observed ${object.observed_at}<br/><span class="fr-tip-cta">click for USGS gauge</span>`,
+            className: 'fr-tip',
+          };
+        }
+        if (layer?.id === 'hazards') {
+          // a cited official GDACS alert that corroborates a flag — never its stated cause.
+          // "ports in footprint" = the alert's geographic overlap, an association, not a claim.
+          const pop = object.affected_population ? `<br/>${object.affected_population}` : '';
+          return {
+            html:
+              `<b>${object.name}</b> · ${object.type_label}<br/>` +
+              `${object.alertlevel} alert · ${object.n_affected_ports} ports in footprint${pop}<br/>` +
+              `<span class="fr-tip-cta">click for GDACS report</span>`,
+            className: 'fr-tip',
+          };
+        }
         return null;
       },
     });
