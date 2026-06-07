@@ -66,7 +66,11 @@ export default function App() {
     }
     return def;
   });
+  // the curated lens currently loaded (null once the user diverges by toggling/switching);
+  // when set, the URL carries ?lens=<id> so the exact scene is shareable.
+  const [activeLens, setActiveLens] = useState<string | null>(null);
   const toggleLayer = useCallback((id: LayerId) => {
+    setActiveLens(null); // a manual toggle diverges from any loaded lens
     setLayers((m) => {
       const next = { ...m, [id]: !m[id] };
       try {
@@ -93,7 +97,8 @@ export default function App() {
     }
     return 'globe';
   });
-  const changeView = useCallback((v: AppView) => {
+  // a bare view switch (ViewToggle / palette) is a manual move, so it diverges from any lens
+  const setViewPersist = useCallback((v: AppView) => {
     setView(v);
     try {
       localStorage.setItem('fr_view', v);
@@ -101,9 +106,17 @@ export default function App() {
       /* ignore */
     }
   }, []);
+  const changeView = useCallback(
+    (v: AppView) => {
+      setActiveLens(null);
+      setViewPersist(v);
+    },
+    [setViewPersist]
+  );
 
-  // load a curated lens: set the exact layer scene + view, persist it, and stamp ?lens=<id>
-  // on the URL so the scene is shareable. Manual toggles afterward just clear the stamp.
+  // load a curated lens: set the exact layer scene + view and mark it active. The unified
+  // URL-sync effect then stamps ?lens=<id> so the scene is one-click shareable; manual
+  // toggles/view-switches clear the stamp (the scene has diverged from the lens).
   const applyLens = useCallback(
     (lens: Lens) => {
       const next = lensVisibility(lens);
@@ -113,16 +126,10 @@ export default function App() {
       } catch {
         /* ignore */
       }
-      changeView(lens.view);
-      try {
-        const p = new URLSearchParams(window.location.hash.slice(1));
-        p.set('lens', lens.id);
-        window.history.replaceState(null, '', `#${p.toString()}`);
-      } catch {
-        /* ignore */
-      }
+      setViewPersist(lens.view); // set view WITHOUT clearing the lens
+      setActiveLens(lens.id);
     },
-    [changeView]
+    [setViewPersist]
   );
 
   // a deep-linked ?lens=<id> (shared scene) loads that lens once on first mount
@@ -261,6 +268,7 @@ export default function App() {
   useEffect(() => {
     if (!data || !appliedHash.current) return;
     const p = new URLSearchParams();
+    if (activeLens) p.set('lens', activeLens);
     if (selected?.id) p.set('e', selected.id);
     if (filter !== 'all') p.set('f', filter);
     if (scrubIndex != null) p.set('t', String(scrubIndex));
@@ -271,7 +279,7 @@ export default function App() {
       '',
       s ? `#${s}` : window.location.pathname + window.location.search
     );
-  }, [data, selected, filter, scrubIndex, view]);
+  }, [data, selected, filter, scrubIndex, view, activeLens]);
 
   if (error) {
     return (

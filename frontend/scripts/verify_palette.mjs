@@ -67,10 +67,25 @@ try {
     .locator('.fr-cmdk-row', { has: page.locator('.fr-cmdk-label', { hasText: /^Storm watch$/ }) })
     .first()
     .click();
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(600); // let the URL-sync effect run
   out.urlAfterLens = page.url();
   out.lensStampsUrl = page.url().includes('lens=storm-watch');
   out.paletteClosesOnNav = (await page.locator('.fr-cmdk').count()) === 0;
+  // the stamp must SURVIVE the URL-sync effect (regression guard), then a manual toggle
+  // clears it (the scene has diverged from the lens)
+  await page.waitForTimeout(500);
+  out.lensStampPersists = page.url().includes('lens=storm-watch');
+  await page.keyboard.press('Meta+k');
+  await page.waitForTimeout(200);
+  await page.locator('.fr-cmdk-input').fill('vessels');
+  await page.waitForTimeout(150);
+  await page
+    .locator('.fr-cmdk-row', { has: page.locator('.fr-cmdk-label', { hasText: /^vessels$/ }) })
+    .first()
+    .click();
+  await page.waitForTimeout(400);
+  out.toggleClearsLensStamp = !page.url().includes('lens=');
+  await page.keyboard.press('Escape');
 
   // 6) Esc closes when reopened
   await page.keyboard.press('Meta+k');
@@ -88,6 +103,8 @@ try {
   const activeView = (await page2.locator('.fr-view-btn.on').first().textContent())?.trim();
   out.deepLinkActiveView = activeView;
   out.deepLinkAppliesLens = /Ledger/i.test(activeView || '');
+  // the deep-linked stamp must persist on the fresh load too (the shareable round-trip)
+  out.deepLinkUrlKeepsLens = page2.url().includes('lens=source-ledger');
   await page2.close();
 } catch (e) {
   out.threwAt = String(e).split('\n')[0];
