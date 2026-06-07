@@ -103,3 +103,11 @@ jobs:
           path: frontend/dist
       - id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Upstream contract drift check (monitor)
+        working-directory: backend
+        # The scheduled contract-check from the plan. Runs LAST so a feed whose schema
+        # changed or went empty fails THIS run (pinging the maintainer) WITHOUT halting the
+        # refresh+deploy above — the one drifted layer degrades to absent; the spine still
+        # ships. Validates the freshly-published sidecars against freight_radar/contracts.py.
+        run: python -m freight_radar.contracts ../frontend/public/data
