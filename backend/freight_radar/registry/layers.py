@@ -53,7 +53,8 @@ class Kind(str, Enum):
     SPINE = "SPINE"  # exactly the freight chain: we own ingest -> facts -> detect -> index
     SIGNAL = "SIGNAL"  # a Python scalar we compute over raw observed inputs
     CONTEXT = "CONTEXT"  # someone else's cited raw value, shown as-is
-    # DERIVED is reserved for the P6 reasoning agent — no layer carries it yet.
+    DERIVED = "DERIVED"  # what a reasoner SAID about the facts — commentary, metric=null,
+    # every claim cited, association-only, quarantined; can never own or mutate a number.
 
 
 class Producer(str, Enum):
@@ -62,6 +63,7 @@ class Producer(str, Enum):
     AIS = "ais"  # sidecar/ais_consumer.py — off the enricher loop
     EXTERNAL = "external"  # a separate Action step (GFS wind is heavy/slow)
     CLIENT = "client"  # rendered entirely client-side; no data file at all
+    AGENT = "agent"  # the OFFLINE reasoner (Claude Code) writes it; the site only serves it
 
 
 @dataclass(frozen=True)
@@ -579,6 +581,20 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         producer=Producer.CLIENT,  # pure GIBS raster, rendered client-side — no data file
         globe=Globe("satellite", "Context", "satellite", "sat", False, 4),
         source=Source("NASA GIBS (VIIRS)", "https://gibs.earthdata.nasa.gov", "public domain"),
+    ),
+    # ---- DERIVED: the reasoning agent's commentary (P6 capstone) ----
+    LayerDescriptor(
+        id="ai_briefing",
+        kind=Kind.DERIVED,
+        producer=Producer.AGENT,  # written OFFLINE by Claude Code; the static site only serves it
+        module="freight_radar.derived.briefing",  # the quarantined validator namespace
+        output="ai_briefing",
+        manifest_sidecar=True,
+        metric=None,  # DERIVED owns no number — by construction
+        honesty_note=(
+            "AI commentary over the cited store — every claim traces to a layer, association-only, "
+            "read-only. The agent can recombine + order cited facts; it can never own or mutate a number."
+        ),
     ),
 )
 

@@ -33,7 +33,7 @@ def test_every_tool_has_a_docstring_description() -> None:
 def test_list_layers_returns_tier_stamped_catalog() -> None:
     cat = tools.list_layers()
     assert cat["counts"]["layers"] >= 20
-    assert set(cat["counts"]["by_tier"]) == {"SPINE", "SIGNAL", "CONTEXT"}
+    assert set(cat["counts"]["by_tier"]) == {"SPINE", "SIGNAL", "CONTEXT", "DERIVED"}
 
 
 def test_get_layer_facts_carries_provenance() -> None:

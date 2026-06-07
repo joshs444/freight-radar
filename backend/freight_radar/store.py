@@ -81,11 +81,13 @@ def catalog(out_dir=None) -> dict:
             "SPINE": "the freight chain we own end-to-end (ingest -> facts -> detect -> index)",
             "SIGNAL": "a Python scalar we compute over raw observed inputs",
             "CONTEXT": "someone else's cited raw value, shown as-is",
+            "DERIVED": "an AI agent's commentary over the store — cited, association-only, owns no number",
         },
         "counts": {
             "layers": len(layers),
             "by_tier": {
-                t: sum(1 for x in layers if x["kind"] == t) for t in ("SPINE", "SIGNAL", "CONTEXT")
+                t: sum(1 for x in layers if x["kind"] == t)
+                for t in ("SPINE", "SIGNAL", "CONTEXT", "DERIVED")
             },
         },
         "layers": layers,

@@ -13,7 +13,7 @@ from freight_radar.honesty.scorecard import build_scorecard
 def test_scorecard_structure_and_currently_all_green() -> None:
     s = build_scorecard()
     assert s["layers_total"] >= 20
-    assert set(s["layers_by_tier"]) == {"SPINE", "SIGNAL", "CONTEXT"}
+    assert set(s["layers_by_tier"]) == {"SPINE", "SIGNAL", "CONTEXT", "DERIVED"}
     assert s["layers_by_tier"]["SIGNAL"] >= 1
     # P1 milestone: every honesty gate green.
     assert all(s["honesty_gates"].values()), s["honesty_gates"]

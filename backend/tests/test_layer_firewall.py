@@ -106,7 +106,7 @@ def _forbidden_reach(module_name: str) -> set[str]:
 
 # --- the firewall, per layer ------------------------------------------------
 _NON_SPINE = [
-    d for d in REGISTRY if d.kind in (Kind.SIGNAL, Kind.CONTEXT) and d.module
+    d for d in REGISTRY if d.kind in (Kind.SIGNAL, Kind.CONTEXT, Kind.DERIVED) and d.module
 ]
 
 
@@ -124,6 +124,20 @@ def test_every_non_spine_layer_was_actually_checked() -> None:
     assert len(_NON_SPINE) >= 8, f"expected the context/signal ring, got {len(_NON_SPINE)}"
     for d in _NON_SPINE:
         assert d.module in MODULES, f"{d.id}: declared module {d.module!r} not found in the package"
+
+
+def test_nothing_imports_the_derived_namespace() -> None:
+    # The AI firewall, reverse direction (the P6 capstone's load-bearing guarantee): no module
+    # outside derived/ may import freight_radar.derived. The reasoner's DERIVED output can be
+    # validated + served, but it can NEVER flow back into the store / the fact path.
+    offenders = []
+    for mod in MODULES:
+        if mod.startswith("freight_radar.derived"):
+            continue
+        reach = _reachable(mod) | _direct_imports(mod)
+        if any(m.startswith("freight_radar.derived") for m in reach):
+            offenders.append(mod)
+    assert not offenders, f"modules importing the quarantined derived namespace: {offenders}"
 
 
 def test_the_analyzer_finds_real_edges() -> None:

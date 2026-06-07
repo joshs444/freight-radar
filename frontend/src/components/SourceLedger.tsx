@@ -33,13 +33,23 @@ interface Scoreboard {
   zero_cost_compliance_pct?: number;
   source_coverage_pct?: number;
 }
+interface BriefingClaim {
+  text: string;
+  cites: string[];
+}
+interface Briefing {
+  agent_model: string;
+  disclaimer?: string;
+  claims: BriefingClaim[];
+}
 
 const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
   SIGNAL: { label: 'measured · signal', cls: 'signal' },
   CONTEXT: { label: 'cited · context', cls: 'context' },
+  DERIVED: { label: 'derived · AI', cls: 'derived' },
 };
-const ORDER = ['SPINE', 'SIGNAL', 'CONTEXT'];
+const ORDER = ['SPINE', 'SIGNAL', 'CONTEXT', 'DERIVED'];
 
 function ageDays(iso?: string): string {
   if (!iso) return '—';
@@ -53,6 +63,7 @@ export default function SourceLedger() {
   const [cat, setCat] = useState<Catalog | null>(null);
   const [man, setMan] = useState<Manifest>({});
   const [score, setScore] = useState<Scoreboard | null>(null);
+  const [brief, setBrief] = useState<Briefing | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,11 +76,15 @@ export default function SourceLedger() {
       fetch(base + 'data/scoreboard.json')
         .then((r) => r.json() as Promise<Scoreboard>)
         .catch(() => null),
+      fetch(base + 'data/ai_briefing.json')
+        .then((r) => r.json() as Promise<Briefing>)
+        .catch(() => null),
     ])
-      .then(([c, m, s]) => {
+      .then(([c, m, s, b]) => {
         setCat(c);
         setMan(m);
         setScore(s);
+        setBrief(b);
       })
       .catch((e: Error) => setErr(String(e.message || e)));
   }, []);
@@ -102,6 +117,27 @@ export default function SourceLedger() {
             CI {score.honesty_ci_pass_rate ?? '—'}% · zero-cost{' '}
             {score.zero_cost_compliance_pct ?? '—'}% · sources {score.source_coverage_pct ?? '—'}%
           </span>
+        </div>
+      )}
+      {brief && brief.claims?.length > 0 && (
+        <div className="fr-brief-derived" data-testid="fr-brief-derived">
+          <div className="fr-brief-derived-h">
+            <span className="fr-tier derived">derived · AI commentary</span>
+            <span className="fr-brief-derived-by">{brief.agent_model}</span>
+          </div>
+          <ul className="fr-brief-claims">
+            {brief.claims.map((c, i) => (
+              <li key={i}>
+                <span>{c.text}</span>{' '}
+                {c.cites.map((cite) => (
+                  <code key={cite} className="fr-cite">
+                    {cite}
+                  </code>
+                ))}
+              </li>
+            ))}
+          </ul>
+          {brief.disclaimer && <p className="fr-brief-disc">{brief.disclaimer}</p>}
         </div>
       )}
       <div className="fr-ledger-table">

@@ -25,10 +25,12 @@ def _needs_source(d) -> bool:
 def tier_violations() -> list[str]:
     out: list[str] = []
     for d in REGISTRY:
-        if d.kind not in (Kind.SPINE, Kind.SIGNAL, Kind.CONTEXT):
+        if d.kind not in (Kind.SPINE, Kind.SIGNAL, Kind.CONTEXT, Kind.DERIVED):
             out.append(f"{d.id}: invalid kind {d.kind!r}")
         if d.kind is Kind.CONTEXT and d.metric is not None:
             out.append(f"{d.id}: CONTEXT must not own a metric (passthrough), got {d.metric!r}")
+        if d.kind is Kind.DERIVED and d.metric is not None:
+            out.append(f"{d.id}: DERIVED must own no metric (commentary, not a number)")
         if d.kind is Kind.SIGNAL and not d.metric:
             out.append(f"{d.id}: SIGNAL must declare the scalar it owns (metric=None)")
     return out

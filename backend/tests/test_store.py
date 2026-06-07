@@ -18,10 +18,10 @@ def test_catalog_is_complete_and_tier_stamped() -> None:
     ids = {layer["id"] for layer in cat["layers"]}
     assert ids == {d.id for d in REGISTRY}, "catalog must list every registry layer"
     for layer in cat["layers"]:
-        assert layer["kind"] in ("SPINE", "SIGNAL", "CONTEXT"), layer
-        # CONTEXT is passthrough — it owns no computed metric.
-        if layer["kind"] == "CONTEXT":
-            assert layer["metric"] is None, f"{layer['id']}: CONTEXT must not own a metric"
+        assert layer["kind"] in ("SPINE", "SIGNAL", "CONTEXT", "DERIVED"), layer
+        # CONTEXT + DERIVED are passthrough/commentary — they own no computed metric.
+        if layer["kind"] in ("CONTEXT", "DERIVED"):
+            assert layer["metric"] is None, f"{layer['id']}: {layer['kind']} must not own a metric"
     assert cat["counts"]["layers"] == len(REGISTRY)
 
 

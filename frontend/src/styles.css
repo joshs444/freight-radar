@@ -4263,3 +4263,57 @@ td.w {
   color: var(--ink-dim);
   margin-left: auto;
 }
+.fr-tier.derived {
+  background: #f3eef8;
+  color: #6a3f8f;
+  border-color: #e0d4ee;
+}
+/* DERIVED tier — the AI reasoner's commentary, clearly fenced off + cited */
+.fr-brief-derived {
+  margin: 12px 12px 0;
+  border: 1px solid #e0d4ee;
+  border-left: 3px solid #8a5cc0;
+  border-radius: 8px;
+  background: #fbf9fe;
+  padding: 12px 14px;
+}
+.fr-brief-derived-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.fr-brief-derived-by {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+.fr-brief-claims {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fr-brief-claims li {
+  font-family: var(--display);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.6;
+  padding: 4px 0;
+  border-bottom: 1px solid #efeaf6;
+}
+.fr-cite {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 0 5px;
+  margin-left: 2px;
+  border-radius: 4px;
+  background: #efe7f7;
+  color: #6a3f8f;
+}
+.fr-brief-disc {
+  margin: 9px 0 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}

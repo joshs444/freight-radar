@@ -29,7 +29,7 @@ def build_scorecard() -> dict:
     cov = P.source_coverage()
     return {
         "layers_total": len(REGISTRY),
-        "layers_by_tier": {k: tiers.get(k, 0) for k in ("SPINE", "SIGNAL", "CONTEXT")},
+        "layers_by_tier": {k: tiers.get(k, 0) for k in ("SPINE", "SIGNAL", "CONTEXT", "DERIVED")},
         "globe_layers": sum(1 for d in REGISTRY if d.globe is not None),
         "honesty_gates": gates,
         "honesty_ci_pass_rate": round(100 * sum(gates.values()) / len(gates), 1),
