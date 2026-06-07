@@ -50,6 +50,7 @@ export default function LayerPanel({
     if (r.id === 'marine') return (counts.marine ?? 0) > 0;
     if (r.id === 'tides') return (counts.tides ?? 0) > 0;
     if (r.id === 'streamflow') return (counts.streamflow ?? 0) > 0;
+    if (r.id === 'hazards') return (counts.hazards ?? 0) > 0;
     return true;
   };
 

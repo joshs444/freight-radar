@@ -339,6 +339,7 @@ export default function App() {
                   marineDots={hist.mode ? [] : (data.marine?.items ?? [])}
                   tideDots={hist.mode ? [] : (data.tides?.items ?? [])}
                   streamDots={hist.mode ? [] : (data.streamflow?.items ?? [])}
+                  hazardDots={hist.mode ? [] : (data.disruptions?.events ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -372,6 +373,7 @@ export default function App() {
                 marine: data.marine?.items?.length ?? 0,
                 tides: data.tides?.items?.length ?? 0,
                 streamflow: data.streamflow?.items?.length ?? 0,
+                hazards: data.disruptions?.events?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}

@@ -15,6 +15,7 @@ import {
   RIVER,
   severityColor,
   newsCategoryColor,
+  hazardColor,
 } from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
@@ -30,6 +31,7 @@ import type {
   MarineItem,
   TideItem,
   StreamflowItem,
+  DisruptionEvent,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -146,6 +148,7 @@ interface LayerInputs {
   marineDots: MarineItem[];
   tideDots: TideItem[];
   streamDots: StreamflowItem[];
+  hazardDots: DisruptionEvent[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -168,6 +171,7 @@ function buildLayers({
   marineDots,
   tideDots,
   streamDots,
+  hazardDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -352,6 +356,35 @@ function buildLayers({
       },
     }),
 
+    // GDACS official hazard alerts (tropical cyclones, floods, quakes) sized by how many
+    // freight ports each one's footprint touches and coloured by GDACS's own RED/ORANGE/
+    // GREEN alert level. CONTEXT: a cited alert that corroborates a flag — never its cause.
+    new ScatterplotLayer({
+      id: 'hazards',
+      visible: layers.hazards,
+      parameters: MARKER_PARAMETERS,
+      data: hazardDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: (d) => 5 + Math.sqrt(Math.max(0, d.n_affected_ports)) * 2.4,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 4,
+      radiusMaxPixels: 18,
+      getFillColor: (d) => rgba(hazardColor(d.alertlevel), 150),
+      stroked: true,
+      getLineColor: (d) => rgba(hazardColor(d.alertlevel), 230),
+      lineWidthMinPixels: 1,
+      pickable: true,
+      onClick: (info) => {
+        const d = info.object as DisruptionEvent | undefined;
+        if (d)
+          window.open(
+            `https://www.gdacs.org/report.aspx?eventtype=${d.type}&eventid=${d.eventid}`,
+            '_blank',
+            'noopener'
+          );
+      },
+    }),
+
     // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
     // type-colored glow makes each one read as a live point that stands out from the
     // static slate ports, even when zoomed out where they cluster at the chokepoints…
@@ -515,6 +548,7 @@ interface GlobeProps {
   marineDots: MarineItem[];
   tideDots: TideItem[];
   streamDots: StreamflowItem[];
+  hazardDots: DisruptionEvent[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -536,6 +570,7 @@ export default function Globe({
   marineDots,
   tideDots,
   streamDots,
+  hazardDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -739,6 +774,7 @@ export default function Globe({
         marineDots: marineDots ?? [], // Open-Meteo wave height at chokepoints (context)
         tideDots: tideDots ?? [], // NOAA CO-OPS water level at US ports (context)
         streamDots: streamDots ?? [], // USGS river stage at inland gauges (context)
+        hazardDots: hazardDots ?? [], // GDACS official hazard alerts (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -757,6 +793,7 @@ export default function Globe({
     marineDots,
     tideDots,
     streamDots,
+    hazardDots,
     quakeDots,
     selectedFlag,
     onSelectFlag,

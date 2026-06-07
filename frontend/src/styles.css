@@ -577,6 +577,10 @@ body,
 .sw.river {
   background: #468250;
 }
+/* GDACS hazards — the RED/ORANGE/GREEN alert-level family in one dot */
+.sw.hazard {
+  background: conic-gradient(#c63434 0 45%, #d68226 45% 80%, #6e8c60 80% 100%);
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(

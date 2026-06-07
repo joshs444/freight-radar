@@ -365,6 +365,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         fetch_file="data/disruptions.json",
         appdata_key="disruptions",
+        globe=Globe("hazards", "Context", "hazards", "hazard", False, 9),
         source=Source("GDACS", "https://www.gdacs.org", "GDACS terms"),
         honesty_note="Cited official hazard alerts; corroborates a flag, never creates one.",
     ),

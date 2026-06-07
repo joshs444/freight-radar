@@ -9,6 +9,17 @@ export const WAVE = [40, 110, 170]; // steel blue for Open-Meteo marine wave-hei
 export const TIDE = [56, 154, 156]; // teal-cyan for NOAA CO-OPS water-level dots at US ports (context)
 export const RIVER = [70, 130, 80]; // muted river-green for USGS gauge river-stage dots (context)
 
+// GDACS official hazard-alert dots, coloured by the alert level GDACS assigns (RED/ORANGE/
+// GREEN) — shown exactly as published, a cited corroborating alert, never a stated cause.
+const HAZARD_BY_LEVEL: Record<string, [number, number, number]> = {
+  RED: [198, 52, 52],
+  ORANGE: [214, 130, 38],
+  GREEN: [110, 140, 96],
+};
+const HAZARD_FALLBACK: [number, number, number] = [150, 120, 110];
+export const hazardColor = (level: string | null | undefined): [number, number, number] =>
+  HAZARD_BY_LEVEL[(level ?? '').toUpperCase()] ?? HAZARD_FALLBACK;
+
 // Severity ramp 0 -> 100 : slate -> amber -> red, tuned to read on a light bg.
 // No green (green = "all clear", wrong for an alert). Muted, not neon.
 const RAMP: [number, number[]][] = [
