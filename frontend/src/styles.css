@@ -573,6 +573,10 @@ body,
 .sw.tide {
   background: #389a9c;
 }
+/* river stage — muted green dot (matches the RIVER marker colour) */
+.sw.river {
+  background: #468250;
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(

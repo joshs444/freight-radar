@@ -673,6 +673,26 @@ export interface Tides {
   items: TideItem[];
 }
 
+export interface StreamflowItem {
+  site: string;
+  river: string;
+  place: string;
+  lat: number;
+  lon: number;
+  stage_ft: number;
+  observed_at: string;
+  url: string;
+}
+export interface Streamflow {
+  generated_at: string;
+  as_of: string;
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  counts: { gauges: number };
+  items: StreamflowItem[];
+}
+
 // ---- the full payload useData() resolves -----------------------------------
 
 export interface AppData {
@@ -688,6 +708,7 @@ export interface AppData {
   eonet: Eonet | null;
   marine: Marine | null;
   tides: Tides | null;
+  streamflow: Streamflow | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;

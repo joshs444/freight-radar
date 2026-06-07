@@ -12,6 +12,7 @@ import {
   EVENT,
   WAVE,
   TIDE,
+  RIVER,
   severityColor,
   newsCategoryColor,
 } from './lib/colors.ts';
@@ -28,6 +29,7 @@ import type {
   EonetItem,
   MarineItem,
   TideItem,
+  StreamflowItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -143,6 +145,7 @@ interface LayerInputs {
   eonetDots: EonetItem[];
   marineDots: MarineItem[];
   tideDots: TideItem[];
+  streamDots: StreamflowItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -164,6 +167,7 @@ function buildLayers({
   eonetDots,
   marineDots,
   tideDots,
+  streamDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -320,6 +324,30 @@ function buildLayers({
       pickable: true,
       onClick: (info) => {
         const url = (info.object as TideItem | undefined)?.url;
+        if (url) window.open(url, '_blank', 'noopener');
+      },
+    }),
+
+    // USGS observed river stage at inland freight gauges (Mississippi etc.) — river-green
+    // dots. CONTEXT: a cited stage reading the reader weighs (low water narrows barge
+    // drafts); association-only, never a stated cause.
+    new ScatterplotLayer({
+      id: 'streamflow',
+      visible: layers.streamflow,
+      parameters: MARKER_PARAMETERS,
+      data: streamDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 5,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 3,
+      radiusMaxPixels: 8,
+      getFillColor: rgba(RIVER, 175),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 130),
+      lineWidthMinPixels: 0.5,
+      pickable: true,
+      onClick: (info) => {
+        const url = (info.object as StreamflowItem | undefined)?.url;
         if (url) window.open(url, '_blank', 'noopener');
       },
     }),
@@ -486,6 +514,7 @@ interface GlobeProps {
   eonetDots: EonetItem[];
   marineDots: MarineItem[];
   tideDots: TideItem[];
+  streamDots: StreamflowItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -506,6 +535,7 @@ export default function Globe({
   eonetDots,
   marineDots,
   tideDots,
+  streamDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -708,6 +738,7 @@ export default function Globe({
         eonetDots: eonetDots ?? [], // NASA EONET natural events (context)
         marineDots: marineDots ?? [], // Open-Meteo wave height at chokepoints (context)
         tideDots: tideDots ?? [], // NOAA CO-OPS water level at US ports (context)
+        streamDots: streamDots ?? [], // USGS river stage at inland gauges (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -725,6 +756,7 @@ export default function Globe({
     eonetDots,
     marineDots,
     tideDots,
+    streamDots,
     quakeDots,
     selectedFlag,
     onSelectFlag,

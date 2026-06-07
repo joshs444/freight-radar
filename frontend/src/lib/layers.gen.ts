@@ -19,7 +19,8 @@ export type LayerId =
   | 'satellite'
   | 'eonet'
   | 'marine'
-  | 'tides';
+  | 'tides'
+  | 'streamflow';
 
 export type LayerVisibility = Record<LayerId, boolean>;
 
@@ -37,6 +38,7 @@ export const LAYER_IDS: readonly LayerId[] = [
   'eonet',
   'marine',
   'tides',
+  'streamflow',
 ];
 
 // First-paint defaults (App.tsx seeds layer state from this, then localStorage).
@@ -54,6 +56,7 @@ export const DEFAULT_LAYER_VISIBILITY: LayerVisibility = {
   eonet: false,
   marine: false,
   tides: false,
+  streamflow: false,
 };
 
 export interface LayerRow {
@@ -91,6 +94,7 @@ export const LAYER_SECTIONS: LayerSection[] = [
       { id: 'eonet', label: 'events', sw: 'event' },
       { id: 'marine', label: 'seas', sw: 'wave' },
       { id: 'tides', label: 'tides', sw: 'tide' },
+      { id: 'streamflow', label: 'rivers', sw: 'river' },
     ],
   },
 ];
@@ -117,6 +121,7 @@ export const OPTIONAL_SIDECAR_FILES: readonly string[] = [
   'data/world.json',
   'data/events.json',
   'data/brief.json',
+  'data/streamflow.json',
   'data/eonet.json',
   'data/marine.json',
   'data/tides.json',

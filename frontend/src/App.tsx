@@ -338,6 +338,7 @@ export default function App() {
                   eonetDots={hist.mode ? [] : (data.eonet?.items ?? [])}
                   marineDots={hist.mode ? [] : (data.marine?.items ?? [])}
                   tideDots={hist.mode ? [] : (data.tides?.items ?? [])}
+                  streamDots={hist.mode ? [] : (data.streamflow?.items ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -370,6 +371,7 @@ export default function App() {
                 eonet: data.eonet?.items?.length ?? 0,
                 marine: data.marine?.items?.length ?? 0,
                 tides: data.tides?.items?.length ?? 0,
+                streamflow: data.streamflow?.items?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}
