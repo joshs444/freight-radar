@@ -4223,6 +4223,20 @@ td.w {
   max-width: 42ch;
   color: var(--ink-dim);
 }
+/* "shape ✓" badge — the layer's feed schema is machine-checked every refresh */
+.fr-ledger-mon {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid #cfe6d9;
+  border-radius: 999px;
+  background: #eef6f1;
+  color: #2f7a55;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
 .fr-tier {
   display: inline-block;
   font-family: var(--mono);

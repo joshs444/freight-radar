@@ -101,3 +101,19 @@ def test_detects_array_sidecar_drift():
 
 def test_clean_payload_has_no_violations():
     assert check_payload("tides", _GOOD_TIDES) == []
+
+
+def test_catalog_surfaces_contract_monitored():
+    """The agent-legible catalog marks each output layer whose feed shape is monitored, so
+    the Source Ledger (and an agent) can see which feeds are drift-checked."""
+    from freight_radar.store import catalog
+
+    layers = catalog()["layers"]
+    by_id = {layer["id"]: layer for layer in layers}
+    # every catalog layer carries the boolean
+    assert all("contract_monitored" in layer for layer in layers)
+    # a contracted external feed is flagged; an uncontracted/derived one is not
+    assert by_id["tides"]["contract_monitored"] is True
+    assert by_id["marine"]["contract_monitored"] is True
+    monitored = {layer["id"] for layer in layers if layer["contract_monitored"]}
+    assert monitored, "expected some monitored layers in the catalog"

@@ -19,6 +19,7 @@ interface Layer {
   sidecar: string | null;
   source: Source | null;
   honesty_note: string | null;
+  contract_monitored?: boolean;
 }
 interface Catalog {
   counts: { layers: number; by_tier: Record<string, number> };
@@ -102,7 +103,9 @@ export default function SourceLedger() {
         <p className="fr-ledger-sub">
           {cat.counts.layers} layers · {bt.SPINE} spine + {bt.SIGNAL} signal (measured) ·{' '}
           {bt.CONTEXT} cited context. Every number is computed in Python from a cited source;
-          context is possibly-related, never a stated cause.
+          context is possibly-related, never a stated cause. Feeds marked{' '}
+          <span className="fr-ledger-mon">shape ✓</span> have their schema + liveness
+          machine-checked every refresh — a drifted source fails the run, never ships silently.
         </p>
       </div>
       {score?.honesty_gates && (
@@ -181,7 +184,17 @@ export default function SourceLedger() {
                   </td>
                   <td>{l.source?.license ?? '—'}</td>
                   <td className="fr-ledger-what">{l.metric ?? l.honesty_note ?? '—'}</td>
-                  <td>{fresh}</td>
+                  <td>
+                    {fresh}
+                    {l.contract_monitored && (
+                      <span
+                        className="fr-ledger-mon"
+                        title="Shape machine-checked every refresh by the upstream drift detector (schema + liveness)"
+                      >
+                        shape ✓
+                      </span>
+                    )}
+                  </td>
                 </tr>
               );
             })}

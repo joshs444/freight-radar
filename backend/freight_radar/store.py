@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Optional
 
 from .config import publish_dir
+from .contracts import SIDECAR_CONTRACTS
 from .registry.layers import REGISTRY
 
 ASSOCIATION_ONLY = "Co-located in space/time — association only, never a stated cause."
@@ -55,6 +56,9 @@ def catalog(out_dir=None) -> dict:
                 "metric": d.metric,  # the owned statistic (null for passthrough CONTEXT)
                 "sidecar": (f"data/{d.output}.json" if d.output else None),
                 "globe_layer": (d.globe.layer_id if d.globe else None),
+                # whether this feed's shape is machine-checked every refresh by the upstream
+                # drift detector (freight_radar/contracts.py) — schema/liveness, not value
+                "contract_monitored": bool(d.output and d.output in SIDECAR_CONTRACTS),
                 "source": (
                     {
                         "name": d.source.name,
