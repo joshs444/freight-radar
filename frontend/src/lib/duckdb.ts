@@ -99,6 +99,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW eonet AS SELECT unnest(items, recursive := true) FROM read_json_auto('eonet.json')",
     note: 'open natural events — fire/volcano/storm/ice, NASA EONET (CONTEXT)',
   },
+  {
+    view: 'marine',
+    file: 'marine.json',
+    sql: "CREATE OR REPLACE VIEW marine AS SELECT unnest(items, recursive := true) FROM read_json_auto('marine.json')",
+    note: 'model wave height at major chokepoints, Open-Meteo (CONTEXT)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */

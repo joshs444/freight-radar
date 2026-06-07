@@ -242,6 +242,12 @@ def _eonet(ctx: EnrichCtx) -> dict:
     return eonet_run(ctx)
 
 
+def _marine(ctx: EnrichCtx) -> dict:
+    from ..marine import run as marine_run
+
+    return marine_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -548,6 +554,18 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         source=Source("NASA EONET", "https://eonet.gsfc.nasa.gov", "public domain"),
         honesty_note="Observed natural events (fire/volcano/storm/ice) shown as NASA tracks them; possibly-related context, never a cause.",
+    ),
+    LayerDescriptor(
+        id="marine",
+        kind=Kind.CONTEXT,
+        producer=Producer.ENRICHER,
+        module="freight_radar.marine",
+        run=_marine,
+        enrich_order=18,
+        output="marine",
+        manifest_sidecar=True,
+        source=Source("Open-Meteo (marine)", "https://open-meteo.com", "CC-BY 4.0"),
+        honesty_note="Model wave height at major chokepoints shown as Open-Meteo reports it; possibly-related context, never a cause.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(
