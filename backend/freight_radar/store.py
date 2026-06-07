@@ -134,7 +134,15 @@ _NEARBY_SOURCES = (
     ("quakes", "items", "USGS earthquake"),
     ("news_geo", "items", "GDELT news"),
     ("weather", "storms", "active storm"),
+    ("eonet", "items", "NASA natural event"),
+    ("marine", "items", "sea state"),
+    ("tides", "items", "water level"),
+    ("streamflow", "items", "river stage"),
+    ("disruptions", "events", "GDACS hazard alert"),
 )
+
+# the per-item key that names a place, in priority order (layers disagree on the field name)
+_PLACE_KEYS = ("place", "name", "port", "title", "river")
 
 
 def nearby(lat: float, lon: float, radius_km: float = 750.0, out_dir=None) -> dict:
@@ -163,7 +171,7 @@ def nearby(lat: float, lon: float, radius_km: float = 750.0, out_dir=None) -> di
                         "label": label,
                         "km": round(km, 1),
                         "source": src,
-                        "place": it.get("place") or it.get("name"),
+                        "place": next((it[k] for k in _PLACE_KEYS if it.get(k)), None),
                         "url": it.get("url"),
                         "detail": it,
                     }

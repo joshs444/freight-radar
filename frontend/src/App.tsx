@@ -33,6 +33,7 @@ import type {
 } from './types.ts';
 import LayerPanel from './components/LayerPanel.tsx';
 import CommandPalette from './components/CommandPalette.tsx';
+import NearbyPanel from './components/NearbyPanel.tsx';
 import { DEFAULT_LAYER_VISIBILITY } from './lib/layers.gen.ts';
 import { LENS_BY_ID, lensVisibility } from './lib/lenses.ts';
 import type { Lens } from './lib/lenses.ts';
@@ -443,6 +444,9 @@ export default function App() {
             <button className="fr-history-enter" onClick={hist.enter}>
               ▸ History · play 2019→now
             </button>
+          )}
+          {view === 'globe' && data && !hist.mode && selected && (
+            <NearbyPanel entity={selected} data={data} onClose={() => selectEntity(null)} />
           )}
           {view === 'globe' && !hist.mode && data && (
             <LayerPanel

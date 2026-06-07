@@ -4490,3 +4490,177 @@ td.w {
   text-align: center;
   color: var(--ink-dim);
 }
+
+/* P6 "Nearby" panel — cited co-located context for the selected entity, distance-ordered.
+   NOT a leaderboard: no severity sort, no risk score, no base-rate. Association only. */
+.fr-nearby {
+  position: absolute;
+  top: 64px;
+  right: 14px;
+  z-index: 30;
+  width: 300px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(27, 34, 48, 0.18);
+  overflow: hidden;
+}
+.fr-nearby-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px 8px;
+}
+.fr-nearby-eyebrow {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.fr-nearby-title {
+  margin: 2px 0 0;
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.fr-nearby-x {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 0 2px;
+}
+.fr-nearby-x:hover {
+  color: var(--ink);
+}
+.fr-nearby-radii {
+  display: flex;
+  gap: 5px;
+  padding: 0 14px 8px;
+}
+.fr-nearby-radius {
+  flex: 1;
+  padding: 4px 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+.fr-nearby-radius.on {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.fr-nearby-note {
+  margin: 0;
+  padding: 0 14px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--line);
+}
+.fr-nearby-empty {
+  padding: 16px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+.fr-nearby-list {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  overflow-y: auto;
+}
+.fr-nearby-row {
+  border-left: 3px solid var(--line-strong);
+}
+.fr-nearby-link {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 14px 7px 11px;
+  text-decoration: none;
+  color: inherit;
+}
+a.fr-nearby-link:hover {
+  background: var(--hover);
+}
+.fr-nearby-km {
+  flex: none;
+  width: 52px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.fr-nearby-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.fr-nearby-label {
+  font-family: var(--display);
+  font-size: 12px;
+  color: var(--ink);
+}
+.fr-nearby-place {
+  font-size: 11px;
+  color: var(--ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fr-nearby-detail {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-faint);
+}
+.fr-nearby-src {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-faint);
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* per-layer accent (matches the globe dot families) */
+.fr-nearby-row.sw-quakes {
+  border-left-color: #8c5e58;
+}
+.fr-nearby-row.sw-news_geo {
+  border-left-color: #6e6490;
+}
+.fr-nearby-row.sw-eonet {
+  border-left-color: #c87828;
+}
+.fr-nearby-row.sw-marine {
+  border-left-color: #286eaa;
+}
+.fr-nearby-row.sw-tides {
+  border-left-color: #389a9c;
+}
+.fr-nearby-row.sw-streamflow {
+  border-left-color: #468250;
+}
+.fr-nearby-row.sw-disruptions {
+  border-left-color: #c63434;
+}
