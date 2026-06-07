@@ -86,9 +86,54 @@ def source_coverage() -> dict:
     }
 
 
+def spine_root_violations() -> list[str]:
+    """SPINE == 1: exactly ONE measured root + a single-rooted acyclic provenance graph.
+
+    The measured tier is the freight chain we own end-to-end; everything in it must trace to
+    the one measured root (the canonical PortWatch throughput export) via ``derives_from``.
+    This makes tier inflation a CI failure: a new SPINE layer either declares what it derives
+    from, or it tries to be a second root and fails here. Guards: !=1 root, a derives_from
+    pointing at a non-SPINE (or missing) layer, a cycle, or an orphan that never reaches root.
+    """
+    out: list[str] = []
+    spine = {d.id: d for d in REGISTRY if d.kind is Kind.SPINE}
+    if not spine:
+        return out
+    roots = [d.id for d in spine.values() if d.derives_from is None]
+    if len(roots) != 1:
+        out.append(f"SPINE must have exactly one measured root, found {len(roots)}: {sorted(roots)}")
+    root = roots[0] if len(roots) == 1 else None
+
+    for did, d in spine.items():
+        if d.derives_from is None:
+            continue
+        if d.derives_from not in spine:
+            out.append(
+                f"{did}: derives_from {d.derives_from!r} is not a SPINE layer "
+                f"(a measured layer may only derive from the measured spine)"
+            )
+
+    # every non-root must reach the root by following derives_from (acyclic + single-rooted)
+    if root is not None and not out:
+        for did in spine:
+            seen, cur, steps = set(), did, 0
+            while cur is not None and cur != root and steps <= len(spine):
+                if cur in seen:
+                    out.append(f"{did}: derives_from forms a cycle")
+                    break
+                seen.add(cur)
+                cur = spine[cur].derives_from
+                steps += 1
+            else:
+                if cur != root and did != root:
+                    out.append(f"{did}: derives_from chain never reaches the measured root {root!r}")
+    return out
+
+
 def all_violations() -> dict[str, list[str]]:
     return {
         "tier": tier_violations(),
+        "spine_root": spine_root_violations(),
         "zero_cost": cost_violations(),
         "source_completeness": source_completeness_violations(),
         "source_coverage": source_coverage_violations(),

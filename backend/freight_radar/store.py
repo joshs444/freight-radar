@@ -56,6 +56,8 @@ def catalog(out_dir=None) -> dict:
                 "metric": d.metric,  # the owned statistic (null for passthrough CONTEXT)
                 "sidecar": (f"data/{d.output}.json" if d.output else None),
                 "globe_layer": (d.globe.layer_id if d.globe else None),
+                # SPINE provenance edge — the measured root has null; the rest name their parent
+                "derives_from": d.derives_from,
                 # whether this feed's shape is machine-checked every refresh by the upstream
                 # drift detector (freight_radar/contracts.py) — schema/liveness, not value
                 "contract_monitored": bool(d.output and d.output in SIDECAR_CONTRACTS),

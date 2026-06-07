@@ -110,6 +110,10 @@ class LayerDescriptor:
     metric: Optional[str] = None  # the owned statistic + method (None for passthrough CONTEXT)
     source: Optional[Source] = None
     honesty_note: Optional[str] = None
+    # SPINE provenance DAG: the one measured root has derives_from=None; every OTHER SPINE
+    # layer names the SPINE layer it derives from. The SPINE==1 predicate enforces exactly one
+    # root + a single-rooted acyclic graph, so the measured tier can never silently inflate.
+    derives_from: Optional[str] = None
 
     @property
     def enrich_key(self) -> str:
@@ -292,6 +296,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="flags",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.CORE,
         module="freight_radar.detect.run_detection",
@@ -302,6 +307,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="chokepoints",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.CORE,
         module="freight_radar.export_snapshot",
@@ -309,6 +315,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="ports",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.CORE,
         module="freight_radar.export_snapshot",
@@ -316,6 +323,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="lanes",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.CORE,
         module="freight_radar.export_snapshot",
@@ -435,6 +443,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="timeseries",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.export_timeseries",
@@ -447,6 +456,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="ports_lookup",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.export_ports_lookup",
@@ -477,6 +487,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="stress",
+        derives_from="flags",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.narrative.stress",
@@ -490,6 +501,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="world",
+        derives_from="snapshot",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.narrative.world",
@@ -502,6 +514,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="events",
+        derives_from="flags",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.narrative.events",
@@ -515,6 +528,7 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     ),
     LayerDescriptor(
         id="brief",
+        derives_from="stress",
         kind=Kind.SPINE,
         producer=Producer.ENRICHER,
         module="freight_radar.narrative.brief",

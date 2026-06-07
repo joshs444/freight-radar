@@ -21,6 +21,7 @@ def build_scorecard() -> dict:
     tiers = Counter(d.kind.value for d in REGISTRY)
     gates = {
         "tier_predicates": not P.tier_violations(),
+        "spine_is_one": not P.spine_root_violations(),
         "causal_verb_lexicon": not P.causal_copy_violations(),
         "zero_cost": not P.cost_violations(),
         "source_completeness": not P.source_completeness_violations(),
