@@ -17,6 +17,8 @@ touches the fact tables or sidecars it reads — the published numbers are uncha
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import duckdb
 
 ENTITY_PREFIX = "pw"  # the anchor source (IMF PortWatch); others crosswalk in by LOCODE/etc.
@@ -94,6 +96,35 @@ def build_substrate(
         "entities": con.execute("SELECT count(*) FROM dim_entity").fetchone()[0],
         "observations": con.execute("SELECT count(*) FROM fct_observation").fetchone()[0],
     }
+
+
+def export_observation(con: duckdb.DuckDBPyConnection, out_dir) -> Path:
+    """Materialize fct_observation as a compact zstd Parquet sidecar (~1.4MB for the full
+    439k-row thin index) under <out_dir>/store/. Parquet (not JSON) keeps it ~30x smaller and
+    is read natively by DuckDB(-WASM) — the agent-legible store, queryable in-browser at scale.
+    """
+    store = Path(out_dir) / "store"
+    store.mkdir(parents=True, exist_ok=True)
+    pth = store / "fct_observation.parquet"
+    con.execute(
+        f"COPY fct_observation TO '{pth}' (FORMAT parquet, COMPRESSION zstd)"  # noqa: S608 — internal path
+    )
+    return pth
+
+
+def publish_substrate(db_path, out_dir, knowledge_time: str, run_id: str = "substrate") -> dict:
+    """Build the substrate against the published DB and export the thin index to a sidecar.
+
+    ``knowledge_time`` is the run's real as-of (NOT a static literal) — the bitemporal stamp on
+    every row: 'as of when did we know this'. Called from publish; additive (only CREATEs the
+    index tables, never touches the facts it reads)."""
+    con = duckdb.connect(str(db_path), read_only=False)
+    try:
+        summary = build_substrate(con, knowledge_time=knowledge_time, run_id=run_id)
+        summary["parquet"] = str(export_observation(con, out_dir))
+    finally:
+        con.close()
+    return summary
 
 
 def resolve_locode(con: duckdb.DuckDBPyConnection, locode: str) -> str | None:

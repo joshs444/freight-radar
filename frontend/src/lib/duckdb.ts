@@ -34,6 +34,7 @@ export interface ViewDef {
   file: string;
   sql: string;
   note: string;
+  binary?: boolean; // Parquet etc. — registered as a byte buffer, not text
 }
 
 // The sidecars exposed as SQL views. Nested arrays are unnested into rows so an analyst
@@ -135,6 +136,13 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW tides AS SELECT unnest(items, recursive := true) FROM read_json_auto('tides.json')",
     note: 'observed water level at major US ports, NOAA CO-OPS (CONTEXT)',
   },
+  {
+    view: 'fct_observation',
+    file: 'store/fct_observation.parquet',
+    binary: true,
+    sql: "CREATE OR REPLACE VIEW fct_observation AS SELECT * FROM read_parquet('store/fct_observation.parquet')",
+    note: 'the thin unifying index — one measured value per entity per day, bitemporal + lineage-stamped (the substrate)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */
@@ -148,7 +156,11 @@ export async function loadStore(db: AsyncDuckDB, base: string): Promise<string[]
         if (!fetched.has(v.file)) {
           const r = await fetch(base + 'data/' + v.file);
           if (!r.ok) continue;
-          await db.registerFileText(v.file, await r.text());
+          if (v.binary) {
+            await db.registerFileBuffer(v.file, new Uint8Array(await r.arrayBuffer()));
+          } else {
+            await db.registerFileText(v.file, await r.text());
+          }
           fetched.add(v.file);
         }
         await con.query(v.sql);

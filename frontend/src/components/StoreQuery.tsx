@@ -35,6 +35,10 @@ const EXAMPLES: { label: string; sql: string }[] = [
     label: 'River stage (inland freight context)',
     sql: 'SELECT river, place, stage_ft, observed_at\nFROM streamflow\nORDER BY stage_ft;',
   },
+  {
+    label: 'Substrate time-travel — the thin index as of a past date',
+    sql: "SELECT entity_key, metric_key, value, date_key, knowledge_time\nFROM fct_observation\nWHERE date_key <= DATE '2020-04-01'\nORDER BY date_key DESC\nLIMIT 12;",
+  },
 ];
 
 export default function StoreQuery() {

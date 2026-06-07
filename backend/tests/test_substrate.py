@@ -97,6 +97,34 @@ def test_value_matches_the_source_fact(con) -> None:
     assert float(idx) == float(src)
 
 
+def test_knowledge_time_is_the_passed_run_value_not_a_static_literal(con) -> None:
+    # the bitemporal stamp must be THIS run's knowledge_time (the fixture passes 2026-06-01),
+    # never a hardcoded "2026-01-01" literal — else time-travel is a lie.
+    kts = {r[0] for r in con.execute("SELECT DISTINCT knowledge_time FROM fct_observation").fetchall()}
+    assert len(kts) == 1
+    assert str(next(iter(kts))).startswith("2026-06-01"), kts
+
+
+def test_export_observation_writes_a_readable_parquet(con, tmp_path) -> None:
+    import duckdb
+
+    from freight_radar.substrate import export_observation
+
+    pth = export_observation(con, tmp_path)
+    assert pth.exists() and pth.suffix == ".parquet"
+    # the Parquet round-trips: same row count + bitemporal columns intact
+    n_src = con.execute("SELECT count(*) FROM fct_observation").fetchone()[0]
+    rc = duckdb.connect()
+    try:
+        n_pq, cols = rc.execute(f"SELECT count(*) FROM read_parquet('{pth}')").fetchone()[0], [
+            r[0] for r in rc.execute(f"DESCRIBE SELECT * FROM read_parquet('{pth}')").fetchall()
+        ]
+    finally:
+        rc.close()
+    assert n_pq == n_src and n_pq > 0
+    assert {"entity_key", "date_key", "value", "knowledge_time", "lineage_run_id"} <= set(cols)
+
+
 def test_build_is_additive(con) -> None:
     # building the substrate must not mutate the fact tables it reads
     n = con.execute("SELECT count(*) FROM fct_chokepoint_daily").fetchone()[0]

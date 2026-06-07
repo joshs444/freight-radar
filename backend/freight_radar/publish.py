@@ -11,12 +11,15 @@ committed JSON. The Temporal workflow is the always-on version of the same steps
 from __future__ import annotations
 
 import json
+import logging
 import os
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import db_path, publish_dir
+
+log = logging.getLogger(__name__)
 from .export_snapshot import LANES, SOURCE, export
 from .registry.layers import SIDECARS as _SIDECARS  # the optional-sidecar freshness set
 
@@ -136,6 +139,19 @@ def publish_static(db=None, out_dir=None) -> dict:
     export(db_path=db, out_dir=out, write_flags=False)
     write_signal_pool(out)  # pooled FDR across all signal families -> signals_fdr.json (one m, one q)
     write_claimed_vs_measured(out)  # centrum's claimed 99.7% vs our measured stress (the contrast)
+
+    # the substrate: build the thin unifying index (fct_observation + dim_entity) over the
+    # published DB and export it to a Parquet sidecar, stamped with THIS run's knowledge_time
+    # (the bitemporal keystone). Additive + degrade-to-absent — never blocks the publish.
+    try:
+        from .substrate import publish_substrate
+
+        knowledge_time = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        s = publish_substrate(db, out, knowledge_time=knowledge_time, run_id="publish")
+        log.info("substrate: %s observations -> %s", s.get("observations"), s.get("parquet"))
+    except Exception as e:  # noqa: BLE001 — the index is optional; an absent one just hides
+        log.warning("substrate export skipped: %r", e)
+
     write_scorecard(out)  # the honesty scorecard (Harness Layer 4) — registry-derived, free
     write_catalog(out)  # the agent-legible read surface entry point (store/catalog.json)
     # NB: graceful-rot self-demotion (freight_radar.contracts --demote) runs as an explicit
