@@ -234,6 +234,12 @@ def _space_weather(ctx: EnrichCtx) -> dict:
     return space_weather_run(ctx)
 
 
+def _eonet(ctx: EnrichCtx) -> dict:
+    from ..eonet import run as eonet_run
+
+    return eonet_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -528,6 +534,18 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         source=Source("NOAA SWPC", "https://www.swpc.noaa.gov", "public domain"),
         honesty_note="Observed geomagnetic indices shown as NOAA publishes them; possibly-related context, never a cause.",
+    ),
+    LayerDescriptor(
+        id="eonet",
+        kind=Kind.CONTEXT,
+        producer=Producer.ENRICHER,
+        module="freight_radar.eonet",
+        run=_eonet,
+        enrich_order=17,
+        output="eonet",
+        manifest_sidecar=True,
+        source=Source("NASA EONET", "https://eonet.gsfc.nasa.gov", "public domain"),
+        honesty_note="Observed natural events (fire/volcano/storm/ice) shown as NASA tracks them; possibly-related context, never a cause.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(
