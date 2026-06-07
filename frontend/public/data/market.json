@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-06T23:37:05+00:00",
+  "generated_at": "2026-06-07T18:54:53+00:00",
   "indicators": {
     "brent": {
       "value": 93.09,
-      "change_pct": -1.99,
+      "change_pct": -3.03,
       "change_basis": "prev_close",
       "as_of": "2026-06-05",
       "source": "Yahoo Finance",
@@ -14,7 +14,7 @@
     },
     "wti": {
       "value": 90.54,
-      "change_pct": -1.76,
+      "change_pct": -3.43,
       "change_basis": "prev_close",
       "as_of": "2026-06-05",
       "source": "Yahoo Finance",
@@ -25,7 +25,7 @@
     },
     "natgas": {
       "value": 3.229,
-      "change_pct": 1.57,
+      "change_pct": 1.96,
       "change_basis": "prev_close",
       "as_of": "2026-06-05",
       "source": "Yahoo Finance",
@@ -46,10 +46,10 @@
       "stale": false
     },
     "usdcny": {
-      "value": 6.766,
-      "change_pct": -0.0,
+      "value": 6.765,
+      "change_pct": -0.02,
       "change_basis": "prev_close",
-      "as_of": "2026-06-06",
+      "as_of": "2026-06-07",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/CNY=X",
       "name": "USD/CNY",
@@ -60,7 +60,7 @@
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
       "value": 698,
-      "change_pct": -1.99,
+      "change_pct": -3.03,
       "change_basis": "modeled",
       "as_of": "2026-06-05",
       "source": "modeled from Brent (~7.5x)",
