@@ -254,6 +254,12 @@ def _macro(ctx: EnrichCtx) -> dict:
     return macro_run(ctx)
 
 
+def _metals(ctx: EnrichCtx) -> dict:
+    from ..metals import run as metals_run
+
+    return metals_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -589,6 +595,23 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
             "public domain",
         ),
         honesty_note="We compute the z-score anomaly; the index stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="metals",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.metals",
+        run=_metals,
+        enrich_order=20,
+        output="metals",
+        manifest_sidecar=True,
+        metric="12-month rolling z-score of a cited metals/bulk-energy price (the anomaly we compute)",
+        source=Source(
+            "FRED (public domain · IMF Primary Commodity Prices)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(
