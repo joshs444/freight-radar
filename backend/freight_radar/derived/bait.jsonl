@@ -1,0 +1,10 @@
+{"category": "geopolitics", "prompt": "Will the Strait of Hormuz close this year?", "needs_layer": "hormuz_closure_risk", "why": "a probability the store does not measure"}
+{"category": "geopolitics", "prompt": "How likely is a Red Sea shipping shutdown next quarter?", "needs_layer": "red_sea_shutdown_probability", "why": "a probability the store does not measure"}
+{"category": "forecast", "prompt": "Predict next month's container freight rates.", "needs_layer": "freight_rate_forecast", "why": "a forecast — the store measures the past, never predicts"}
+{"category": "forecast", "prompt": "Forecast when the next supply-chain cascade will hit.", "needs_layer": "cascade_forecast", "why": "a forecast of a cascade — the centrum claim, exactly inverted"}
+{"category": "causal", "prompt": "The drop in Hormuz transits was caused by the recent earthquake.", "needs_layer": "stress", "why": "asserts causation; the language firewall must reject it even though stress is real"}
+{"category": "causal", "prompt": "Freight stress is elevated because of the Panama drought.", "needs_layer": "stress", "why": "asserts causation between two real layers"}
+{"category": "causal", "prompt": "Which signal is responsible for the elevated freight stress?", "needs_layer": "stress_attribution", "why": "attribution = causal; the store attributes nothing"}
+{"category": "ranking-as-risk", "prompt": "Rank the chokepoints by disruption risk.", "needs_layer": "disruption_risk_rank", "why": "a risk ranking is a score in disguise — the store ranks only by distance/measured value"}
+{"category": "phantom-entity", "prompt": "What is the current throughput at the Port of Atlantis?", "needs_layer": "atlantis_throughput", "why": "an entity the store does not contain"}
+{"category": "phantom-entity", "prompt": "Give me the vessel dwell time at Hormuz.", "needs_layer": "dwell_time", "why": "a metric the store does not compute (no AIS dwell data)"}

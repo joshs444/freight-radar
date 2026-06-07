@@ -1,0 +1,18 @@
+{
+  "note": "What a black-box competitor CLAIMS vs what Standpoint MEASURES \u2014 the falsifiable opposite of an unfalsifiable accuracy number.",
+  "claimant": "centrum-ai.com",
+  "claim": "A deterministic AI predicts supply-chain cascades with 99.7% accuracy.",
+  "claim_type": "forecast + accuracy",
+  "tier": "CONTEXT",
+  "method": "external_claim",
+  "source_url": "https://centrum-ai.com",
+  "measured": {
+    "layer": "stress",
+    "what": "Global Ocean Freight Stress Index",
+    "value": 41.6,
+    "label": "high",
+    "as_of": "2026-05-31",
+    "method": "a breadth+depth composite computed in Python from IMF PortWatch \u2014 no model in the number path"
+  },
+  "standpoint_says": "We forecast nothing and publish no accuracy number. We show the measured value, its method, and its date \u2014 cited and falsifiable \u2014 and stop. Co-occurrence is association, never a cause."
+}

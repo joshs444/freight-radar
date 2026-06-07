@@ -47,6 +47,19 @@ interface Demotions {
   note?: string;
   demoted: { stem: string; violations: string[] }[];
 }
+interface ClaimedVsMeasured {
+  claimant: string;
+  claim: string;
+  source_url: string;
+  standpoint_says: string;
+  measured: {
+    what: string;
+    value: number;
+    label?: string;
+    as_of?: string;
+    method: string;
+  } | null;
+}
 
 const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
@@ -70,6 +83,7 @@ export default function SourceLedger() {
   const [score, setScore] = useState<Scoreboard | null>(null);
   const [brief, setBrief] = useState<Briefing | null>(null);
   const [demo, setDemo] = useState<Demotions | null>(null);
+  const [cvm, setCvm] = useState<ClaimedVsMeasured | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -89,13 +103,18 @@ export default function SourceLedger() {
       fetch(base + 'data/demotions.json')
         .then((r) => (r.ok ? (r.json() as Promise<Demotions>) : null))
         .catch(() => null),
+      // a competitor's cited claim vs our measured truth — the falsifiable contrast
+      fetch(base + 'data/claimed_vs_measured.json')
+        .then((r) => (r.ok ? (r.json() as Promise<ClaimedVsMeasured>) : null))
+        .catch(() => null),
     ])
-      .then(([c, m, s, b, d]) => {
+      .then(([c, m, s, b, d, cv]) => {
         setCat(c);
         setMan(m);
         setScore(s);
         setBrief(b);
         setDemo(d);
+        setCvm(cv);
       })
       .catch((e: Error) => setErr(String(e.message || e)));
   }, []);
@@ -118,6 +137,33 @@ export default function SourceLedger() {
           machine-checked every refresh — a drifted source fails the run, never ships silently.
         </p>
       </div>
+      {cvm && (
+        <div className="fr-cvm" data-testid="fr-cvm">
+          <div className="fr-cvm-claimed">
+            <span className="fr-cvm-tag">a competitor claims</span>
+            <p className="fr-cvm-claim">“{cvm.claim}”</p>
+            <a className="fr-cvm-src" href={cvm.source_url} target="_blank" rel="noreferrer">
+              {cvm.claimant}
+            </a>
+          </div>
+          <div className="fr-cvm-vs" aria-hidden>
+            vs
+          </div>
+          <div className="fr-cvm-measured">
+            <span className="fr-cvm-tag measured">Standpoint measures</span>
+            {cvm.measured ? (
+              <p className="fr-cvm-claim">
+                {cvm.measured.what}: <b>{cvm.measured.value}</b>
+                {cvm.measured.label ? ` (${cvm.measured.label})` : ''}
+                {cvm.measured.as_of ? ` · as of ${cvm.measured.as_of}` : ''}
+              </p>
+            ) : (
+              <p className="fr-cvm-claim">the measured value, cited and dated</p>
+            )}
+            <span className="fr-cvm-says">{cvm.standpoint_says}</span>
+          </div>
+        </div>
+      )}
       {demo && demo.demoted.length > 0 && (
         <div className="fr-ledger-demoted" data-testid="fr-ledger-demoted">
           <span className="fr-ledger-demoted-h">⤓ auto-demoted to dark this refresh</span>

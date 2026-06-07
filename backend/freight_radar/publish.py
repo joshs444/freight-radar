@@ -128,12 +128,14 @@ def publish_static(db=None, out_dir=None) -> dict:
     from .honesty.scorecard import write as write_scorecard
     from .store import write_catalog
 
+    from .claimed_vs_measured import write as write_claimed_vs_measured
     from .signal_pool import write as write_signal_pool
 
     run_detection.run(db, flags_json=out / "flags.json")
     run_enrichers(build_ctx(db=db, out=out))  # exposure + news + timeseries (+ future layers)
     export(db_path=db, out_dir=out, write_flags=False)
     write_signal_pool(out)  # pooled FDR across all signal families -> signals_fdr.json (one m, one q)
+    write_claimed_vs_measured(out)  # centrum's claimed 99.7% vs our measured stress (the contrast)
     write_scorecard(out)  # the honesty scorecard (Harness Layer 4) — registry-derived, free
     write_catalog(out)  # the agent-legible read surface entry point (store/catalog.json)
     # NB: graceful-rot self-demotion (freight_radar.contracts --demote) runs as an explicit
