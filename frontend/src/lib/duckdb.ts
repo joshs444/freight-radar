@@ -124,6 +124,12 @@ export const VIEWS: ViewDef[] = [
     note: 'freight transport-cost anomalies by mode — OUR 12-mo z, FDR-gated (SIGNAL)',
   },
   {
+    view: 'signals_fdr',
+    file: 'signals_fdr.json',
+    sql: "CREATE OR REPLACE VIEW signals_fdr AS SELECT unnest(items, recursive := true) FROM read_json_auto('signals_fdr.json')",
+    note: 'ALL signal families pooled into ONE Benjamini-Hochberg family — one honest significance bar (SIGNAL)',
+  },
+  {
     view: 'tides',
     file: 'tides.json',
     sql: "CREATE OR REPLACE VIEW tides AS SELECT unnest(items, recursive := true) FROM read_json_auto('tides.json')",
