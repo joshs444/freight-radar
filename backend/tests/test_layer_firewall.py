@@ -140,6 +140,28 @@ def test_nothing_imports_the_derived_namespace() -> None:
     assert not offenders, f"modules importing the quarantined derived namespace: {offenders}"
 
 
+def test_hyp_cannot_reach_the_factwriters() -> None:
+    # the ML association tier reads the published substrate Parquet — it must NEVER reach the
+    # detector / ingest / wap, so a co-movement it mines can't leak back into a measured number.
+    breach = {m: _forbidden_reach(m) for m in MODULES if m.startswith("freight_radar.hyp")}
+    breach = {k: v for k, v in breach.items() if v}
+    assert not breach, f"FIREWALL BREACH — hyp/ can reach the fact-writers: {breach}"
+
+
+def test_nothing_imports_the_hyp_namespace() -> None:
+    # hyp_* is quarantined DARK exactly like derived/: nothing in the package imports it. The
+    # reasoner consumes its ARTIFACT (data/hyp/), never the module — so a mined association can
+    # never become a dependency of the store, and a CI fact (not a comment) keeps it off-globe.
+    offenders = []
+    for mod in MODULES:
+        if mod.startswith("freight_radar.hyp"):
+            continue
+        reach = _reachable(mod) | _direct_imports(mod)
+        if any(m.startswith("freight_radar.hyp") for m in reach):
+            offenders.append(mod)
+    assert not offenders, f"modules importing the quarantined hyp namespace: {offenders}"
+
+
 def test_the_analyzer_finds_real_edges() -> None:
     # sanity: the detector itself MUST reach the forbidden namespaces, or the BFS is broken
     # and the firewall would be falsely green.

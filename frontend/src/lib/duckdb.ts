@@ -143,6 +143,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW fct_observation AS SELECT * FROM read_parquet('store/fct_observation.parquet')",
     note: 'the thin unifying index — one measured value per entity per day, bitemporal + lineage-stamped (the substrate)',
   },
+  {
+    view: 'hyp_associations',
+    file: 'hyp/associations.json',
+    sql: "CREATE OR REPLACE VIEW hyp_associations AS SELECT unnest(items, recursive := true) FROM read_json_auto('hyp/associations.json')",
+    note: 'DARK — BH-controlled signal co-movements we measured. NOT a forecast, NEVER a cause. Console-only, never on the globe.',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */

@@ -43,6 +43,10 @@ const EXAMPLES: { label: string; sql: string }[] = [
     label: 'The whole store, unified — observations by tier',
     sql: 'SELECT tier, count(*) AS observations, count(DISTINCT entity_key) AS entities\nFROM fct_observation\nGROUP BY tier\nORDER BY observations DESC;',
   },
+  {
+    label: 'DARK — strongest signal co-movements (association, never a cause)',
+    sql: 'SELECT layer_a, layer_b, lag, effect_size, n\nFROM hyp_associations\nORDER BY abs(effect_size) DESC\nLIMIT 12;',
+  },
 ];
 
 export default function StoreQuery() {

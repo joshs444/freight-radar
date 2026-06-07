@@ -66,6 +66,13 @@ jobs:
         # a subprocess (not a Python import) so the AI firewall — nothing imports derived/ — holds.
         run: python -m freight_radar.derived.reason ../frontend/public/data
 
+      - name: Mine the hyp_* association tier (DARK — console-only, never the globe)
+        working-directory: backend
+        # BH-controlled lead-lag co-movements across the signal z-series in the substrate
+        # Parquet, emitted to data/hyp/. A subprocess (nothing imports hyp), and the rendering
+        # fence keeps it off the globe — it's measured association, never a forecast or a cause.
+        run: python -m freight_radar.hyp.associate ../frontend/public/data || echo "hyp skipped (no substrate yet)"
+
       - name: Snapshot real AIS vessel positions near the chokepoints
         working-directory: backend
         env:
