@@ -654,6 +654,25 @@ export interface Marine {
   items: MarineItem[];
 }
 
+export interface TideItem {
+  port: string;
+  station: string;
+  lat: number;
+  lon: number;
+  water_level_ft: number;
+  observed_at: string;
+  url: string;
+}
+export interface Tides {
+  generated_at: string;
+  as_of: string;
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  counts: { ports: number };
+  items: TideItem[];
+}
+
 // ---- the full payload useData() resolves -----------------------------------
 
 export interface AppData {
@@ -668,6 +687,7 @@ export interface AppData {
   quakes: Quakes | null;
   eonet: Eonet | null;
   marine: Marine | null;
+  tides: Tides | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;

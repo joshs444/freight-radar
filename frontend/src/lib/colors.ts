@@ -6,6 +6,7 @@ export const CYAN = [13, 148, 136]; // teal accent (used sparingly)
 export const QUAKE = [140, 94, 88]; // muted terracotta for USGS earthquake dots (context)
 export const EVENT = [200, 120, 40]; // burnt orange for NASA EONET natural-event dots (context)
 export const WAVE = [40, 110, 170]; // steel blue for Open-Meteo marine wave-height dots (context)
+export const TIDE = [56, 154, 156]; // teal-cyan for NOAA CO-OPS water-level dots at US ports (context)
 
 // Severity ramp 0 -> 100 : slate -> amber -> red, tuned to read on a light bg.
 // No green (green = "all clear", wrong for an alert). Muted, not neon.

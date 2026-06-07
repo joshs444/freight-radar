@@ -11,6 +11,7 @@ import {
   QUAKE,
   EVENT,
   WAVE,
+  TIDE,
   severityColor,
   newsCategoryColor,
 } from './lib/colors.ts';
@@ -26,6 +27,7 @@ import type {
   QuakeItem,
   EonetItem,
   MarineItem,
+  TideItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -140,6 +142,7 @@ interface LayerInputs {
   quakeDots: QuakeItem[];
   eonetDots: EonetItem[];
   marineDots: MarineItem[];
+  tideDots: TideItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -160,6 +163,7 @@ function buildLayers({
   quakeDots,
   eonetDots,
   marineDots,
+  tideDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -295,6 +299,29 @@ function buildLayers({
       stroked: true,
       getLineColor: rgba([255, 255, 255], 130),
       lineWidthMinPixels: 0.5,
+    }),
+
+    // NOAA CO-OPS observed water level at major US ports — teal dots. CONTEXT: a cited
+    // tide reading the reader weighs (tides set draft windows); association-only, never a cause.
+    new ScatterplotLayer({
+      id: 'tides',
+      visible: layers.tides,
+      parameters: MARKER_PARAMETERS,
+      data: tideDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 5,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 3,
+      radiusMaxPixels: 8,
+      getFillColor: rgba(TIDE, 175),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 130),
+      lineWidthMinPixels: 0.5,
+      pickable: true,
+      onClick: (info) => {
+        const url = (info.object as TideItem | undefined)?.url;
+        if (url) window.open(url, '_blank', 'noopener');
+      },
     }),
 
     // live AIS vessels — REAL current positions near the chokepoints (a sample). A soft
@@ -458,6 +485,7 @@ interface GlobeProps {
   quakeDots: QuakeItem[];
   eonetDots: EonetItem[];
   marineDots: MarineItem[];
+  tideDots: TideItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -477,6 +505,7 @@ export default function Globe({
   quakeDots,
   eonetDots,
   marineDots,
+  tideDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -678,6 +707,7 @@ export default function Globe({
         quakeDots: quakeDots ?? [], // USGS M4+ earthquakes (context)
         eonetDots: eonetDots ?? [], // NASA EONET natural events (context)
         marineDots: marineDots ?? [], // Open-Meteo wave height at chokepoints (context)
+        tideDots: tideDots ?? [], // NOAA CO-OPS water level at US ports (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -694,6 +724,7 @@ export default function Globe({
     newsDots,
     eonetDots,
     marineDots,
+    tideDots,
     quakeDots,
     selectedFlag,
     onSelectFlag,

@@ -569,6 +569,10 @@ body,
 .sw.wave {
   background: #286eaa;
 }
+/* tides — teal-cyan dot (matches the TIDE marker colour) */
+.sw.tide {
+  background: #389a9c;
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(
