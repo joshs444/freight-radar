@@ -136,20 +136,32 @@ def append_signals(con, out_dir, knowledge_time: str, run_id: str) -> int:
     (added to dim_entity). The unified index now carries the anomaly WE compute, not just the
     spine — the join surface the hyp_* association tier needs."""
     ents, obs = [], []
+    method = "12-month rolling z-score (the anomaly we compute)"
     for family in _SIGNAL_FAMILIES:
         d = _read_json(out_dir, family)
         if not d:
             continue
         for it in d.get("items", []):
-            z, sid, as_of = it.get("our_zscore"), it.get("id"), it.get("as_of")
-            if z is None or not sid or not as_of:
+            sid = it.get("id")
+            if not sid:
                 continue
             ek = f"signal:{sid}"
-            ents.append((ek, "signal", it.get("name"), None, None, None, None, None, sid, family))
-            obs.append(
-                (ek, as_of, "month", sid, family, float(z), "SIGNAL",
-                 "12-month rolling z-score (the anomaly we compute)", as_of, knowledge_time, run_id)
+            # prefer the full z-series (a real time series — what hyp_* lead-lag reads); fall
+            # back to the single latest z for an older sidecar without one
+            points = it.get("z_series") or (
+                [{"date": it.get("as_of"), "z": it.get("our_zscore")}]
+                if it.get("our_zscore") is not None and it.get("as_of")
+                else []
             )
+            points = [p for p in points if p.get("z") is not None and p.get("date")]
+            if not points:
+                continue
+            ents.append((ek, "signal", it.get("name"), None, None, None, None, None, sid, family))
+            for p in points:
+                obs.append(
+                    (ek, p["date"], "month", sid, family, float(p["z"]), "SIGNAL",
+                     method, p["date"], knowledge_time, run_id)
+                )
     if ents:
         con.executemany(f"INSERT INTO dim_entity ({_ENT_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?)", ents)
     if obs:

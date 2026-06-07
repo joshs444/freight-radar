@@ -14,7 +14,7 @@ import logging
 from datetime import datetime, timezone
 
 from . import _http
-from .commodities import parse_series, zscore_12mo
+from .commodities import parse_series, zscore_12mo, zscore_series
 from .multiplicity import control_z
 
 log = logging.getLogger(__name__)
@@ -49,6 +49,7 @@ def compute_signal(series_by_id: dict[str, list[tuple[str, float]]], q: float = 
                 "latest_price": round(series[-1][1], 2),
                 "as_of": series[-1][0],
                 "our_zscore": round(z, 2),
+                "z_series": zscore_series(series),
             }
         )
     keep, fdr = control_z([r["our_zscore"] for r in rows], q=q)

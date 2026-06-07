@@ -70,6 +70,21 @@ def zscore_12mo(values: list[float]) -> float | None:
     return (values[-1] - statistics.mean(baseline)) / sd
 
 
+def zscore_series(series: list[tuple[str, float]], last_n: int = 36) -> list[dict]:
+    """The SAME owned scalar (12-mo rolling z), computed at EVERY month — the last `last_n`
+    points. This is the time series the signals-board sparkline draws and the hyp_* lead-lag
+    read consumes; [] when the series is too short for one full baseline."""
+    vals = [v for _, v in series]
+    out: list[dict] = []
+    for i in range(12, len(vals)):
+        baseline = vals[i - 12 : i]
+        sd = statistics.stdev(baseline)
+        if sd == 0:
+            continue
+        out.append({"date": series[i][0], "z": round((vals[i] - statistics.mean(baseline)) / sd, 2)})
+    return out[-last_n:]
+
+
 def compute_signal(series_by_id: dict[str, list[tuple[str, float]]], q: float = 0.10) -> dict:
     """Pure: from {fred_id: [(date,value)]} compute each commodity's owned z + FDR significance."""
     rows = []
@@ -87,6 +102,7 @@ def compute_signal(series_by_id: dict[str, list[tuple[str, float]]], q: float = 
                 "latest_price": round(series[-1][1], 4),
                 "as_of": series[-1][0],
                 "our_zscore": round(z, 2),
+                "z_series": zscore_series(series),
             }
         )
     keep, fdr = control_z([r["our_zscore"] for r in rows], q=q)
