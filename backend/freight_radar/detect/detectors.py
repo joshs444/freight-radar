@@ -69,6 +69,12 @@ class DetectionConfig:
     top_n_ports: int = 75
     fdr_q: float = 0.10  # Benjamini-Hochberg false-discovery budget for the PORT family
     min_history_days: int = 35
+    # Small-count floor for SPIKE flags. One vessel calling at a near-dormant port
+    # (baseline ~0.04/day) reads as "+2700%, z=28" — a near-zero-denominator artifact,
+    # not congestion. A spike must clear BOTH a baseline floor and an absolute-count
+    # floor; collapses/drops are exempt (a fall to zero is directionally real).
+    spike_min_baseline: float = 0.5  # calls/day the trailing norm must exceed
+    spike_min_value: float = 3.0  # raw calls the spike day must reach
     # Wave 5: change-point gate (CUSUM + ruptures PELT). See changepoint.py.
     use_changepoint_gate: bool = True
     cusum_k: float = 0.5
@@ -365,8 +371,18 @@ def detect_series(
         return None
 
     z = best_z
-    direction = "down" if z <= cfg.collapse_z else "up"
     value, baseline, pct = pct_vs_baseline(values, cfg.z_window, end=best_end)
+    # The detector TRIGGERS on the STL-residual z, but the flag's LABEL (kind + headline)
+    # must describe what actually happened to the LEVEL versus its 28-day norm — i.e. follow
+    # ``pct``. Keying the label off the residual z-sign let a port whose calls fell to zero
+    # (pct -100%) be labelled a "congestion spike" because its residual was positive, so the
+    # headline read "100% ABOVE its norm" on an emptied port. Label off the level, detect off z;
+    # on the rare pct==0 tie, fall back to the z-sign.
+    direction = "down" if pct < 0 else ("up" if pct > 0 else ("down" if z <= cfg.collapse_z else "up"))
+    # Small-count spike floor: suppress an up-flag resting on a near-empty baseline (a single
+    # call against ~0/day is a denominator artifact, not congestion). Subtractive only.
+    if direction == "up" and (baseline < cfg.spike_min_baseline and value < cfg.spike_min_value):
+        return None
     kind = KINDS[(entity_type, direction)]
     severity = severity_score(z, resid, cfg, econ_weight, end=best_end)
     peak_date = values.index[best_end].date()

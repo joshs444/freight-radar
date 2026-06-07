@@ -140,3 +140,59 @@ def test_flag_id_stable():
     # a different week (or kind/portid) yields a different id
     other_week = make_flag_id("chokepoint_transit_collapse", "chokepoint1", date(2026, 5, 23))
     assert other_week != a
+
+
+def test_spike_floor_suppresses_a_single_call_on_a_dormant_port():
+    """A near-dormant port (norm < 0.5 calls/day) that sees one or two calls must NOT
+    fire a congestion spike: 1 vs ~0.04/day reads as "+2700%, z=28", a near-zero-
+    denominator artifact, not congestion. Going wide to ~2065 ports manufactured ~100
+    of these. The level/count floor (spike_min_baseline / spike_min_value) suppresses them.
+    """
+    # 60 mostly-empty days with a little variance (so the baseline isn't degenerate),
+    # then a peak day of 2 calls. Baseline stays << 0.5/day; the peak value < 3. Isolate
+    # the FLOOR from the change-point gate (which independently suppresses single-day
+    # blips) by turning the gate off, so this asserts the floor and nothing else.
+    nogate = DetectionConfig(use_changepoint_gate=False)
+    base = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0] * 10  # 60 days, mean ~0.17/day
+
+    flag = detect_series(
+        portid="port9999", entity="Dormant Terminal", entity_type="port",
+        metric="portcalls_total", values=_series(base + [2.0]),
+        as_of=date(2026, 3, 1), cfg=nogate, unit="vessels",
+    )
+    assert flag is None, "a single call on a near-empty port must not fire a spike"
+
+    # The SAME dormant port with a genuine surge (value >= spike_min_value) still fires —
+    # the floor is subtractive, not a blanket mute on small ports.
+    surge = detect_series(
+        portid="port9999", entity="Dormant Terminal", entity_type="port",
+        metric="portcalls_total", values=_series(base + [12.0]),
+        as_of=date(2026, 3, 1), cfg=nogate, unit="vessels",
+    )
+    assert surge is not None and "spike" in surge.kind
+
+
+def test_headline_label_follows_the_level_never_the_residual_sign():
+    """A flag's kind + headline must describe what happened to the LEVEL (pct vs its
+    28-day norm), not the STL-residual z-sign. On a steep downtrend the residual at the
+    last point can go POSITIVE (actual above the extrapolated trend) while the level is
+    still BELOW its 28-day mean — which once mislabelled a falling port a "congestion
+    spike … above its norm". Invariant: 'above' in the headline iff pct_change > 0, and
+    the kind's spike/drop matches the level direction.
+    """
+    rng = np.random.default_rng(3)
+    series = _series(np.linspace(80, 8, 60) + rng.normal(0, 0.4, 60))  # steep decline
+
+    flag = detect_series(
+        portid="port1234", entity="Declining Port", entity_type="port",
+        metric="portcalls_total", values=series, as_of=series.index[-1].date(),
+        cfg=CFG, unit="vessels",
+    )
+    if flag is not None:
+        above = "above" in flag.headline
+        assert above == (flag.pct_change > 0), (
+            f"headline/level mismatch: pct={flag.pct_change}, headline={flag.headline!r}"
+        )
+        assert ("spike" in flag.kind) == (flag.pct_change > 0)
+        # whichever way it went, the |pct| in the headline is the real number
+        assert f"{abs(flag.pct_change):.0f}%" in flag.headline
