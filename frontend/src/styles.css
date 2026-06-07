@@ -4227,3 +4227,39 @@ td.w {
   background: #f6f6f8;
   color: #5b6675;
 }
+.fr-ledger-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+}
+.fr-ledger-score-h {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.fr-gate {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid #cfe6d6;
+  background: #eaf3ec;
+  color: #2f6b43;
+}
+.fr-gate.bad {
+  border-color: #e6cfcf;
+  background: #f8eaea;
+  color: #9c3b3b;
+}
+.fr-ledger-score-m {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  margin-left: auto;
+}

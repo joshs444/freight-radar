@@ -27,6 +27,12 @@ interface Catalog {
 interface Manifest {
   layers?: Record<string, { present: boolean; generated_at?: string }>;
 }
+interface Scoreboard {
+  honesty_gates?: Record<string, boolean>;
+  honesty_ci_pass_rate?: number;
+  zero_cost_compliance_pct?: number;
+  source_coverage_pct?: number;
+}
 
 const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
@@ -46,6 +52,7 @@ function ageDays(iso?: string): string {
 export default function SourceLedger() {
   const [cat, setCat] = useState<Catalog | null>(null);
   const [man, setMan] = useState<Manifest>({});
+  const [score, setScore] = useState<Scoreboard | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,10 +62,14 @@ export default function SourceLedger() {
       fetch(base + 'data/manifest.json')
         .then((r) => r.json() as Promise<Manifest>)
         .catch(() => ({})),
+      fetch(base + 'data/scoreboard.json')
+        .then((r) => r.json() as Promise<Scoreboard>)
+        .catch(() => null),
     ])
-      .then(([c, m]) => {
+      .then(([c, m, s]) => {
         setCat(c);
         setMan(m);
+        setScore(s);
       })
       .catch((e: Error) => setErr(String(e.message || e)));
   }, []);
@@ -79,6 +90,20 @@ export default function SourceLedger() {
           context is possibly-related, never a stated cause.
         </p>
       </div>
+      {score?.honesty_gates && (
+        <div className="fr-ledger-score" data-testid="fr-ledger-score">
+          <span className="fr-ledger-score-h">honesty self-grade</span>
+          {Object.entries(score.honesty_gates).map(([k, ok]) => (
+            <span key={k} className={`fr-gate ${ok ? 'ok' : 'bad'}`} title={k}>
+              {ok ? '✓' : '✗'} {k.replace(/_/g, ' ')}
+            </span>
+          ))}
+          <span className="fr-ledger-score-m">
+            CI {score.honesty_ci_pass_rate ?? '—'}% · zero-cost{' '}
+            {score.zero_cost_compliance_pct ?? '—'}% · sources {score.source_coverage_pct ?? '—'}%
+          </span>
+        </div>
+      )}
       <div className="fr-ledger-table">
         <table data-testid="fr-ledger-table">
           <thead>
