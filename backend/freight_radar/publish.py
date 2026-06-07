@@ -133,6 +133,9 @@ def publish_static(db=None, out_dir=None) -> dict:
     export(db_path=db, out_dir=out, write_flags=False)
     write_scorecard(out)  # the honesty scorecard (Harness Layer 4) — registry-derived, free
     write_catalog(out)  # the agent-legible read surface entry point (store/catalog.json)
+    # NB: graceful-rot self-demotion (freight_radar.contracts --demote) runs as an explicit
+    # step in refresh.yml AFTER publish — kept out of publish_static so the golden harness +
+    # per-layer tests (which call publish_static against a hermetic fixture) stay deterministic.
     return write_manifest(out)
 
 

@@ -203,11 +203,76 @@ def check_dir(data_dir: Path) -> tuple[dict[str, list[str]], list[str]]:
     return violations, missing
 
 
+# The measured spine the app blocks on — absent is fatal, so a broken one HARD-fails the
+# publish (an absent spine beats a silently-broken one). Everything else degrades to dark.
+CORE_STEMS = frozenset({"snapshot", "lanes", "flags"})
+
+
+class DriftBlocked(RuntimeError):
+    """A CORE sidecar failed its contract — the measured spine must not ship broken."""
+
+
+def demote_drifted(data_dir: Path, *, core_stems: frozenset[str] = CORE_STEMS) -> dict:
+    """Graceful-rot self-demotion (the metabolism). A CONTEXT/SIGNAL sidecar that fails its
+    contract is DELETED from the served dir so its layer goes dark — the frontend already
+    degrades-to-absent, so a rotted feed disappears instead of rendering broken, with zero
+    human intervention. A CORE sidecar failure is collected as `blocked` (the caller raises:
+    a broken spine must fail the run). A `demotions.json` record is written when anything is
+    demoted, so the rot is LOUD (the Source Ledger surfaces it), never silent."""
+    data_dir = Path(data_dir)
+    demoted: list[dict] = []
+    blocked: list[dict] = []
+    for stem in sorted(SIDECAR_CONTRACTS):
+        p = data_dir / f"{stem}.json"
+        if not p.exists():
+            continue
+        v = check_file(p)
+        if not v:
+            continue
+        if stem in core_stems:
+            blocked.append({"stem": stem, "violations": v})
+        else:
+            p.unlink()  # go dark — the frontend hides an absent layer
+            demoted.append({"stem": stem, "violations": v})
+    if demoted:
+        (data_dir / "demotions.json").write_text(
+            json.dumps(
+                {
+                    "note": "Feeds auto-demoted to dark because they failed their data contract "
+                    "(schema/liveness drift). Demotion is automatic + loud, never silent.",
+                    "demoted": demoted,
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+    return {"checked": len(SIDECAR_CONTRACTS), "demoted": demoted, "blocked": blocked}
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI: validate a data dir, print a report, exit 1 on any schema/liveness drift. Missing
     sidecars are reported as warnings (a feed can transiently degrade-to-absent) but do not
     fail on their own — a *contracted, present, malformed* feed is the hard failure."""
     args = argv if argv is not None else sys.argv[1:]
+
+    # --demote: self-heal mode (the metabolism). Quarantine drifted CONTEXT/SIGNAL feeds to
+    # dark, HARD-fail on a drifted CORE feed. Used in refresh.yml BEFORE commit so a rotted
+    # feed disappears instead of shipping broken — survives untended.
+    if args and args[0] == "--demote":
+        data_dir = Path(args[1]) if len(args) > 1 else publish_dir()
+        report = demote_drifted(data_dir)
+        print(f"self-demotion check over {data_dir}:")
+        for d in report["demoted"]:
+            print(f"  ⤓ demoted to dark: {d['stem']} — {d['violations']}")
+        for b in report["blocked"]:
+            print(f"  ✗ BLOCKED (core spine broke): {b['stem']} — {b['violations']}")
+        if report["blocked"]:
+            print("  publish blocked — a broken measured spine must not ship.")
+            return 1
+        if not report["demoted"]:
+            print("  ✓ all feeds healthy")
+        return 0
+
     data_dir = Path(args[0]) if args else publish_dir()
     violations, missing = check_dir(data_dir)
 

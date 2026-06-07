@@ -67,11 +67,19 @@ jobs:
         run: python -m freight_radar.sidecar.ais_consumer --snapshot || echo "AIS snapshot skipped"
         continue-on-error: true
 
+      - name: Graceful-rot self-demotion (the metabolism — runs untended)
+        working-directory: backend
+        # A freshly-fetched feed that failed its data contract is QUARANTINED to dark
+        # (deleted) here, BEFORE commit, so a rotted source disappears instead of shipping
+        # broken — the refresh survives with zero human intervention. A broken measured SPINE
+        # hard-fails this step (exit 1), so an absent spine never silently ships as a broken one.
+        run: python -m freight_radar.contracts --demote ../frontend/public/data
+
       - name: Commit refreshed sidecars
         run: |
           git config user.name "freight-radar-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add frontend/public/data/*.json
+          git add -A frontend/public/data  # -A so a demoted (deleted) feed goes dark in git too
           git add -f frontend/public/data/wind_f*.png 2>/dev/null || true
           git add -f data/state/events_state.json 2>/dev/null || true
           if git diff --cached --quiet; then

@@ -43,6 +43,10 @@ interface Briefing {
   disclaimer?: string;
   claims: BriefingClaim[];
 }
+interface Demotions {
+  note?: string;
+  demoted: { stem: string; violations: string[] }[];
+}
 
 const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
@@ -65,6 +69,7 @@ export default function SourceLedger() {
   const [man, setMan] = useState<Manifest>({});
   const [score, setScore] = useState<Scoreboard | null>(null);
   const [brief, setBrief] = useState<Briefing | null>(null);
+  const [demo, setDemo] = useState<Demotions | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -80,12 +85,17 @@ export default function SourceLedger() {
       fetch(base + 'data/ai_briefing.json')
         .then((r) => r.json() as Promise<Briefing>)
         .catch(() => null),
+      // present only when the weekly metabolism quarantined a drifted feed to dark
+      fetch(base + 'data/demotions.json')
+        .then((r) => (r.ok ? (r.json() as Promise<Demotions>) : null))
+        .catch(() => null),
     ])
-      .then(([c, m, s, b]) => {
+      .then(([c, m, s, b, d]) => {
         setCat(c);
         setMan(m);
         setScore(s);
         setBrief(b);
+        setDemo(d);
       })
       .catch((e: Error) => setErr(String(e.message || e)));
   }, []);
@@ -108,6 +118,19 @@ export default function SourceLedger() {
           machine-checked every refresh — a drifted source fails the run, never ships silently.
         </p>
       </div>
+      {demo && demo.demoted.length > 0 && (
+        <div className="fr-ledger-demoted" data-testid="fr-ledger-demoted">
+          <span className="fr-ledger-demoted-h">⤓ auto-demoted to dark this refresh</span>
+          {demo.demoted.map((d) => (
+            <span key={d.stem} className="fr-ledger-demoted-row" title={d.violations.join(' · ')}>
+              <code>{d.stem}</code> failed its data contract — pulled rather than shown broken
+            </span>
+          ))}
+          <span className="fr-ledger-demoted-m">
+            Rot is loud: a feed that breaks its schema disappears, never silently misleads.
+          </span>
+        </div>
+      )}
       {score?.honesty_gates && (
         <div className="fr-ledger-score" data-testid="fr-ledger-score">
           <span className="fr-ledger-score-h">honesty self-grade</span>

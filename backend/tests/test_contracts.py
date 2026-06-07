@@ -17,6 +17,7 @@ from freight_radar.contracts import (
     SIDECAR_CONTRACTS,
     check_payload,
     check_dir,
+    demote_drifted,
 )
 
 # repo-root/frontend/public/data — the committed sidecars the live site serves
@@ -101,6 +102,45 @@ def test_detects_array_sidecar_drift():
 
 def test_clean_payload_has_no_violations():
     assert check_payload("tides", _GOOD_TIDES) == []
+
+
+# --- graceful-rot self-demotion (the metabolism) -------------------------------------
+
+import json as _json  # noqa: E402
+
+
+def _write(d: Path, stem: str, payload) -> None:
+    (d / f"{stem}.json").write_text(_json.dumps(payload))
+
+
+def test_demote_quarantines_a_drifted_context_feed(tmp_path):
+    """A CONTEXT/SIGNAL feed that fails its contract goes DARK (deleted) so the layer hides —
+    a healthy one is untouched. This is the rot-without-human-intervention metabolism."""
+    _write(tmp_path, "tides", _GOOD_TIDES)  # healthy
+    _write(tmp_path, "eonet", {"generated_at": "x", "source": "s", "source_url": "u", "items": []})  # empty → drift
+    report = demote_drifted(tmp_path)
+    assert not (tmp_path / "eonet.json").exists(), "drifted feed should be quarantined to dark"
+    assert (tmp_path / "tides.json").exists(), "healthy feed must be untouched"
+    assert {d["stem"] for d in report["demoted"]} == {"eonet"}
+    assert report["blocked"] == []
+    assert (tmp_path / "demotions.json").exists(), "demotion must be recorded (loud, not silent)"
+
+
+def test_demote_blocks_a_broken_core_spine(tmp_path):
+    """A broken CORE sidecar (the measured spine) is BLOCKING — never silently deleted, never
+    shipped broken. The caller (publish/refresh) fails the run on a non-empty `blocked`."""
+    _write(tmp_path, "snapshot", {"generated_at": "x", "as_of": "y", "source": "s"})  # missing chokepoints/ports
+    report = demote_drifted(tmp_path)
+    assert {b["stem"] for b in report["blocked"]} == {"snapshot"}
+    assert report["demoted"] == []
+    assert (tmp_path / "snapshot.json").exists(), "a blocked core feed is not deleted (it fails the run)"
+
+
+def test_demote_is_a_noop_on_healthy_feeds(tmp_path):
+    _write(tmp_path, "tides", _GOOD_TIDES)
+    report = demote_drifted(tmp_path)
+    assert report["demoted"] == [] and report["blocked"] == []
+    assert not (tmp_path / "demotions.json").exists()
 
 
 def test_catalog_surfaces_contract_monitored():
