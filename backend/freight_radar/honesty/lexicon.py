@@ -31,6 +31,15 @@ CAUSAL_FORECAST: tuple[str, ...] = (
     "forecast",
     "predict",
     "cascade",
+    # directional/editorializing drift — the "co-located with" → "amid escalating" slide the
+    # 5-year plan flags as how honesty erodes without ever tripping a schema check. Phrase
+    # forms only, so they fire on narrative prose but not on observed-value copy.
+    "amid escalating",
+    "amid rising",
+    "intensifying",
+    "worsening",
+    "spike in",
+    "surge in",
 )
 
 

@@ -24,6 +24,41 @@ from pathlib import Path
 
 from ..honesty.lexicon import scan as scan_causal
 
+# Fixed process-boilerplate keys the agent does NOT author as a claim — they legitimately use
+# the banned words in negation ("co-occurrence is association, never causation"; the `method`
+# string describes that the agent never forecasts). Everything ELSE is treated as agent prose
+# and scanned. Adding an agent-authored field (a summary, a headline) is therefore caught by
+# default — the rendered firewall is FAIL-CLOSED, not an allowlist of what to check.
+_BOILERPLATE_KEYS = frozenset(
+    {"tier", "metric", "agent_model", "generated_at", "as_of", "method", "disclaimer", "cites"}
+)
+
+
+def scan_rendered(briefing: dict) -> list[str]:
+    """Scan every AGENT-AUTHORED string in the rendered briefing for causal/forecast language —
+    not only ``claims[].text``. A causal verb that drifts into any new free-text field (a
+    headline, a summary, a per-claim rationale) fails here, even though the structured
+    claim-text check would miss it. Fixed boilerplate keys are skipped (they negate the words
+    by design); any unknown key IS scanned (fail-closed)."""
+    out: list[str] = []
+
+    def walk(obj: object, path: str) -> None:
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k in _BOILERPLATE_KEYS:
+                    continue
+                walk(v, f"{path}.{k}")
+        elif isinstance(obj, list):
+            for i, v in enumerate(obj):
+                walk(v, f"{path}[{i}]")
+        elif isinstance(obj, str):
+            hits = scan_causal(obj)
+            if hits:
+                out.append(f"{path}: causal/forecast language {hits} in agent prose")
+
+    walk(briefing, "briefing")
+    return out
+
 
 def validate(briefing: dict, valid_layer_ids: set[str]) -> list[str]:
     """Return a list of honesty violations (empty == the briefing is admissible)."""
@@ -39,16 +74,16 @@ def validate(briefing: dict, valid_layer_ids: set[str]) -> list[str]:
     if not claims:
         out.append("a briefing with no claims is not a briefing")
     for i, c in enumerate(claims):
-        text = str(c.get("text", ""))
         cites = c.get("cites") or []
         if not cites:
             out.append(f"claim {i}: zero cites — every claim must trace to the store")
         for cite in cites:
             if cite not in valid_layer_ids:
                 out.append(f"claim {i}: cite {cite!r} is not a layer in the store")
-        hits = scan_causal(text)
-        if hits:
-            out.append(f"claim {i}: causal/forecast verb {hits} — association-only")
+
+    # the rendered language firewall: causal/forecast language in ANY agent-authored field,
+    # not just claim text (a summary/headline that drifts to "amid escalating" fails here too)
+    out.extend(scan_rendered(briefing))
     return out
 
 

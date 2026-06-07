@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from freight_radar.derived.briefing import load, validate
+from freight_radar.derived.briefing import load, scan_rendered, validate
 from freight_radar.registry.layers import REGISTRY, Kind, by_id
 
 BRIEFING = Path(__file__).resolve().parents[2] / "frontend" / "public" / "data" / "ai_briefing.json"
@@ -52,6 +52,28 @@ def test_validate_rejects_ungrounded_causal_or_metric_claims() -> None:
         validate(
             {**base, "claims": [{"text": "stress reads 41.6", "cites": ["stress"]}]},
             valid,
+        )
+        == []
+    )
+
+
+def test_rendered_firewall_catches_drift_in_any_agent_field() -> None:
+    """The rendered firewall is FAIL-CLOSED: causal/forecast language in a NEW agent-authored
+    field (a summary/headline the structured claim-check never looks at) still fails. This is
+    the 5-year plan's 'amid escalating' guard — erosion that wouldn't trip the schema."""
+    clean = {
+        "tier": "DERIVED",
+        "agent_model": "claude",
+        "claims": [{"text": "stress reads 41.6", "cites": ["stress"]}],
+    }
+    assert scan_rendered(clean) == []
+    # a brand-new free-text field with directional drift is caught even though it's not a claim
+    assert scan_rendered({**clean, "summary": "the chain is worsening amid escalating tension"})
+    assert scan_rendered({**clean, "headline": "a spike in disruptions"})
+    # but the fixed boilerplate that legitimately negates the words is NOT a false positive
+    assert (
+        scan_rendered(
+            {**clean, "method": "the agent never forecasts", "disclaimer": "never causation"}
         )
         == []
     )
