@@ -2,7 +2,7 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "claude (offline reasoner \u2014 the static site only serves this artifact)",
-  "generated_at": "2026-06-07T19:25:45+00:00",
+  "generated_at": "2026-06-07T20:04:21+00:00",
   "as_of": "2026-05-31",
   "method": "An offline agent reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. No model is in the number path.",
   "disclaimer": "DERIVED \u2014 what an AI said about the cited facts. Every claim traces to a layer; co-occurrence is association, never causation.",
@@ -42,7 +42,8 @@
         "flags",
         "news"
       ],
-      "section": "connection"
+      "section": "connection",
+      "flag_id": "b74be045769441ea"
     },
     {
       "text": "Chittagong activity change of -56.2% (measured) co-occurs this week with 4 cited news reports (Prothom Alo English, The Daily Star, Dhaka Tribune, \u2026) \u2014 possibly-related context, never a stated cause.",
@@ -50,7 +51,8 @@
         "flags",
         "news"
       ],
-      "section": "connection"
+      "section": "connection",
+      "flag_id": "bf5d19895223543d"
     },
     {
       "text": "Colombo activity change of 54.9% (measured) co-occurs this week with 4 cited news reports (marketscreener.com, The Hindu, The Sunday Times, Sri Lanka, \u2026) \u2014 possibly-related context, never a stated cause.",
@@ -58,7 +60,8 @@
         "flags",
         "news"
       ],
-      "section": "connection"
+      "section": "connection",
+      "flag_id": "4575666a119dd90a"
     },
     {
       "text": "Cited context this week: 153 USGS earthquakes and 250 NASA EONET natural events near the chain.",

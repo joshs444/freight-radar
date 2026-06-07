@@ -58,7 +58,7 @@ def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[
          if isinstance(items.get(f.get("flag_id")), dict) and items[f["flag_id"]].get("items")),
         key=lambda f: -(f.get("severity") or 0),
     )
-    out: list[tuple[str, list[str]]] = []
+    out: list[tuple[str, list[str], str]] = []
     for f in ranked[:k]:
         arts = items[f["flag_id"]]["items"]
         srcs: list[str] = []
@@ -74,6 +74,7 @@ def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[
             f"{f['entity']} {word} change of {f['pct_change']}% (measured) co-occurs this week with "
             f"{len(arts)} cited news reports ({named}, …) — possibly-related context, never a stated cause.",
             ["flags", "news"],
+            f["flag_id"],  # lets the UI link the named sources to their articles in news.json
         ))
     return out
 
@@ -81,10 +82,13 @@ def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[
 def build(out_dir) -> dict:
     claims: list[dict] = []
 
-    def add(text: str, cites: list[str], section: str) -> None:
+    def add(text: str, cites: list[str], section: str, flag_id: str | None = None) -> None:
         c = ground_or_abstain(text, cites, out_dir=out_dir)  # drops if any cite can't ground
         if c is not ABSTAIN:
-            claims.append({"text": c.text, "cites": list(c.cites), "section": section})
+            claim = {"text": c.text, "cites": list(c.cites), "section": section}
+            if flag_id:  # a reference key (not prose, not a number) the UI uses to link articles
+                claim["flag_id"] = flag_id
+            claims.append(claim)
 
     stress = _payload("stress", out_dir)
     flags = _payload("flags", out_dir)
@@ -142,8 +146,8 @@ def build(out_dir) -> dict:
     # number to those already-cited reports, as association. Grounded + gated like any other claim.
     if isinstance(flags, list) and flags:
         news = _payload("news", out_dir)
-        for text, cites in _connections(flags, news):
-            add(text, cites, "connection")
+        for text, cites, fid in _connections(flags, news):
+            add(text, cites, "connection", flag_id=fid)
 
     # CONTEXT RING — ambient cited signals near the chain (counts only, no per-flag attribution).
     quakes, eonet = _payload("quakes", out_dir), _payload("eonet", out_dir)

@@ -107,8 +107,9 @@ def test_connections_join_a_measured_pct_to_cited_news_as_association_only() -> 
         {"source": "NPR"}, {"source": "CNBC"}, {"source": "The New York Times"}, {"source": "NBC News"}]}}}
     conns = _connections(flags, news, k=3)
     assert len(conns) == 1, "only the flag with co-occurring news is connected"
-    text, cites = conns[0]
+    text, cites, fid = conns[0]
     assert cites == ["flags", "news"]               # the pct is from flags, the count from news
+    assert fid == "f1"                              # the reference key the UI links articles by
     assert "-92.4%" in text and "4 cited news reports" in text
     assert "never a stated cause" in text
     assert scan_causal(text) == []                  # association-only: no causal/forecast verb

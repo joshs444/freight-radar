@@ -4369,6 +4369,31 @@ td.w {
   color: #8a5cc0;
   margin-bottom: 2px;
 }
+.fr-brief-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 4px 0 2px;
+}
+.fr-brief-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 7px;
+  border: 1px solid #d9c9ef;
+  border-radius: 999px;
+  background: #fff;
+  color: #6a3f8f;
+  text-decoration: none;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.fr-brief-link:hover {
+  background: #f1e9fb;
+  border-color: #8a5cc0;
+}
+.fr-brief-link::before {
+  content: '↗ ';
+  opacity: 0.55;
+}
 
 /* ⌘K command palette — discover (jump/toggle) + recall (lenses) in one box */
 .fr-cmdk-chip {

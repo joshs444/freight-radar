@@ -38,6 +38,7 @@ interface BriefingClaim {
   text: string;
   cites: string[];
   section?: string;
+  flag_id?: string;
 }
 interface Briefing {
   agent_model: string;
@@ -60,6 +61,14 @@ interface ClaimedVsMeasured {
     as_of?: string;
     method: string;
   } | null;
+}
+interface NewsArticle {
+  title: string;
+  url: string;
+  source: string;
+}
+interface NewsData {
+  items: Record<string, { items: NewsArticle[] }>;
 }
 
 const TIER: Record<string, { label: string; cls: string }> = {
@@ -85,6 +94,7 @@ export default function SourceLedger() {
   const [brief, setBrief] = useState<Briefing | null>(null);
   const [demo, setDemo] = useState<Demotions | null>(null);
   const [cvm, setCvm] = useState<ClaimedVsMeasured | null>(null);
+  const [news, setNews] = useState<NewsData | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,14 +118,19 @@ export default function SourceLedger() {
       fetch(base + 'data/claimed_vs_measured.json')
         .then((r) => (r.ok ? (r.json() as Promise<ClaimedVsMeasured>) : null))
         .catch(() => null),
+      // per-flag curated news — lets the briefing's connection lines link to the actual articles
+      fetch(base + 'data/news.json')
+        .then((r) => (r.ok ? (r.json() as Promise<NewsData>) : null))
+        .catch(() => null),
     ])
-      .then(([c, m, s, b, d, cv]) => {
+      .then(([c, m, s, b, d, cv, nw]) => {
         setCat(c);
         setMan(m);
         setScore(s);
         setBrief(b);
         setDemo(d);
         setCvm(cv);
+        setNews(nw);
       })
       .catch((e: Error) => setErr(String(e.message || e)));
   }, []);
@@ -207,16 +222,36 @@ export default function SourceLedger() {
               { key: 'connection', label: 'Connected to world events — association, not cause' },
               { key: 'context', label: 'Context ring' },
             ];
-            const claimRow = (c: BriefingClaim, i: number) => (
-              <li key={i}>
-                <span>{c.text}</span>{' '}
-                {c.cites.map((cite) => (
-                  <code key={cite} className="fr-cite">
-                    {cite}
-                  </code>
-                ))}
-              </li>
-            );
+            const claimRow = (c: BriefingClaim, i: number) => {
+              // a connection claim names its co-occurring sources; link each to its actual article
+              const arts = (c.flag_id && news?.items?.[c.flag_id]?.items) || [];
+              return (
+                <li key={i}>
+                  <span>{c.text}</span>{' '}
+                  {c.cites.map((cite) => (
+                    <code key={cite} className="fr-cite">
+                      {cite}
+                    </code>
+                  ))}
+                  {arts.length > 0 && (
+                    <div className="fr-brief-links">
+                      {arts.map((a, j) => (
+                        <a
+                          key={j}
+                          href={a.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="fr-brief-link"
+                          title={a.title}
+                        >
+                          {a.source}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            };
             const lead = brief.claims.filter((c) => c.section === 'lead');
             const untagged = brief.claims.filter((c) => !c.section); // back-compat: flat list
             return (
