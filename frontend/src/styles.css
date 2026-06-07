@@ -4350,6 +4350,25 @@ td.w {
   color: var(--ink-faint);
   line-height: 1.5;
 }
+.fr-brief-lead {
+  margin: 0 0 10px;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.55;
+}
+.fr-brief-section {
+  margin-top: 10px;
+}
+.fr-brief-section-h {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a5cc0;
+  margin-bottom: 2px;
+}
 
 /* ⌘K command palette — discover (jump/toggle) + recall (lenses) in one box */
 .fr-cmdk-chip {

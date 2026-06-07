@@ -37,6 +37,7 @@ interface Scoreboard {
 interface BriefingClaim {
   text: string;
   cites: string[];
+  section?: string;
 }
 interface Briefing {
   agent_model: string;
@@ -197,8 +198,16 @@ export default function SourceLedger() {
             <span className="fr-tier derived">derived · AI commentary</span>
             <span className="fr-brief-derived-by">{brief.agent_model}</span>
           </div>
-          <ul className="fr-brief-claims">
-            {brief.claims.map((c, i) => (
+          {(() => {
+            // Render the same gated claims as a sectioned brief: a synthesized lead line, then
+            // the measured spine, the fact<->news connections, and the context ring. Grouping is
+            // presentational only — every line is still an atomic, cited, gate-checked claim.
+            const SECTIONS: { key: string; label: string }[] = [
+              { key: 'spine', label: 'Measured spine' },
+              { key: 'connection', label: 'Connected to world events — association, not cause' },
+              { key: 'context', label: 'Context ring' },
+            ];
+            const claimRow = (c: BriefingClaim, i: number) => (
               <li key={i}>
                 <span>{c.text}</span>{' '}
                 {c.cites.map((cite) => (
@@ -207,8 +216,37 @@ export default function SourceLedger() {
                   </code>
                 ))}
               </li>
-            ))}
-          </ul>
+            );
+            const lead = brief.claims.filter((c) => c.section === 'lead');
+            const untagged = brief.claims.filter((c) => !c.section); // back-compat: flat list
+            return (
+              <>
+                {lead.map((c, i) => (
+                  <p key={`lead${i}`} className="fr-brief-lead">
+                    {c.text}{' '}
+                    {c.cites.map((cite) => (
+                      <code key={cite} className="fr-cite">
+                        {cite}
+                      </code>
+                    ))}
+                  </p>
+                ))}
+                {SECTIONS.map(({ key, label }) => {
+                  const rows = brief.claims.filter((c) => c.section === key);
+                  if (rows.length === 0) return null;
+                  return (
+                    <div key={key} className="fr-brief-section">
+                      <div className="fr-brief-section-h">{label}</div>
+                      <ul className="fr-brief-claims">{rows.map(claimRow)}</ul>
+                    </div>
+                  );
+                })}
+                {untagged.length > 0 && (
+                  <ul className="fr-brief-claims">{untagged.map(claimRow)}</ul>
+                )}
+              </>
+            );
+          })()}
           {brief.disclaimer && <p className="fr-brief-disc">{brief.disclaimer}</p>}
         </div>
       )}

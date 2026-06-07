@@ -81,39 +81,43 @@ def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[
 def build(out_dir) -> dict:
     claims: list[dict] = []
 
-    def add(text: str, cites: list[str]) -> None:
+    def add(text: str, cites: list[str], section: str) -> None:
         c = ground_or_abstain(text, cites, out_dir=out_dir)  # drops if any cite can't ground
         if c is not ABSTAIN:
-            claims.append({"text": c.text, "cites": list(c.cites)})
+            claims.append({"text": c.text, "cites": list(c.cites), "section": section})
 
     stress = _payload("stress", out_dir)
+    flags = _payload("flags", out_dir)
     as_of = ""
+    n_flags = len(flags) if isinstance(flags, list) else 0
+
+    # LEAD — one synthesized headline. It is a CLAIM (cited + attribution-checked), not a free
+    # header, so its numbers are entailed like any other: the index by 'stress', the count by 'flags'.
     if isinstance(stress, dict) and stress.get("index") is not None:
         as_of = stress.get("as_of") or ""
-        add(
-            f"The Global Ocean Freight Stress Index reads {stress['index']} "
-            f"(label: {stress.get('label')}) as of {as_of}.",
-            ["stress"],
-        )
+        if n_flags:
+            add(
+                f"This week — the Global Ocean Freight Stress Index reads {stress['index']} "
+                f"(label: {stress.get('label')}), with {n_flags} ports and chokepoints carrying an "
+                f"FDR-significant disruption flag.",
+                ["stress", "flags"], "lead",
+            )
+        else:
+            add(
+                f"This week — the Global Ocean Freight Stress Index reads {stress['index']} "
+                f"(label: {stress.get('label')}) as of {as_of}.",
+                ["stress"], "lead",
+            )
 
-    flags = _payload("flags", out_dir)
+    # MEASURED SPINE — the specific anomalies we computed in Python.
     if isinstance(flags, list) and flags:
-        add(f"{len(flags)} ports and chokepoints carry an FDR-significant disruption flag this week.", ["flags"])
         hz = next((f for f in flags if "Hormuz" in str(f.get("entity", ""))), None)
         if hz and hz.get("pct_change") is not None:
             add(
-                f"Among the flagged, {hz['entity']} shows a transit change of "
-                f"{hz['pct_change']}% versus its baseline — a measured reading, never a stated cause.",
-                ["flags"],
+                f"{hz['entity']} shows a transit change of {hz['pct_change']}% versus its baseline "
+                "— a measured reading, never a stated cause.",
+                ["flags"], "spine",
             )
-
-        # The synthesis: connect the top measured disruptions to their co-occurring CITED news.
-        # This is the honest answer to "should the AI do research?" — the research (retrieval) is
-        # the deterministic per-flag news join; the AI only joins the measured number to those
-        # already-cited reports, as association. Each is grounded + gated like any other claim.
-        news = _payload("news", out_dir)
-        for text, cites in _connections(flags, news):
-            add(text, cites)
 
     fr = _payload("freight_rate", out_dir)
     if isinstance(fr, dict) and fr.get("items"):
@@ -122,7 +126,7 @@ def build(out_dir) -> dict:
             add(
                 f"Our freight-cost signal flags the {top['name']} at a {top['our_zscore']:+g} "
                 "z-score — an anomaly we computed, association only.",
-                ["freight_rate"],
+                ["freight_rate"], "spine",
             )
 
     gat = _payload("gatun", out_dir)
@@ -130,15 +134,24 @@ def build(out_dir) -> dict:
         add(
             f"At the Panama Canal, the Gatun lake level reads {gat['current_level_ft']} ft, "
             f"in the {gat.get('pctile_alltime')}th percentile all-time.",
-            ["gatun"],
+            ["gatun"], "spine",
         )
 
+    # CONNECTED TO WORLD EVENTS — each top disruption joined to its co-occurring CITED news. The
+    # research (retrieval) is the deterministic per-flag news join; the AI only joins the measured
+    # number to those already-cited reports, as association. Grounded + gated like any other claim.
+    if isinstance(flags, list) and flags:
+        news = _payload("news", out_dir)
+        for text, cites in _connections(flags, news):
+            add(text, cites, "connection")
+
+    # CONTEXT RING — ambient cited signals near the chain (counts only, no per-flag attribution).
     quakes, eonet = _payload("quakes", out_dir), _payload("eonet", out_dir)
     if isinstance(quakes, dict) and isinstance(eonet, dict):
         add(
             f"Cited context this week: {len(quakes.get('items', []))} USGS earthquakes and "
             f"{len(eonet.get('items', []))} NASA EONET natural events near the chain.",
-            ["quakes", "eonet"],
+            ["quakes", "eonet"], "context",
         )
 
     return {
