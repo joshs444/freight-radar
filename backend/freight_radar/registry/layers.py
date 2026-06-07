@@ -270,6 +270,18 @@ def _freight_rate(ctx: EnrichCtx) -> dict:
     return freight_rate_run(ctx)
 
 
+def _slack(ctx: EnrichCtx) -> dict:
+    from ..slack import run as slack_run
+
+    return slack_run(ctx)
+
+
+def _labor(ctx: EnrichCtx) -> dict:
+    from ..labor import run as labor_run
+
+    return labor_run(ctx)
+
+
 def _tides(ctx: EnrichCtx) -> dict:
     from ..tides import run as tides_run
 
@@ -665,6 +677,40 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
             "public domain",
         ),
         honesty_note="We compute the z-score anomaly; the rate index stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="slack",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.slack",
+        run=_slack,
+        enrich_order=23,
+        output="slack",
+        manifest_sidecar=True,
+        metric="12-month rolling z-score of a cited inventories-to-sales ratio (the slack anomaly we compute)",
+        source=Source(
+            "FRED (public domain · Census/BEA inventories-to-sales)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the ratio stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="labor",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.labor",
+        run=_labor,
+        enrich_order=24,
+        output="labor",
+        manifest_sidecar=True,
+        metric="12-month rolling z-score of a cited transport-employment headcount (the anomaly we compute)",
+        source=Source(
+            "FRED (public domain · BLS Current Employment Statistics)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the headcount stays cited context, never restated as ours.",
     ),
     LayerDescriptor(
         id="tides",

@@ -18,7 +18,14 @@ from .multiplicity import control_z
 
 # the measured SIGNAL families (registry kind=SIGNAL, the FRED-z loop). gatun/exposure are
 # self-contained measured signals with their own bespoke shape, not z-baskets — excluded.
-SIGNAL_STEMS: tuple[str, ...] = ("commodities", "macro", "metals", "freight_rate")
+SIGNAL_STEMS: tuple[str, ...] = (
+    "commodities",
+    "macro",
+    "metals",
+    "freight_rate",
+    "slack",
+    "labor",
+)
 
 
 def pool_signals(data_dir: Path, q: float = 0.10) -> dict:

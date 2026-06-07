@@ -125,6 +125,18 @@ export const VIEWS: ViewDef[] = [
     note: 'freight transport-cost anomalies by mode — OUR 12-mo z, FDR-gated (SIGNAL)',
   },
   {
+    view: 'slack',
+    file: 'slack.json',
+    sql: "CREATE OR REPLACE VIEW slack AS SELECT unnest(items, recursive := true) FROM read_json_auto('slack.json')",
+    note: 'supply-chain slack anomalies — inventories-to-sales, OUR 12-mo z, FDR-gated (SIGNAL)',
+  },
+  {
+    view: 'labor',
+    file: 'labor.json',
+    sql: "CREATE OR REPLACE VIEW labor AS SELECT unnest(items, recursive := true) FROM read_json_auto('labor.json')",
+    note: 'transport-employment anomalies — OUR 12-mo z, FDR-gated (SIGNAL)',
+  },
+  {
     view: 'signals_fdr',
     file: 'signals_fdr.json',
     sql: "CREATE OR REPLACE VIEW signals_fdr AS SELECT unnest(items, recursive := true) FROM read_json_auto('signals_fdr.json')",

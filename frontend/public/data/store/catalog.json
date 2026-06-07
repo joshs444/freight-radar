@@ -8,10 +8,10 @@
     "DERIVED": "an AI agent's commentary over the store \u2014 cited, association-only, owns no number"
   },
   "counts": {
-    "layers": 32,
+    "layers": 34,
     "by_tier": {
       "SPINE": 11,
-      "SIGNAL": 6,
+      "SIGNAL": 8,
       "CONTEXT": 14,
       "DERIVED": 1
     }
@@ -442,6 +442,42 @@
         "cost": "free"
       },
       "honesty_note": "We compute the z-score anomaly; the rate index stays cited context, never restated as ours."
+    },
+    {
+      "id": "slack",
+      "kind": "SIGNAL",
+      "producer": "enricher",
+      "metric": "12-month rolling z-score of a cited inventories-to-sales ratio (the slack anomaly we compute)",
+      "sidecar": "data/slack.json",
+      "globe_layer": null,
+      "derives_from": null,
+      "contract_monitored": true,
+      "source": {
+        "name": "FRED (public domain \u00b7 Census/BEA inventories-to-sales)",
+        "url": "https://fred.stlouisfed.org",
+        "license": "public domain",
+        "auth": "none",
+        "cost": "free"
+      },
+      "honesty_note": "We compute the z-score anomaly; the ratio stays cited context, never restated as ours."
+    },
+    {
+      "id": "labor",
+      "kind": "SIGNAL",
+      "producer": "enricher",
+      "metric": "12-month rolling z-score of a cited transport-employment headcount (the anomaly we compute)",
+      "sidecar": "data/labor.json",
+      "globe_layer": null,
+      "derives_from": null,
+      "contract_monitored": true,
+      "source": {
+        "name": "FRED (public domain \u00b7 BLS Current Employment Statistics)",
+        "url": "https://fred.stlouisfed.org",
+        "license": "public domain",
+        "auth": "none",
+        "cost": "free"
+      },
+      "honesty_note": "We compute the z-score anomaly; the headcount stays cited context, never restated as ours."
     },
     {
       "id": "tides",

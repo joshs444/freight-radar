@@ -106,7 +106,7 @@ _ENT_COLS = "entity_key,entity_type,name,country,iso3,locode,lat,lon,source_nati
 
 # measured SIGNAL families — each item's OWN z lands as a SIGNAL observation under a synthetic
 # signal:<id> entity (a signal is not a place, so it crosswalks to its own entity, never a port)
-_SIGNAL_FAMILIES = ("commodities", "macro", "metals", "freight_rate")
+_SIGNAL_FAMILIES = ("commodities", "macro", "metals", "freight_rate", "slack", "labor")
 # cited CONTEXT layers whose item COUNT lands as a CONTEXT observation (association only)
 _CONTEXT_COUNTS = (
     ("quakes", "items"),

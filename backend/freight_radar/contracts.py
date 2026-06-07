@@ -126,7 +126,7 @@ _SIGNAL_CONTRACT = Contract(
     item_requires=frozenset({"id", "name", "our_zscore", "fdr_significant"}),
     min_items=1,
 )
-for _sig in ("commodities", "macro", "metals", "freight_rate"):
+for _sig in ("commodities", "macro", "metals", "freight_rate", "slack", "labor"):
     SIDECAR_CONTRACTS[_sig] = _SIGNAL_CONTRACT
 
 # how many items to spot-check for missing keys (catches partial drift without scanning all)

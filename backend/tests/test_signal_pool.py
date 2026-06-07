@@ -37,9 +37,11 @@ def test_pool_over_real_committed_signals_is_coherent() -> None:
     items = pooled["items"]
     assert items, "expected the committed signal families to pool"
     assert pooled["counts"]["tested"] == len(items)  # every signal is one test in the pool
-    # pooling never invents significance beyond the per-family silos combined
+    # pooling never invents significance beyond the per-family silos combined (over ALL families)
+    from freight_radar.signal_pool import SIGNAL_STEMS
+
     silo_sig = 0
-    for stem in ("commodities", "macro", "metals", "freight_rate"):
+    for stem in SIGNAL_STEMS:
         p = data / f"{stem}.json"
         if p.exists():
             silo_sig += sum(1 for it in json.loads(p.read_text())["items"] if it.get("fdr_significant"))
