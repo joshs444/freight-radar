@@ -27,6 +27,10 @@ const EXAMPLES: { label: string; sql: string }[] = [
     label: 'Commodity anomalies (our z, FDR-gated)',
     sql: 'SELECT name, our_zscore, fdr_significant, latest_price, unit\nFROM commodities\nORDER BY abs(our_zscore) DESC;',
   },
+  {
+    label: 'River stage (inland freight context)',
+    sql: 'SELECT river, place, stage_ft, observed_at\nFROM streamflow\nORDER BY stage_ft;',
+  },
 ];
 
 export default function StoreQuery() {

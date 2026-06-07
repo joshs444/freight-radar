@@ -222,6 +222,12 @@ def _commodities(ctx: EnrichCtx) -> dict:
     return commodities_run(ctx)
 
 
+def _streamflow(ctx: EnrichCtx) -> dict:
+    from ..streamflow import run as streamflow_run
+
+    return streamflow_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -492,6 +498,18 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
             "public domain",
         ),
         honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="streamflow",
+        kind=Kind.CONTEXT,
+        producer=Producer.ENRICHER,
+        module="freight_radar.streamflow",
+        run=_streamflow,
+        enrich_order=15,
+        output="streamflow",
+        manifest_sidecar=True,
+        source=Source("USGS Water Services", "https://waterservices.usgs.gov", "public domain"),
+        honesty_note="Observed river stage shown as USGS publishes it; possibly-related context, never a cause.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(

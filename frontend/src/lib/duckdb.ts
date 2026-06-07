@@ -81,6 +81,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW commodities AS SELECT unnest(items, recursive := true) FROM read_json_auto('commodities.json')",
     note: 'commodity anomalies — OUR 12-mo z-score, FDR-gated (SIGNAL)',
   },
+  {
+    view: 'streamflow',
+    file: 'streamflow.json',
+    sql: "CREATE OR REPLACE VIEW streamflow AS SELECT unnest(items, recursive := true) FROM read_json_auto('streamflow.json')",
+    note: 'river stage on the Mississippi/Ohio freight corridor (CONTEXT)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */
