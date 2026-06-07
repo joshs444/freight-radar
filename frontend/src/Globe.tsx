@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
-import { AMBER, PORT, LANE, QUAKE, severityColor, newsCategoryColor } from './lib/colors.ts';
+import { AMBER, PORT, LANE, QUAKE, EVENT, severityColor, newsCategoryColor } from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
 import type {
@@ -15,6 +15,7 @@ import type {
   Ships,
   NewsGeoItem,
   QuakeItem,
+  EonetItem,
   MapApi,
   GlobeSnapshot,
   GlobeChokepoint,
@@ -127,6 +128,7 @@ interface LayerInputs {
   storms: Storm[];
   newsDots: NewsGeoItem[];
   quakeDots: QuakeItem[];
+  eonetDots: EonetItem[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   layers: LayerVisibility;
@@ -145,6 +147,7 @@ function buildLayers({
   storms,
   newsDots,
   quakeDots,
+  eonetDots,
   selectedId,
   onSelectFlag,
   layers,
@@ -237,6 +240,29 @@ function buildLayers({
       pickable: true,
       onClick: (info) => {
         const url = (info.object as QuakeItem | undefined)?.url;
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      },
+    }),
+
+    // NASA EONET natural events (wildfires, volcanoes, severe storms, ice) — burnt-orange
+    // dots. CONTEXT, below the freight marks; click opens the source. A co-located fact.
+    new ScatterplotLayer({
+      id: 'eonet',
+      visible: layers.eonet,
+      parameters: MARKER_PARAMETERS,
+      data: eonetDots,
+      getPosition: (d) => [d.lon, d.lat],
+      getRadius: 3,
+      radiusUnits: 'pixels',
+      radiusMinPixels: 2,
+      radiusMaxPixels: 6,
+      getFillColor: rgba(EVENT, 180),
+      stroked: true,
+      getLineColor: rgba([255, 255, 255], 140),
+      lineWidthMinPixels: 0.5,
+      pickable: true,
+      onClick: (info) => {
+        const url = (info.object as EonetItem | undefined)?.url;
         if (url) window.open(url, '_blank', 'noopener,noreferrer');
       },
     }),
@@ -400,6 +426,7 @@ interface GlobeProps {
   storms: Storm[] | undefined;
   newsDots: NewsGeoItem[];
   quakeDots: QuakeItem[];
+  eonetDots: EonetItem[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
@@ -417,6 +444,7 @@ export default function Globe({
   storms,
   newsDots,
   quakeDots,
+  eonetDots,
   selectedFlag,
   onSelectFlag,
   mapApiRef,
@@ -616,6 +644,7 @@ export default function Globe({
         storms: storms ?? [],
         newsDots: newsDots ?? [], // GDELT geo-tagged world-news (context)
         quakeDots: quakeDots ?? [], // USGS M4+ earthquakes (context)
+        eonetDots: eonetDots ?? [], // NASA EONET natural events (context)
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
@@ -630,6 +659,7 @@ export default function Globe({
     ships,
     storms,
     newsDots,
+    eonetDots,
     quakeDots,
     selectedFlag,
     onSelectFlag,

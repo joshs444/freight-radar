@@ -615,6 +615,26 @@ export interface History {
   source: string;
 }
 
+// ---- eonet.json (NASA EONET natural events — a CONTEXT globe layer) ---------
+export interface EonetItem {
+  id: string;
+  title: string;
+  category: string;
+  lat: number;
+  lon: number;
+  date: string;
+  url: string;
+}
+export interface Eonet {
+  generated_at: string;
+  as_of: string;
+  source: string;
+  source_url: string;
+  disclaimer: string;
+  counts: { events: number; by_category: Record<string, number> };
+  items: EonetItem[];
+}
+
 // ---- the full payload useData() resolves -----------------------------------
 
 export interface AppData {
@@ -627,6 +647,7 @@ export interface AppData {
   news: News | null;
   newsGeo: NewsGeo | null;
   quakes: Quakes | null;
+  eonet: Eonet | null;
   market: Market | null;
   stress: Stress | null;
   brief: Brief | null;

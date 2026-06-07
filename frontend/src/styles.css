@@ -562,6 +562,9 @@ body,
 .sw.quake {
   background: #8c5e58;
 }
+.sw.event {
+  background: #c87828;
+}
 /* news swatch = the topic-colour family in one dot (economy/trade/energy/conflict/disaster) */
 .sw.news {
   background: conic-gradient(

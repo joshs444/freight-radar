@@ -16,7 +16,8 @@ export type LayerId =
   | 'quakes'
   | 'storms'
   | 'wind'
-  | 'satellite';
+  | 'satellite'
+  | 'eonet';
 
 export type LayerVisibility = Record<LayerId, boolean>;
 
@@ -31,6 +32,7 @@ export const LAYER_IDS: readonly LayerId[] = [
   'storms',
   'wind',
   'satellite',
+  'eonet',
 ];
 
 // First-paint defaults (App.tsx seeds layer state from this, then localStorage).
@@ -45,6 +47,7 @@ export const DEFAULT_LAYER_VISIBILITY: LayerVisibility = {
   storms: true,
   wind: true,
   satellite: false,
+  eonet: false,
 };
 
 export interface LayerRow {
@@ -79,6 +82,7 @@ export const LAYER_SECTIONS: LayerSection[] = [
       { id: 'storms', label: 'storms', sw: 'storm' },
       { id: 'wind', label: 'wind', sw: 'wind' },
       { id: 'satellite', label: 'satellite', sw: 'sat' },
+      { id: 'eonet', label: 'events', sw: 'event' },
     ],
   },
 ];
@@ -105,6 +109,7 @@ export const OPTIONAL_SIDECAR_FILES: readonly string[] = [
   'data/world.json',
   'data/events.json',
   'data/brief.json',
+  'data/eonet.json',
   'data/ships.json',
   'data/wind.json',
 ];

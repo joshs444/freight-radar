@@ -335,6 +335,7 @@ export default function App() {
                   storms={hist.mode ? [] : data.weather?.storms}
                   newsDots={hist.mode ? [] : (data.newsGeo?.items ?? [])}
                   quakeDots={hist.mode ? [] : (data.quakes?.items ?? [])}
+                  eonetDots={hist.mode ? [] : (data.eonet?.items ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   mapApiRef={mapApiRef}
@@ -364,6 +365,7 @@ export default function App() {
                 lanes: data.lanes?.length ?? 0,
                 news: data.newsGeo?.items?.length ?? 0,
                 quakes: data.quakes?.items?.length ?? 0,
+                eonet: data.eonet?.items?.length ?? 0,
               }}
               ships={data.ships ?? null}
               shipCoverage={shipCoverage}

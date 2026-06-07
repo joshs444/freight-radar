@@ -46,6 +46,7 @@ export default function LayerPanel({
     if (r.id === 'ships') return (ships?.count ?? 0) > 0;
     if (r.id === 'news') return (counts.news ?? 0) > 0;
     if (r.id === 'quakes') return (counts.quakes ?? 0) > 0;
+    if (r.id === 'eonet') return (counts.eonet ?? 0) > 0;
     return true;
   };
 
