@@ -105,6 +105,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW marine AS SELECT unnest(items, recursive := true) FROM read_json_auto('marine.json')",
     note: 'model wave height at major chokepoints, Open-Meteo (CONTEXT)',
   },
+  {
+    view: 'macro',
+    file: 'macro.json',
+    sql: "CREATE OR REPLACE VIEW macro AS SELECT unnest(items, recursive := true) FROM read_json_auto('macro.json')",
+    note: 'freight/industrial anomalies — OUR 12-mo z, FDR-gated (SIGNAL)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */

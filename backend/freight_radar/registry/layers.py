@@ -248,6 +248,12 @@ def _marine(ctx: EnrichCtx) -> dict:
     return marine_run(ctx)
 
 
+def _macro(ctx: EnrichCtx) -> dict:
+    from ..macro import run as macro_run
+
+    return macro_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -566,6 +572,23 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         source=Source("Open-Meteo (marine)", "https://open-meteo.com", "CC-BY 4.0"),
         honesty_note="Model wave height at major chokepoints shown as Open-Meteo reports it; possibly-related context, never a cause.",
+    ),
+    LayerDescriptor(
+        id="macro",
+        kind=Kind.SIGNAL,
+        producer=Producer.ENRICHER,
+        module="freight_radar.macro",
+        run=_macro,
+        enrich_order=19,
+        output="macro",
+        manifest_sidecar=True,
+        metric="12-month rolling z-score of a cited freight/industrial index (the anomaly we compute)",
+        source=Source(
+            "FRED (public domain · BTS / Federal Reserve)",
+            "https://fred.stlouisfed.org",
+            "public domain",
+        ),
+        honesty_note="We compute the z-score anomaly; the index stays cited context, never restated as ours.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(
