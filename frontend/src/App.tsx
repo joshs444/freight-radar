@@ -370,6 +370,10 @@ export default function App() {
               hasWind={!!data.wind}
               newsGeo={data.newsGeo ?? null}
               quakes={data.quakes ?? null}
+              spineFdr={{
+                tested: data.snapshot?.ports?.length ?? 0,
+                flagged: flags.filter((f) => String(f.portid).startsWith('port')).length,
+              }}
             />
           )}
           {view === 'globe' && !hist.mode && data?.wind && layers.wind && (

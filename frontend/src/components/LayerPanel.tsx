@@ -25,6 +25,7 @@ interface LayerPanelProps {
   hasWind: boolean;
   newsGeo: NewsGeo | null;
   quakes: Quakes | null;
+  spineFdr?: { tested: number; flagged: number };
 }
 
 export default function LayerPanel({
@@ -36,6 +37,7 @@ export default function LayerPanel({
   hasWind,
   newsGeo,
   quakes,
+  spineFdr,
 }: LayerPanelProps) {
   const portsN = counts.ports ?? 0;
   const visible = (r: LayerRow): boolean => {
@@ -123,6 +125,14 @@ export default function LayerPanel({
             ? ` near ${shipCoverage} of the 28 chokepoints right now`
             : ' near the 28 chokepoints'}{' '}
           — not all ships, not the {portsN.toLocaleString()} ports.
+        </p>
+      )}
+
+      {spineFdr && spineFdr.flagged > 0 && (
+        <p className="fr-layers-note">
+          Freight spine: ~{spineFdr.tested.toLocaleString()} ports tested · {spineFdr.flagged}{' '}
+          flagged · FDR-gated (q=0.10, expect ≤{Math.round(0.1 * spineFdr.flagged)} false). We test
+          wide, flag only the genuinely-significant.
         </p>
       )}
 
