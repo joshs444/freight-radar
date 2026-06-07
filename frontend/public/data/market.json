@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-06-06T23:37:05+00:00",
+  "indicators": {
+    "brent": {
+      "value": 93.09,
+      "change_pct": -1.99,
+      "change_basis": "prev_close",
+      "as_of": "2026-06-05",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/BZ=F",
+      "name": "Brent crude",
+      "unit": "$/bbl",
+      "stale": false
+    },
+    "wti": {
+      "value": 90.54,
+      "change_pct": -1.76,
+      "change_basis": "prev_close",
+      "as_of": "2026-06-05",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/CL=F",
+      "name": "WTI crude",
+      "unit": "$/bbl",
+      "stale": false
+    },
+    "natgas": {
+      "value": 3.229,
+      "change_pct": 1.57,
+      "change_basis": "prev_close",
+      "as_of": "2026-06-05",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/NG=F",
+      "name": "Henry Hub gas",
+      "unit": "$/MMBtu",
+      "stale": false
+    },
+    "eurusd": {
+      "value": 1.1527,
+      "change_pct": -1.05,
+      "change_basis": "prev_close",
+      "as_of": "2026-06-05",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/EURUSD=X",
+      "name": "EUR/USD",
+      "unit": "",
+      "stale": false
+    },
+    "usdcny": {
+      "value": 6.766,
+      "change_pct": -0.0,
+      "change_basis": "prev_close",
+      "as_of": "2026-06-06",
+      "source": "Yahoo Finance",
+      "source_url": "https://finance.yahoo.com/quote/CNY=X",
+      "name": "USD/CNY",
+      "unit": "",
+      "stale": false
+    },
+    "bunker_vlsfo": {
+      "name": "VLSFO bunker (modeled)",
+      "unit": "$/tonne",
+      "value": 698,
+      "change_pct": -1.99,
+      "change_basis": "modeled",
+      "as_of": "2026-06-05",
+      "source": "modeled from Brent (~7.5x)",
+      "source_url": "https://shipandbunker.com/",
+      "estimate": true,
+      "basis": "modeled_from_brent",
+      "stale": false
+    }
+  },
+  "items": {
+    "b74be045769441ea": {
+      "entity": "Strait of Hormuz",
+      "linked": [
+        "brent",
+        "natgas",
+        "bunker_vlsfo"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
+    "bce0e2fdd63be992": {
+      "entity": "Kerch Strait",
+      "linked": [
+        "brent"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    }
+  },
+  "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+}

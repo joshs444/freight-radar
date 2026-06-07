@@ -1,0 +1,38 @@
+{
+  "tier": "DERIVED",
+  "agent_model": "claude (offline reasoner — the static site only serves this artifact)",
+  "generated_at": "2026-06-07T01:00:00+00:00",
+  "as_of": "2026-05-31",
+  "method": "An AI agent (Claude Code) read the published store and wrote these claims offline, on the weekly cadence; the live site calls no model, so the marginal cost is zero. Each claim cites a layer in the store, is association-only (no stated cause, no forecast), and owns no number — this commentary is read-only and can never mutate the store.",
+  "disclaimer": "DERIVED — what an AI said about the cited facts. Every claim traces to a layer; co-occurrence is association, never causation.",
+  "claims": [
+    {
+      "text": "The Global Ocean Freight Stress Index reads 41.6 (label: high) as of 2026-05-31.",
+      "cites": ["stress"]
+    },
+    {
+      "text": "247 of the ~2065 measured ports carry an FDR-significant disruption flag this week, alongside 5 of the 28 chokepoints — the spine tested wide and surfaced the genuinely-significant.",
+      "cites": ["flags"]
+    },
+    {
+      "text": "Among the flagged: the Strait of Hormuz sits under a persistent-collapse flag, and Hong Kong shows a port-cargo-type drop at z -7.3.",
+      "cites": ["flags"]
+    },
+    {
+      "text": "Three commodities sit at FDR-significant 12-month z-scores — Wheat +2.98, Brent crude +2.47, Soybeans +2.27 — co-occurring with the elevated freight stress.",
+      "cites": ["commodities", "stress"]
+    },
+    {
+      "text": "On the inland corridor, the Upper Mississippi gage at Clinton, IA reads 10.04 ft, the lowest of the tracked river gauges.",
+      "cites": ["streamflow"]
+    },
+    {
+      "text": "At the Panama Canal, the Gatun lake level is 85.22 ft (39th percentile all-time), with a draft restriction in effect.",
+      "cites": ["gatun"]
+    },
+    {
+      "text": "Cited context this week: 150 USGS M4+ earthquakes (26 at M5 or above), 250 open NASA EONET natural events (243 wildfires, 3 volcanoes), and quiet space weather (Kp 2.33, scale G0).",
+      "cites": ["quakes", "eonet", "space_weather"]
+    }
+  ]
+}

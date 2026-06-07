@@ -1,0 +1,23 @@
+{
+  "layers_total": 32,
+  "layers_by_tier": {
+    "SPINE": 11,
+    "SIGNAL": 6,
+    "CONTEXT": 14,
+    "DERIVED": 1
+  },
+  "globe_layers": 15,
+  "honesty_gates": {
+    "tier_predicates": true,
+    "spine_is_one": true,
+    "causal_verb_lexicon": true,
+    "zero_cost": true,
+    "source_completeness": true,
+    "source_coverage": true
+  },
+  "honesty_ci_pass_rate": 100.0,
+  "zero_cost_compliance_pct": 100.0,
+  "source_coverage_pct": 100.0,
+  "note": "Binary CI gates decide shipping; this scorecard tracks trend only (correct != improving). Grows one row per phase.",
+  "generated_at": "2026-06-07T03:51:43+00:00"
+}
