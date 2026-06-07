@@ -260,6 +260,12 @@ def _metals(ctx: EnrichCtx) -> dict:
     return metals_run(ctx)
 
 
+def _tides(ctx: EnrichCtx) -> dict:
+    from ..tides import run as tides_run
+
+    return tides_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -612,6 +618,18 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
             "public domain",
         ),
         honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
+    ),
+    LayerDescriptor(
+        id="tides",
+        kind=Kind.CONTEXT,
+        producer=Producer.ENRICHER,
+        module="freight_radar.tides",
+        run=_tides,
+        enrich_order=21,
+        output="tides",
+        manifest_sidecar=True,
+        source=Source("NOAA CO-OPS", "https://tidesandcurrents.noaa.gov", "public domain"),
+        honesty_note="Observed water level at major US ports shown as NOAA publishes it; possibly-related context, never a cause.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(

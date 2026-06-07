@@ -117,6 +117,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW metals AS SELECT unnest(items, recursive := true) FROM read_json_auto('metals.json')",
     note: 'metals/bulk-energy anomalies — OUR 12-mo z, FDR-gated (SIGNAL)',
   },
+  {
+    view: 'tides',
+    file: 'tides.json',
+    sql: "CREATE OR REPLACE VIEW tides AS SELECT unnest(items, recursive := true) FROM read_json_auto('tides.json')",
+    note: 'observed water level at major US ports, NOAA CO-OPS (CONTEXT)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */
