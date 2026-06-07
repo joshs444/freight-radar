@@ -77,3 +77,47 @@ def test_rendered_firewall_catches_drift_in_any_agent_field() -> None:
         )
         == []
     )
+
+
+# --- the synthesis step: connecting a measured fact to its co-occurring cited news ---
+
+from freight_radar.derived.gate import attribution_violations  # noqa: E402
+from freight_radar.derived.reason import _clean_source, _connections  # noqa: E402
+from freight_radar.honesty.lexicon import scan as scan_causal  # noqa: E402
+
+DATA_DIR = BRIEFING.parent
+
+
+def test_clean_source_rejects_digits_and_causal_tokens() -> None:
+    # a digit in a source name would break the attribution gate; a causal/forecast token, the firewall
+    assert _clean_source("NPR") == "NPR"
+    assert _clean_source("Channel 4 News") is None
+    assert _clean_source("Forecast Daily") is None
+    assert _clean_source("   ") is None
+
+
+def test_connections_join_a_measured_pct_to_cited_news_as_association_only() -> None:
+    flags = [
+        {"flag_id": "f1", "entity": "Strait of Hormuz", "kind": "chokepoint_persistent_collapse",
+         "pct_change": -92.4, "severity": 83},
+        {"flag_id": "f2", "entity": "Quietport", "kind": "port_activity_drop",
+         "pct_change": -5.0, "severity": 5},  # no news entry -> must be skipped
+    ]
+    news = {"items": {"f1": {"entity": "Strait of Hormuz", "items": [
+        {"source": "NPR"}, {"source": "CNBC"}, {"source": "The New York Times"}, {"source": "NBC News"}]}}}
+    conns = _connections(flags, news, k=3)
+    assert len(conns) == 1, "only the flag with co-occurring news is connected"
+    text, cites = conns[0]
+    assert cites == ["flags", "news"]               # the pct is from flags, the count from news
+    assert "-92.4%" in text and "4 cited news reports" in text
+    assert "never a stated cause" in text
+    assert scan_causal(text) == []                  # association-only: no causal/forecast verb
+
+
+def test_committed_briefing_connection_numbers_stay_entailed() -> None:
+    # the full attribution gate over the real artifact: EVERY number (incl. the connection claims')
+    # is verbatim-entailed by a cited layer, or this fails. Guards the synthesis in CI, fail-closed.
+    assert attribution_violations(load(BRIEFING), out_dir=DATA_DIR) == []
+    # and at least one connection actually shipped (flags+news cite pair)
+    claims = load(BRIEFING)["claims"]
+    assert any(set(c["cites"]) == {"flags", "news"} for c in claims), "expected >=1 fact<->news connection"

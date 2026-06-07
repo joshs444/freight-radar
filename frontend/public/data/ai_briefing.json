@@ -2,7 +2,7 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "claude (offline reasoner \u2014 the static site only serves this artifact)",
-  "generated_at": "2026-06-07T18:59:41+00:00",
+  "generated_at": "2026-06-07T19:12:50+00:00",
   "as_of": "2026-05-31",
   "method": "An offline agent reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. No model is in the number path.",
   "disclaimer": "DERIVED \u2014 what an AI said about the cited facts. Every claim traces to a layer; co-occurrence is association, never causation.",
@@ -23,6 +23,27 @@
       "text": "Among the flagged, Strait of Hormuz shows a transit change of -92.4% versus its baseline \u2014 a measured reading, never a stated cause.",
       "cites": [
         "flags"
+      ]
+    },
+    {
+      "text": "Strait of Hormuz transit change of -92.4% (measured) co-occurs this week with 4 cited news reports (NPR, CNBC, The New York Times, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "cites": [
+        "flags",
+        "news"
+      ]
+    },
+    {
+      "text": "Chittagong activity change of -56.2% (measured) co-occurs this week with 4 cited news reports (Prothom Alo English, The Daily Star, Dhaka Tribune, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "cites": [
+        "flags",
+        "news"
+      ]
+    },
+    {
+      "text": "Colombo activity change of 54.9% (measured) co-occurs this week with 4 cited news reports (marketscreener.com, The Hindu, The Sunday Times, Sri Lanka, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "cites": [
+        "flags",
+        "news"
       ]
     },
     {

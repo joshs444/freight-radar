@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .. import store
+from ..honesty.lexicon import scan as scan_causal
 from ..registry.layers import REGISTRY
 from .contract import ABSTAIN, ground_or_abstain
 from .gate import gate_briefing
@@ -32,6 +33,49 @@ def _payload(stem: str, out_dir):
         return store.get_layer(stem, out_dir=out_dir).get("payload")
     except Exception:  # noqa: BLE001
         return None
+
+
+def _clean_source(s: object) -> str | None:
+    """A news source usable inside a gated claim: a non-empty name with no digit (a stray
+    number would fail the attribution gate) and no causal/forecast token (the language firewall)."""
+    name = str(s or "").strip()
+    if not name or any(ch.isdigit() for ch in name) or scan_causal(name):
+        return None
+    return name
+
+
+def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[str]]]:
+    """The honest synthesis step: CONNECT each top measured disruption to the world events that
+    co-occur with it — strictly the news ALREADY retrieved per flag, as association, never a cause.
+
+    Every number stays entailed: the pct is read from ``flags``; the article count is the length
+    of that flag's own list inside the ``news`` layer (``_collect`` recurses into it). The model
+    authors no figure — it only joins a measured number to its cited, co-occurring reports.
+    """
+    items = news.get("items", {}) if isinstance(news, dict) else {}
+    ranked = sorted(
+        (f for f in flags
+         if isinstance(items.get(f.get("flag_id")), dict) and items[f["flag_id"]].get("items")),
+        key=lambda f: -(f.get("severity") or 0),
+    )
+    out: list[tuple[str, list[str]]] = []
+    for f in ranked[:k]:
+        arts = items[f["flag_id"]]["items"]
+        srcs: list[str] = []
+        for a in arts:
+            name = _clean_source(a.get("source"))
+            if name and name not in srcs:
+                srcs.append(name)
+        if len(srcs) < 2 or f.get("pct_change") is None:
+            continue
+        word = "transit" if str(f.get("kind", "")).startswith("chokepoint") else "activity"
+        named = ", ".join(srcs[:3])
+        out.append((
+            f"{f['entity']} {word} change of {f['pct_change']}% (measured) co-occurs this week with "
+            f"{len(arts)} cited news reports ({named}, …) — possibly-related context, never a stated cause.",
+            ["flags", "news"],
+        ))
+    return out
 
 
 def build(out_dir) -> dict:
@@ -62,6 +106,14 @@ def build(out_dir) -> dict:
                 f"{hz['pct_change']}% versus its baseline — a measured reading, never a stated cause.",
                 ["flags"],
             )
+
+        # The synthesis: connect the top measured disruptions to their co-occurring CITED news.
+        # This is the honest answer to "should the AI do research?" — the research (retrieval) is
+        # the deterministic per-flag news join; the AI only joins the measured number to those
+        # already-cited reports, as association. Each is grounded + gated like any other claim.
+        news = _payload("news", out_dir)
+        for text, cites in _connections(flags, news):
+            add(text, cites)
 
     fr = _payload("freight_rate", out_dir)
     if isinstance(fr, dict) and fr.get("items"):
