@@ -105,6 +105,45 @@ def test_knowledge_time_is_the_passed_run_value_not_a_static_literal(con) -> Non
     assert str(next(iter(kts))).startswith("2026-06-01"), kts
 
 
+def test_all_tiers_land_in_the_unified_index(tmp_path) -> None:
+    """SIGNAL z's (under synthetic signal:<id> entities) + CONTEXT counts land in the same thin
+    index as the SPINE — the whole store unified, the join surface hyp_* needs."""
+    import duckdb
+
+    from freight_radar.substrate import append_context_counts, append_signals
+
+    con = duckdb.connect()
+    con.execute(
+        "CREATE TABLE dim_entity (entity_key VARCHAR, entity_type VARCHAR, name VARCHAR, "
+        "country VARCHAR, iso3 VARCHAR, locode VARCHAR, lat DOUBLE, lon DOUBLE, "
+        "source_native_id VARCHAR, source VARCHAR)"
+    )
+    con.execute(
+        "CREATE TABLE fct_observation (entity_key VARCHAR, date_key DATE, grain VARCHAR, "
+        "metric_key VARCHAR, layer_key VARCHAR, value DOUBLE, tier VARCHAR, method VARCHAR, "
+        "source_observed_at DATE, knowledge_time TIMESTAMP, lineage_run_id VARCHAR)"
+    )
+    (tmp_path / "commodities.json").write_text(
+        '{"items": [{"id": "X", "name": "Wheat", "our_zscore": 2.5, "as_of": "2026-05-01"}]}'
+    )
+    (tmp_path / "quakes.json").write_text('{"as_of": "2026-06-07", "items": [{}, {}, {}]}')
+
+    assert append_signals(con, tmp_path, "2026-06-01T00:00:00", "t") == 1
+    assert append_context_counts(con, tmp_path, "2026-06-01T00:00:00", "t") == 1
+    tiers = {r[0] for r in con.execute("SELECT DISTINCT tier FROM fct_observation").fetchall()}
+    assert tiers == {"SIGNAL", "CONTEXT"}
+    # the SIGNAL value is the z WE own; the CONTEXT value is the cited count
+    assert con.execute("SELECT value FROM fct_observation WHERE entity_key='signal:X'").fetchone()[0] == 2.5
+    assert con.execute("SELECT value FROM fct_observation WHERE entity_key='context:quakes'").fetchone()[0] == 3.0
+    # the synthetic entities resolved into the crosswalk (no dangling number)
+    orphans = con.execute(
+        "SELECT count(*) FROM fct_observation o LEFT JOIN dim_entity e USING(entity_key) "
+        "WHERE e.entity_key IS NULL"
+    ).fetchone()[0]
+    assert orphans == 0
+    con.close()
+
+
 def test_export_observation_writes_a_readable_parquet(con, tmp_path) -> None:
     import duckdb
 

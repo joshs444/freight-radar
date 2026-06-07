@@ -39,6 +39,10 @@ const EXAMPLES: { label: string; sql: string }[] = [
     label: 'Substrate time-travel — the thin index as of a past date',
     sql: "SELECT entity_key, metric_key, value, date_key, knowledge_time\nFROM fct_observation\nWHERE date_key <= DATE '2020-04-01'\nORDER BY date_key DESC\nLIMIT 12;",
   },
+  {
+    label: 'The whole store, unified — observations by tier',
+    sql: 'SELECT tier, count(*) AS observations, count(DISTINCT entity_key) AS entities\nFROM fct_observation\nGROUP BY tier\nORDER BY observations DESC;',
+  },
 ];
 
 export default function StoreQuery() {

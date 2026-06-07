@@ -98,6 +98,90 @@ def build_substrate(
     }
 
 
+_OBS_COLS = (
+    "entity_key,date_key,grain,metric_key,layer_key,value,tier,method,"
+    "source_observed_at,knowledge_time,lineage_run_id"
+)
+_ENT_COLS = "entity_key,entity_type,name,country,iso3,locode,lat,lon,source_native_id,source"
+
+# measured SIGNAL families — each item's OWN z lands as a SIGNAL observation under a synthetic
+# signal:<id> entity (a signal is not a place, so it crosswalks to its own entity, never a port)
+_SIGNAL_FAMILIES = ("commodities", "macro", "metals", "freight_rate")
+# cited CONTEXT layers whose item COUNT lands as a CONTEXT observation (association only)
+_CONTEXT_COUNTS = (
+    ("quakes", "items"),
+    ("news_geo", "items"),
+    ("eonet", "items"),
+    ("disruptions", "events"),
+    ("marine", "items"),
+    ("tides", "items"),
+    ("streamflow", "items"),
+)
+
+
+def _read_json(out_dir, stem: str) -> dict | None:
+    import json
+
+    p = Path(out_dir) / f"{stem}.json"
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def append_signals(con, out_dir, knowledge_time: str, run_id: str) -> int:
+    """Land every measured SIGNAL's z into fct_observation under a synthetic signal:<id> entity
+    (added to dim_entity). The unified index now carries the anomaly WE compute, not just the
+    spine — the join surface the hyp_* association tier needs."""
+    ents, obs = [], []
+    for family in _SIGNAL_FAMILIES:
+        d = _read_json(out_dir, family)
+        if not d:
+            continue
+        for it in d.get("items", []):
+            z, sid, as_of = it.get("our_zscore"), it.get("id"), it.get("as_of")
+            if z is None or not sid or not as_of:
+                continue
+            ek = f"signal:{sid}"
+            ents.append((ek, "signal", it.get("name"), None, None, None, None, None, sid, family))
+            obs.append(
+                (ek, as_of, "month", sid, family, float(z), "SIGNAL",
+                 "12-month rolling z-score (the anomaly we compute)", as_of, knowledge_time, run_id)
+            )
+    if ents:
+        con.executemany(f"INSERT INTO dim_entity ({_ENT_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?)", ents)
+    if obs:
+        con.executemany(f"INSERT INTO fct_observation ({_OBS_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?,?)", obs)
+    return len(obs)
+
+
+def append_context_counts(con, out_dir, knowledge_time: str, run_id: str) -> int:
+    """Land each cited CONTEXT layer's item COUNT into fct_observation under a context:<layer>
+    entity. A count, never a cause — it indexes how much cited context co-locates, nothing more."""
+    ents, obs = [], []
+    for layer, key in _CONTEXT_COUNTS:
+        d = _read_json(out_dir, layer)
+        if not d:
+            continue
+        n = len(d.get(key) or [])
+        as_of = (d.get("as_of") or d.get("generated_at") or "")[:10]
+        if not as_of:
+            continue
+        ek = f"context:{layer}"
+        ents.append((ek, "context", layer, None, None, None, None, None, layer, "derived"))
+        obs.append(
+            (ek, as_of, "snapshot", f"{layer}_count", layer, float(n), "CONTEXT",
+             "count of cited co-located items (association only)", as_of, knowledge_time, run_id)
+        )
+    if ents:
+        con.executemany(f"INSERT INTO dim_entity ({_ENT_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?)", ents)
+    if obs:
+        con.executemany(f"INSERT INTO fct_observation ({_OBS_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?,?)", obs)
+    return len(obs)
+
+
 def export_observation(con: duckdb.DuckDBPyConnection, out_dir) -> Path:
     """Materialize fct_observation as a compact zstd Parquet sidecar (~1.4MB for the full
     439k-row thin index) under <out_dir>/store/. Parquet (not JSON) keeps it ~30x smaller and
@@ -121,6 +205,13 @@ def publish_substrate(db_path, out_dir, knowledge_time: str, run_id: str = "subs
     con = duckdb.connect(str(db_path), read_only=False)
     try:
         summary = build_substrate(con, knowledge_time=knowledge_time, run_id=run_id)
+        # land the other tiers from the published sidecars so the index spans the WHOLE store
+        summary["signal_obs"] = append_signals(con, out_dir, knowledge_time, run_id)
+        summary["context_obs"] = append_context_counts(con, out_dir, knowledge_time, run_id)
+        summary["observations"] = con.execute("SELECT count(*) FROM fct_observation").fetchone()[0]
+        summary["tiers"] = sorted(
+            r[0] for r in con.execute("SELECT DISTINCT tier FROM fct_observation").fetchall()
+        )
         summary["parquet"] = str(export_observation(con, out_dir))
     finally:
         con.close()
