@@ -11,6 +11,7 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 const Globe = lazy(() => import('./Globe.tsx'));
 const Board = lazy(() => import('./components/Board.tsx'));
 const StoreQuery = lazy(() => import('./components/StoreQuery.tsx'));
+const SourceLedger = lazy(() => import('./components/SourceLedger.tsx'));
 const Chat = lazy(() => import('./components/Chat.tsx'));
 const StressDetail = lazy(() => import('./components/StressDetail.tsx'));
 const HistoryTimeline = lazy(() => import('./components/HistoryTimeline.tsx'));
@@ -81,9 +82,9 @@ export default function App() {
   const [view, setView] = useState<AppView>(() => {
     try {
       const fromHash = new URLSearchParams(window.location.hash.slice(1)).get('v');
-      if (fromHash === 'board' || fromHash === 'data') return fromHash;
+      if (fromHash === 'board' || fromHash === 'data' || fromHash === 'ledger') return fromHash;
       const saved = localStorage.getItem('fr_view');
-      if (saved === 'board' || saved === 'data') return saved;
+      if (saved === 'board' || saved === 'data' || saved === 'ledger') return saved;
     } catch {
       /* ignore */
     }
@@ -308,6 +309,13 @@ export default function App() {
           {view === 'data' && data && (
             <Suspense fallback={<div className="fr-globe-fallback">loading the SQL engine…</div>}>
               <StoreQuery />
+            </Suspense>
+          )}
+          {view === 'ledger' && data && (
+            <Suspense
+              fallback={<div className="fr-globe-fallback">loading the source ledger…</div>}
+            >
+              <SourceLedger />
             </Suspense>
           )}
           {view === 'globe' && data && (

@@ -11,6 +11,7 @@ const VIEWS: { id: AppView; label: string; glyph: string }[] = [
   { id: 'globe', label: 'Globe', glyph: '◐' },
   { id: 'board', label: 'Board', glyph: '▦' },
   { id: 'data', label: 'Data', glyph: '⌗' },
+  { id: 'ledger', label: 'Ledger', glyph: '§' },
 ];
 
 export default function ViewToggle({ view, onChange }: ViewToggleProps) {
