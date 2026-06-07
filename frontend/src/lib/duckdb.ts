@@ -87,6 +87,12 @@ export const VIEWS: ViewDef[] = [
     sql: "CREATE OR REPLACE VIEW streamflow AS SELECT unnest(items, recursive := true) FROM read_json_auto('streamflow.json')",
     note: 'river stage on the Mississippi/Ohio freight corridor (CONTEXT)',
   },
+  {
+    view: 'space_weather',
+    file: 'space_weather.json',
+    sql: "CREATE OR REPLACE VIEW space_weather AS SELECT unnest(items, recursive := true) FROM read_json_auto('space_weather.json')",
+    note: 'observed planetary K-index readings, NOAA SWPC (CONTEXT)',
+  },
 ];
 
 /** Fetch the sidecars + register them as DuckDB views. Returns the views that loaded. */

@@ -228,6 +228,12 @@ def _streamflow(ctx: EnrichCtx) -> dict:
     return streamflow_run(ctx)
 
 
+def _space_weather(ctx: EnrichCtx) -> dict:
+    from ..space_weather import run as space_weather_run
+
+    return space_weather_run(ctx)
+
+
 # --- THE REGISTRY -----------------------------------------------------------
 # One row per layer. Order here is read top-to-bottom for the manifest; the
 # enricher pipeline order is set explicitly by `enrich_order` (NOT list position),
@@ -510,6 +516,18 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         source=Source("USGS Water Services", "https://waterservices.usgs.gov", "public domain"),
         honesty_note="Observed river stage shown as USGS publishes it; possibly-related context, never a cause.",
+    ),
+    LayerDescriptor(
+        id="space_weather",
+        kind=Kind.CONTEXT,
+        producer=Producer.ENRICHER,
+        module="freight_radar.space_weather",
+        run=_space_weather,
+        enrich_order=16,
+        output="space_weather",
+        manifest_sidecar=True,
+        source=Source("NOAA SWPC", "https://www.swpc.noaa.gov", "public domain"),
+        honesty_note="Observed geomagnetic indices shown as NOAA publishes them; possibly-related context, never a cause.",
     ),
     # ---- off-loop producers ----
     LayerDescriptor(
