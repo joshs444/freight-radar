@@ -5,6 +5,7 @@ import { Markdown } from '../lib/md.tsx';
 import { Sparkline, SparkHistory } from './Sparkline.tsx';
 import { computeTrend, trendLabel } from '../lib/trend.ts';
 import { sourceName } from '../lib/provenance.ts';
+import Trace from './Trace.tsx';
 import BriefCard from './BriefCard.tsx';
 import SignalBoard from './SignalBoard.tsx';
 import HazardsPanel from './HazardsPanel.tsx';
@@ -445,32 +446,26 @@ function Row({
   );
 }
 
-// The lineage trace under an expanded flag: this number is MEASURED (computed in Python), here is
-// the exact source it traces to (linked), the method, the metric, and the date. Click-to-source.
+// The lineage trace under an expanded flag, now rendered by the ONE <Trace> primitive (P1-A): the
+// stepped raw -> computed-by-us -> published-number -> cited-source chain. The URL + license are
+// stamped on the flag from the registry root (P0-B); layerId="flags" is a backstop so the tier
+// resolves from the catalog even before the record's own fields are read. A flag is just a detected
+// anomaly on the cited PortWatch series — the trace makes that legible at the point.
 function Provenance({ flag }: { flag: Flag }) {
-  // The URL + license are stamped onto the flag from the registry root (P0-B) — read them
-  // straight off the record, never re-derive from the source string. Single SSOT, no drift.
-  const url = flag.source_url;
+  const v = (n: number) => (Math.abs(n) >= 100 ? Math.round(n).toLocaleString() : n.toFixed(2));
+  const pct = `${flag.pct_change > 0 ? '+' : ''}${flag.pct_change.toFixed(1)}%`;
   return (
-    <div className="fr-prov">
-      <span className="fr-prov-tier">measured · computed in Python</span>
-      <div className="fr-prov-trace">
-        <span className="fr-prov-step">
-          from{' '}
-          {url ? (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="fr-prov-src">
-              {sourceName(flag.source)} ↗
-            </a>
-          ) : (
-            <b>{sourceName(flag.source)}</b>
-          )}
-          {flag.license ? <span className="fr-prov-lic"> ({flag.license})</span> : null}
-        </span>
-        {flag.method && <span className="fr-prov-step">method: {flag.method}</span>}
-        {flag.metric && <span className="fr-prov-step">metric: {flag.metric}</span>}
-        <span className="fr-prov-step">as of {flag.as_of}</span>
-      </div>
-    </div>
+    <Trace
+      layerId="flags"
+      tier="measured · computed in Python"
+      raw={`PortWatch ${flag.metric}`}
+      method={flag.method}
+      published={`${v(flag.value)} vs ${v(flag.baseline)} baseline · ${pct} vs 28d`}
+      source={sourceName(flag.source)}
+      sourceUrl={flag.source_url}
+      license={flag.license}
+      asOf={flag.as_of}
+    />
   );
 }
 

@@ -2376,6 +2376,114 @@ body,
 .fr-prov-lic {
   color: var(--ink-faint);
 }
+
+/* ---- the ONE provenance primitive (Trace.tsx): raw -> computed -> published -> cited ---- */
+.fr-trace {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--line);
+}
+.fr-trace-tier {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-dim);
+  background: var(--surface-2, #f1f3f7);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+/* tier swatch colours, matched to the registry kinds (spine/signal measured, context cited) */
+.fr-trace-tier.spine,
+.fr-trace-tier.signal {
+  color: #2f6f4f;
+  background: #eef6f1;
+  border-color: #cfe6da;
+}
+.fr-trace-tier.context {
+  color: #8a5a1e;
+  background: #fbf3e7;
+  border-color: #ecdcc2;
+}
+.fr-trace-tier.derived {
+  color: #5b3f8c;
+  background: #f2edfa;
+  border-color: #ddd2ee;
+}
+/* the load-bearing fence: national/global signals can never be attributed to a place */
+.fr-trace-fence {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a5a1e;
+  border-left: 2px solid #ecca8f;
+  padding-left: 6px;
+}
+.fr-trace-chain {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.fr-trace-step {
+  display: flex;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+.fr-trace-k {
+  flex: none;
+  width: 86px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.fr-trace-v {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-dim);
+}
+.fr-trace-src {
+  color: #2f5d99;
+  font-weight: 700;
+  text-decoration: none;
+}
+.fr-trace-src:hover {
+  text-decoration: underline;
+}
+.fr-trace-lic,
+.fr-trace-as,
+.fr-trace-muted {
+  color: var(--ink-faint);
+}
+.fr-trace-spark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.fr-trace-spark-cap {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+.fr-trace-note {
+  margin: 6px 0 0;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
 .fr-empty {
   color: var(--ink-faint);
   font-family: var(--mono);
@@ -3222,28 +3330,9 @@ body,
   color: var(--ink-faint);
   line-height: 1.5;
 }
-.fr-sig-trace {
-  margin: 2px 0 7px;
-  padding-left: 71px; /* align under the name column, past the 62px z-badge + gap */
-}
-/* national/computed signals trace in blue, distinct from the green maritime-measured tier */
-.fr-sig-trace .fr-prov-tier {
-  color: #2f5d99;
-  background: #eef2fa;
-  border-color: #cfdcef;
-}
-.fr-sig-spark {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-.fr-sig-spark-cap {
-  font-family: var(--mono);
-  font-size: 8.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-faint);
+/* signal-row trace indents under the name column (past the 62px z-badge + gap) */
+.fr-sig-item .fr-trace {
+  padding-left: 71px;
 }
 
 /* --- Ask Freight Radar (grounded chat) ---------------------------------- */
