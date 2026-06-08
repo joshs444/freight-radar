@@ -802,6 +802,28 @@ def by_id(layer_id: str) -> LayerDescriptor:
     raise KeyError(layer_id)
 
 
+def root_source(layer_id: str) -> Optional[Source]:
+    """Walk ``derives_from`` to the provenance root and return the first ``Source`` found.
+
+    flags/ports/chokepoints all carry ``source=None`` + ``derives_from='snapshot'``; the cited
+    PortWatch ``Source`` lives only on that root. This is the single SSOT resolution every surface
+    must agree on — the flag-source stamping (P0-B), the registry-parity deploy-gate (P2-B), and
+    the frontend ``effectiveSource`` (P1-A) all resolve the URL the SAME way, so a stamped
+    ``source_url`` can never silently fork from the registry. The tier is NOT inherited (a
+    chokepoint's z-score is computed while a port's vessel count is raw — same root, different
+    tier); only the cited Source is. Cycle-guarded.
+    """
+    seen: set[str] = set()
+    cur: Optional[str] = layer_id
+    while cur and cur not in seen:
+        seen.add(cur)
+        d = by_id(cur)
+        if d.source is not None:
+            return d.source
+        cur = d.derives_from
+    return None
+
+
 def globe_descriptors() -> list[LayerDescriptor]:
     """Descriptors that render a toggleable globe layer, in (section, order) order."""
     g = [d for d in REGISTRY if d.globe is not None]

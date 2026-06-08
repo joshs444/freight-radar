@@ -2373,6 +2373,9 @@ body,
 .fr-prov-src:hover {
   text-decoration: underline;
 }
+.fr-prov-lic {
+  color: var(--ink-faint);
+}
 .fr-empty {
   color: var(--ink-faint);
   font-family: var(--mono);

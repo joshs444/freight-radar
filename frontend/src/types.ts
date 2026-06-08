@@ -157,6 +157,8 @@ export interface Flag {
   zscore: number;
   as_of: string;
   source: string;
+  source_url: string; // registry-resolved root URL (P0-B) — clickable, never re-hardcoded
+  license: string; // registry-resolved root license (P0-B)
   method: string;
   lifecycle: string;
   business?: BusinessImpact | null;

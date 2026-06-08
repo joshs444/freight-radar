@@ -28,9 +28,12 @@ from pathlib import Path
 import duckdb
 
 from .config import DEFAULT_DB_PATH, REPO_ROOT
+from .registry.layers import root_source as _root_source
 
 OUT_DIR = REPO_ROOT / "frontend" / "public" / "data"
-SOURCE = "IMF PortWatch — daily granularity, refreshed weekly"
+# The snapshot IS the cited PortWatch root — read its identity from the registry SSOT, not a
+# parallel literal, so the source name can never silently diverge from the catalog/ledger (P0-B).
+SOURCE = f"{_root_source('snapshot').name} — daily granularity, refreshed weekly"
 
 # The 5 leaf vessel types PortWatch breaks every count into. They sum *exactly*
 # to the corresponding `*_total` (container+dry_bulk+general_cargo+roro+tanker),

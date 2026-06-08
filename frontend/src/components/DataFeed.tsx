@@ -4,7 +4,7 @@ import { money } from '../lib/format.ts';
 import { Markdown } from '../lib/md.tsx';
 import { Sparkline, SparkHistory } from './Sparkline.tsx';
 import { computeTrend, trendLabel } from '../lib/trend.ts';
-import { sourceUrl, sourceName } from '../lib/provenance.ts';
+import { sourceName } from '../lib/provenance.ts';
 import BriefCard from './BriefCard.tsx';
 import SignalBoard from './SignalBoard.tsx';
 import HazardsPanel from './HazardsPanel.tsx';
@@ -448,7 +448,9 @@ function Row({
 // The lineage trace under an expanded flag: this number is MEASURED (computed in Python), here is
 // the exact source it traces to (linked), the method, the metric, and the date. Click-to-source.
 function Provenance({ flag }: { flag: Flag }) {
-  const url = sourceUrl(flag.source);
+  // The URL + license are stamped onto the flag from the registry root (P0-B) — read them
+  // straight off the record, never re-derive from the source string. Single SSOT, no drift.
+  const url = flag.source_url;
   return (
     <div className="fr-prov">
       <span className="fr-prov-tier">measured · computed in Python</span>
@@ -462,6 +464,7 @@ function Provenance({ flag }: { flag: Flag }) {
           ) : (
             <b>{sourceName(flag.source)}</b>
           )}
+          {flag.license ? <span className="fr-prov-lic"> ({flag.license})</span> : null}
         </span>
         {flag.method && <span className="fr-prov-step">method: {flag.method}</span>}
         {flag.metric && <span className="fr-prov-step">metric: {flag.metric}</span>}

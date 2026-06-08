@@ -55,7 +55,7 @@ FLAGS_JSON = REPO_ROOT / "frontend" / "public" / "data" / "flags.json"
 FLAG_KEYS = (
     "flag_id", "kind", "entity", "portid", "lat", "lon", "severity",
     "headline", "brief_md", "metric", "value", "baseline", "pct_change",
-    "zscore", "as_of", "source", "method", "lifecycle",
+    "zscore", "as_of", "source", "source_url", "license", "method", "lifecycle",
 )
 
 
@@ -523,6 +523,10 @@ def _upsert_flags(con: duckdb.DuckDBPyConnection, flags: list[Flag]) -> None:
         for f in flags
     ]
     df = pd.DataFrame(rows)
+    # source_url + license are static registry-resolved provenance (P0-B) carried in the flags.json
+    # contract, NOT measured facts — they live on the Flag dataclass + the JSON, but fct_flags stays
+    # the table of computed numbers. Project them out so the upsert matches the schema's columns.
+    df = df.drop(columns=["source_url", "license"], errors="ignore")
     cols = ", ".join(f'"{c}"' for c in df.columns)
     con.register("_flags_src", df)
     try:

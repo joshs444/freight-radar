@@ -16,6 +16,8 @@
     "zscore": 0.0,
     "as_of": "2026-03-01",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "sustained level-shift vs pre-disruption norm",
     "lifecycle": "ongoing",
     "business": {
@@ -121,6 +123,8 @@
     "zscore": -5.92,
     "as_of": "2026-05-24",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "ongoing",
     "business": {
@@ -202,6 +206,8 @@
     "zscore": -7.2,
     "as_of": "2026-05-25",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "ongoing",
     "business": {
@@ -320,6 +326,8 @@
     "zscore": -4.87,
     "as_of": "2026-05-24",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "new",
     "business": {
@@ -412,6 +420,8 @@
     "zscore": 9.57,
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "ongoing",
     "business": {
@@ -504,6 +514,8 @@
     "zscore": 3.66,
     "as_of": "2026-05-18",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "ongoing",
     "business": {
@@ -609,6 +621,8 @@
     "zscore": 3.77,
     "as_of": "2026-05-21",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "ongoing",
     "business": {
@@ -690,6 +704,8 @@
     "zscore": -7.28,
     "as_of": "2026-05-24",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "resolved",
     "business": {
@@ -782,6 +798,8 @@
     "zscore": 3.58,
     "as_of": "2026-05-28",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "new",
     "business": {
@@ -863,6 +881,8 @@
     "zscore": -3.02,
     "as_of": "2026-05-20",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "new",
     "business": {
@@ -944,6 +964,8 @@
     "zscore": -3.67,
     "as_of": "2026-05-20",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "new",
     "business": {
@@ -1025,6 +1047,8 @@
     "zscore": -5.18,
     "as_of": "2026-05-17",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "resolved",
     "business": {
@@ -1117,6 +1141,8 @@
     "zscore": -6.31,
     "as_of": "2026-05-28",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "resolved",
     "business": {
@@ -1209,6 +1235,8 @@
     "zscore": 4.61,
     "as_of": "2026-05-28",
     "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
+    "source_url": "https://portwatch.imf.org",
+    "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
     "lifecycle": "resolved",
     "business": {

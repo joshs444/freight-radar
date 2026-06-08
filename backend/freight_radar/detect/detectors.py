@@ -42,10 +42,17 @@ import yaml
 from statsmodels.tsa.seasonal import STL
 
 from ..config import BACKEND_DIR
+from ..registry.layers import root_source as _root_source
 
 CONFIG_PATH = BACKEND_DIR / "config" / "detection.yaml"
 
-SOURCE = "IMF PortWatch — daily granularity, refreshed weekly"
+# A flag is a detected anomaly on the cited PortWatch series — its provenance is the registry
+# root resolved by walking derives_from (flags -> snapshot), so the URL + license can never fork
+# from the SSOT the catalog/ledger read (P0-B; retires lib/provenance.ts's parallel URL regex).
+_FLAG_ROOT = _root_source("flags")
+SOURCE = f"{_FLAG_ROOT.name} — daily granularity, refreshed weekly"
+SOURCE_URL = _FLAG_ROOT.url
+LICENSE = _FLAG_ROOT.license
 METHOD = "STL(7,robust) residual + 28d rolling z"
 
 # kind labels keyed by (entity_type, direction).
@@ -126,6 +133,8 @@ class Flag:
     zscore: float
     as_of: str  # 'YYYY-MM-DD'
     source: str = SOURCE
+    source_url: str = SOURCE_URL  # registry-resolved root URL (P0-B) — clickable, drift-proof
+    license: str = LICENSE  # registry-resolved root license (P0-B)
     method: str = METHOD
     lifecycle: str = "new"
 
