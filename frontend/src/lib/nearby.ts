@@ -1,4 +1,5 @@
 import type { AppData } from '../types.ts';
+import { gdacsReportUrl } from './sources.ts';
 
 // The P6 "Nearby" surface, client-side. For a selected SPINE entity (a port/chokepoint),
 // gather the CITED CONTEXT items already loaded in the browser that sit within a radius,
@@ -124,7 +125,7 @@ const SOURCES: Source[] = [
     },
     url: (it) =>
       str(it.eventid) || num(it.eventid) != null
-        ? `https://www.gdacs.org/report.aspx?eventtype=${str(it.type) ?? ''}&eventid=${it.eventid}`
+        ? gdacsReportUrl(str(it.type) ?? '', it.eventid as number | string)
         : null,
   },
 ];

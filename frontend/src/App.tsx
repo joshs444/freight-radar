@@ -35,6 +35,8 @@ import type {
 import LayerPanel from './components/LayerPanel.tsx';
 import CommandPalette from './components/CommandPalette.tsx';
 import NearbyPanel from './components/NearbyPanel.tsx';
+import ContextTraceCard from './components/ContextTraceCard.tsx';
+import type { ContextPick } from './lib/sources.ts';
 import { DEFAULT_LAYER_VISIBILITY } from './lib/layers.gen.ts';
 import { LENS_BY_ID, lensVisibility } from './lib/lenses.ts';
 import type { Lens } from './lib/lenses.ts';
@@ -153,6 +155,8 @@ export default function App() {
   // cross-highlight: a hovered feed row and/or a multi-field search light their marks on
   // the globe (a cyan ring). The Globe gets the union of both.
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  // a clicked CONTEXT dot — opens the in-app trace card (trace UP before OUT, P1-C)
+  const [ctxPick, setCtxPick] = useState<ContextPick | null>(null);
   const [searchHits, setSearchHits] = useState<string[]>([]);
   // GFS wind forecast scrubber: 0 = now (analysis) … 4 = +4 days
   const [windFrame, setWindFrame] = useState(0);
@@ -451,6 +455,7 @@ export default function App() {
                   hazardDots={hist.mode ? [] : (data.disruptions?.events ?? [])}
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
+                  onPickContext={setCtxPick}
                   mapApiRef={mapApiRef}
                   windOn={hist.mode ? false : layers.wind}
                   windFrame={windFrame}
@@ -467,6 +472,9 @@ export default function App() {
           )}
           {view === 'globe' && data && !hist.mode && selected && (
             <NearbyPanel entity={selected} data={data} onClose={() => selectEntity(null)} />
+          )}
+          {view === 'globe' && !hist.mode && (
+            <ContextTraceCard pick={ctxPick} onClose={() => setCtxPick(null)} />
           )}
           {view === 'globe' && !hist.mode && data && (
             <LayerPanel

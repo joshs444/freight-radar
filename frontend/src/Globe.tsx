@@ -38,6 +38,7 @@ import type {
   GlobeFlag,
   LayerVisibility,
 } from './types.ts';
+import { gdacsReportUrl, type ContextPick } from './lib/sources.ts';
 
 // deck.gl wants fixed-length RGBA tuples; our color constants are 3-element, so append
 // the alpha into a real 4-tuple (a `[...c, a]` spread would widen back to number[]).
@@ -153,6 +154,7 @@ interface LayerInputs {
   hazardDots: DisruptionEvent[];
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
+  onPickContext: (pick: ContextPick) => void;
   layers: LayerVisibility;
   highlightIds: string[];
 }
@@ -176,6 +178,7 @@ function buildLayers({
   hazardDots,
   selectedId,
   onSelectFlag,
+  onPickContext,
   layers,
   highlightIds,
 }: LayerInputs) {
@@ -240,8 +243,15 @@ function buildLayers({
       lineWidthMinPixels: 0.5,
       pickable: true,
       onClick: (info) => {
-        const url = (info.object as NewsGeoItem | undefined)?.url;
-        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+        const d = info.object as NewsGeoItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'news_geo',
+            title: d.place || d.domain,
+            value: `${d.category_label} · ${d.domain}`,
+            asOf: d.seen,
+            url: d.url,
+          });
       },
       updateTriggers: { getFillColor: newsDots },
     }),
@@ -265,8 +275,15 @@ function buildLayers({
       lineWidthMinPixels: 0.5,
       pickable: true,
       onClick: (info) => {
-        const url = (info.object as QuakeItem | undefined)?.url;
-        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+        const d = info.object as QuakeItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'quakes',
+            title: d.place,
+            value: `M${d.mag}${d.depth_km != null ? ` · depth ${d.depth_km} km` : ''}`,
+            asOf: d.time?.slice(0, 10),
+            url: d.url,
+          });
       },
     }),
 
@@ -288,8 +305,15 @@ function buildLayers({
       lineWidthMinPixels: 0.5,
       pickable: true,
       onClick: (info) => {
-        const url = (info.object as EonetItem | undefined)?.url;
-        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+        const d = info.object as EonetItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'eonet',
+            title: d.title,
+            value: d.category,
+            asOf: d.date?.slice(0, 10),
+            url: d.url,
+          });
       },
     }),
 
@@ -309,6 +333,20 @@ function buildLayers({
       stroked: true,
       getLineColor: rgba([255, 255, 255], 130),
       lineWidthMinPixels: 0.5,
+      // marine has NO per-item url — the card shows the file-level Open-Meteo source + CC-BY
+      // license from the catalog (the only context dot that traces UP without an OUT link).
+      pickable: true,
+      onClick: (info) => {
+        const d = info.object as MarineItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'marine',
+            title: d.name,
+            value: `wave ${d.wave_height_m} m${d.wave_period_s != null ? ` · period ${d.wave_period_s} s` : ''}`,
+            asOf: d.observed_at?.slice(0, 16).replace('T', ' '),
+            url: null,
+          });
+      },
     }),
 
     // NOAA CO-OPS observed water level at major US ports — teal dots. CONTEXT: a cited
@@ -329,8 +367,15 @@ function buildLayers({
       lineWidthMinPixels: 0.5,
       pickable: true,
       onClick: (info) => {
-        const url = (info.object as TideItem | undefined)?.url;
-        if (url) window.open(url, '_blank', 'noopener');
+        const d = info.object as TideItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'tides',
+            title: d.port,
+            value: `water level ${d.water_level_ft} ft`,
+            asOf: d.observed_at?.slice(0, 16).replace('T', ' '),
+            url: d.url,
+          });
       },
     }),
 
@@ -353,8 +398,15 @@ function buildLayers({
       lineWidthMinPixels: 0.5,
       pickable: true,
       onClick: (info) => {
-        const url = (info.object as StreamflowItem | undefined)?.url;
-        if (url) window.open(url, '_blank', 'noopener');
+        const d = info.object as StreamflowItem | undefined;
+        if (d)
+          onPickContext({
+            layerId: 'streamflow',
+            title: d.river || d.place,
+            value: `stage ${d.stage_ft} ft`,
+            asOf: d.observed_at?.slice(0, 16).replace('T', ' '),
+            url: d.url,
+          });
       },
     }),
 
@@ -379,11 +431,13 @@ function buildLayers({
       onClick: (info) => {
         const d = info.object as DisruptionEvent | undefined;
         if (d)
-          window.open(
-            `https://www.gdacs.org/report.aspx?eventtype=${d.type}&eventid=${d.eventid}`,
-            '_blank',
-            'noopener'
-          );
+          onPickContext({
+            layerId: 'disruptions',
+            title: d.name,
+            value: `${d.type_label} · ${d.alertlevel} alert`,
+            asOf: d.from,
+            url: gdacsReportUrl(d.type, d.eventid),
+          });
       },
     }),
 
@@ -563,6 +617,7 @@ interface GlobeProps {
   hazardDots: DisruptionEvent[];
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
+  onPickContext: (pick: ContextPick) => void;
   mapApiRef: MutableRefObject<MapApi | null>;
   windOn: boolean;
   windFrame: number;
@@ -585,6 +640,7 @@ export default function Globe({
   hazardDots,
   selectedFlag,
   onSelectFlag,
+  onPickContext,
   mapApiRef,
   windOn,
   windFrame,
@@ -839,6 +895,7 @@ export default function Globe({
         flags: flags ?? [],
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
+        onPickContext,
         layers,
         highlightIds,
       }),
@@ -858,6 +915,7 @@ export default function Globe({
     quakeDots,
     selectedFlag,
     onSelectFlag,
+    onPickContext,
     layers,
     highlightIds,
   ]);
