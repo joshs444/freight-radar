@@ -2,7 +2,7 @@
 
 **World signals on one honest 3D globe. Ocean-freight throughput is the measured spine — a statistical engine auto-flags transit collapses, congestion, Cape-of-Good-Hope reroutes, and cargo-specific drops from free, public IMF PortWatch data — while geo-tagged world news, storms, hazards, satellite and wind ride alongside as cited, possibly-related context. Every figure is computed in Python from source; no model is in the number path, and nothing here forecasts.** _(Formerly Freight Radar; repo slug + URL keep the old name.)_
 
-[**▶ Live demo**](https://joshs444.github.io/freight-radar/) · [**How it stays honest** ↓](#how-it-stays-honest)
+[**▶ Live demo**](https://joshs444.github.io/freight-radar/) · [**📊 Data Atlas**](docs/DATA-ATLAS.md) ([PDF](docs/DATA-ATLAS.pdf)) · [**How it stays honest** ↓](#how-it-stays-honest)
 
 [![CI](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml)
 [![Deploy](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml)
