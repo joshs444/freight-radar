@@ -128,6 +128,7 @@ export const OPTIONAL_SIDECAR_FILES: readonly string[] = [
   'data/streamflow.json',
   'data/eonet.json',
   'data/marine.json',
+  'data/signals_fdr.json',
   'data/tides.json',
   'data/ships.json',
   'data/wind.json',

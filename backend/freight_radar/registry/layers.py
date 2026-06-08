@@ -670,6 +670,11 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         enrich_order=22,
         output="freight_rate",
         manifest_sidecar=True,
+        # The client loads the POOLED cross-family file (signals_fdr.json) — one Benjamini-
+        # Hochberg family across every signal silo, so multiplicity is controlled honestly. The
+        # freight_rate signal (the headline) carries that fetch for the Signal Board feed panel.
+        fetch_file="data/signals_fdr.json",
+        appdata_key="signals",
         metric="12-month rolling z-score of a cited freight-mode PPI (the cost anomaly we compute)",
         source=Source(
             "FRED (public domain · BLS Producer Price Index)",
