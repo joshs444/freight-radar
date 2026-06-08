@@ -3058,6 +3058,112 @@ body,
   color: var(--ink-dim);
 }
 
+/* Cross-domain signal board — trucking/inventories/commodities, beyond the maritime spine */
+.fr-sigboard {
+  margin: 0 16px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid #2f5d99;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.fr-sigboard-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 13px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+}
+.fr-sigboard-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.fr-sigboard-kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #2f5d99;
+}
+.fr-sigboard-sub {
+  font-family: var(--display);
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  line-height: 1.35;
+}
+.fr-sigboard-toggle {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink-faint);
+}
+.fr-sigboard-body {
+  padding: 0 13px 11px;
+}
+.fr-sigboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fr-sig {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+}
+.fr-sig-z {
+  flex: none;
+  width: 62px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fr-sig-z.up {
+  color: #b0521e;
+}
+.fr-sig-z.down {
+  color: #2f6f8f;
+}
+.fr-sig-z.strong {
+  font-weight: 800;
+}
+.fr-sig-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--display);
+  font-size: 12.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fr-sig-fam {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+.fr-sigboard-foot {
+  margin-top: 9px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+
 /* --- Ask Freight Radar (grounded chat) ---------------------------------- */
 .fr-chat-fab {
   position: fixed;

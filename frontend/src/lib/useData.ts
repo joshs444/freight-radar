@@ -23,6 +23,7 @@ import type {
   Gatun,
   Weather,
   Wind,
+  SignalsFdr,
 } from '../types.ts';
 
 interface DataState {
@@ -78,6 +79,7 @@ export function useData(): DataState {
           gatun,
           weather,
           wind,
+          signals,
         ] = await Promise.all([
           getJson<Timeseries>('data/timeseries.json').catch(() => null),
           getJson<Ships>('data/ships.json').catch(() => null),
@@ -98,6 +100,7 @@ export function useData(): DataState {
           getJson<Gatun>('data/gatun.json').catch(() => null),
           getJson<Weather>('data/weather.json').catch(() => null),
           getJson<Wind>('data/wind.json').catch(() => null),
+          getJson<SignalsFdr>('data/signals_fdr.json').catch(() => null),
         ]);
         if (!alive) return;
         setState({
@@ -126,6 +129,7 @@ export function useData(): DataState {
             gatun,
             weather,
             wind,
+            signals,
           },
         });
       })

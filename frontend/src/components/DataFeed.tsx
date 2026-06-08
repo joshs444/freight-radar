@@ -5,6 +5,7 @@ import { Markdown } from '../lib/md.tsx';
 import { Sparkline, SparkHistory } from './Sparkline.tsx';
 import { computeTrend, trendLabel } from '../lib/trend.ts';
 import BriefCard from './BriefCard.tsx';
+import SignalBoard from './SignalBoard.tsx';
 import HazardsPanel from './HazardsPanel.tsx';
 import GatunPanel from './GatunPanel.tsx';
 import CargoMix from './CargoMix.tsx';
@@ -31,6 +32,7 @@ import type {
   Flag,
   Snapshot,
   TimeseriesSeries,
+  SignalsFdr,
 } from '../types.ts';
 
 const CONF_LABEL: Record<string, string> = {
@@ -476,6 +478,7 @@ interface DataFeedProps {
   dates: string[] | undefined;
   news: Record<string, NewsEntry> | undefined;
   market: MarketType | null | undefined;
+  signals: SignalsFdr | null | undefined;
   selected: MonitorEntity | null | undefined;
   onSelect: (e: MonitorEntity | null) => void;
   onHover?: (id: string | null) => void;
@@ -506,6 +509,7 @@ export default function DataFeed({
   dates,
   news,
   market,
+  signals,
   selected,
   onSelect,
   onHover,
@@ -562,6 +566,9 @@ export default function DataFeed({
             onExport={() => exportBrief(brief)}
           />
         )}
+
+        {/* the multi-domain signal — trucking/inventories/commodities — beyond the maritime spine */}
+        <SignalBoard signals={signals} />
 
         {disruptions && <HazardsPanel disruptions={disruptions} onPickEntity={onPickEntity} />}
 

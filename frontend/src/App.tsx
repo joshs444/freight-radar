@@ -598,6 +598,7 @@ export default function App() {
             dates={ts?.dates}
             news={data.news?.items}
             market={data.market}
+            signals={data.signals}
             selected={selected}
             onSelect={selectEntity}
             asOf={asOf}

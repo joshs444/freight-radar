@@ -718,6 +718,30 @@ export interface AppData {
   gatun: Gatun | null;
   weather: Weather | null;
   wind: Wind | null;
+  signals: SignalsFdr | null;
+}
+
+// ---- cross-domain measured signals (signals_fdr.json) ----------------------
+// The non-maritime measured anomalies — freight-mode rates (truckload/rail/air),
+// inventories-to-sales, commodities, metals, macro, labor. National + monthly (no geo),
+// so they surface as a feed panel, not globe markers. A z-score WE compute, FDR-gated.
+export interface SignalItem {
+  family: string;
+  id: string;
+  name: string;
+  unit: string;
+  as_of: string;
+  value: number;
+  our_zscore: number;
+  fdr_significant: boolean;
+}
+export interface SignalsFdr {
+  method?: string;
+  disclaimer?: string;
+  q?: number;
+  families?: string[];
+  counts?: { tested?: number; significant?: number; expected_false?: number };
+  items: SignalItem[];
 }
 
 // ---- derived UI shapes -----------------------------------------------------
