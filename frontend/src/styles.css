@@ -2334,6 +2334,45 @@ body,
   color: #3f7a5a !important; /* calm green — zero critical flags is a GOOD state, not empty */
   font-weight: 600;
 }
+/* lineage trace: every measured datapoint traces to its source, linked + click-to-source */
+.fr-prov {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--line);
+}
+.fr-prov-tier {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #2f6f4f;
+  background: #eef6f1;
+  border: 1px solid #cfe6da;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-bottom: 5px;
+}
+.fr-prov-trace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+.fr-prov-step b {
+  color: var(--ink-dim);
+}
+.fr-prov-src {
+  color: #2f5d99;
+  font-weight: 700;
+  text-decoration: none;
+}
+.fr-prov-src:hover {
+  text-decoration: underline;
+}
 .fr-empty {
   color: var(--ink-faint);
   font-family: var(--mono);

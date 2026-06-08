@@ -4,6 +4,7 @@ import { money } from '../lib/format.ts';
 import { Markdown } from '../lib/md.tsx';
 import { Sparkline, SparkHistory } from './Sparkline.tsx';
 import { computeTrend, trendLabel } from '../lib/trend.ts';
+import { sourceUrl, sourceName } from '../lib/provenance.ts';
 import BriefCard from './BriefCard.tsx';
 import SignalBoard from './SignalBoard.tsx';
 import HazardsPanel from './HazardsPanel.tsx';
@@ -431,12 +432,41 @@ function Row({
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
           {e.flag && news && <NewsBlock news={news} />}
-          <div className="fr-row-meta">
-            {e.flag ? <span>{e.flag.method}</span> : <span>{e.type} · monitored</span>}
-            {e.flag && <span>as of {e.flag.as_of}</span>}
-          </div>
+          {e.flag ? (
+            <Provenance flag={e.flag} />
+          ) : (
+            <div className="fr-row-meta">
+              <span>{e.type} · monitored</span>
+            </div>
+          )}
         </div>
       )}
+    </div>
+  );
+}
+
+// The lineage trace under an expanded flag: this number is MEASURED (computed in Python), here is
+// the exact source it traces to (linked), the method, the metric, and the date. Click-to-source.
+function Provenance({ flag }: { flag: Flag }) {
+  const url = sourceUrl(flag.source);
+  return (
+    <div className="fr-prov">
+      <span className="fr-prov-tier">measured · computed in Python</span>
+      <div className="fr-prov-trace">
+        <span className="fr-prov-step">
+          from{' '}
+          {url ? (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="fr-prov-src">
+              {sourceName(flag.source)} ↗
+            </a>
+          ) : (
+            <b>{sourceName(flag.source)}</b>
+          )}
+        </span>
+        {flag.method && <span className="fr-prov-step">method: {flag.method}</span>}
+        {flag.metric && <span className="fr-prov-step">metric: {flag.metric}</span>}
+        <span className="fr-prov-step">as of {flag.as_of}</span>
+      </div>
     </div>
   );
 }
