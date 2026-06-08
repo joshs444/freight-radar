@@ -781,6 +781,7 @@ export interface MonitorEntity {
   share_import?: number;
   share_export?: number;
   country?: string | null;
+  as_of?: string; // the snapshot data date — feeds the unflagged port/chokepoint trace (P1-B)
   relevance?: number; // importance × magnitude × corroboration; see lib/relevance.ts
 }
 

@@ -433,13 +433,7 @@ function Row({
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
           {e.flag && news && <NewsBlock news={news} />}
-          {e.flag ? (
-            <Provenance flag={e.flag} />
-          ) : (
-            <div className="fr-row-meta">
-              <span>{e.type} · monitored</span>
-            </div>
-          )}
+          {e.flag ? <Provenance flag={e.flag} /> : <UnflaggedTrace e={e} />}
         </div>
       )}
     </div>
@@ -465,6 +459,46 @@ function Provenance({ flag }: { flag: Flag }) {
       sourceUrl={flag.source_url}
       license={flag.license}
       asOf={flag.as_of}
+    />
+  );
+}
+
+// The most-clicked thing on the globe is an UNFLAGGED port or chokepoint, and it used to trace to
+// "<type> · monitored" — nothing. Now it traces too, on the SAME measured series a flag is detected
+// from — but ports and chokepoints are DIFFERENT shapes (adversarial fence #4/#5):
+//   • a CHOKEPOINT (28; carries n_total/baseline/pct) gets the computed trace: throughput vs the
+//     28-day baseline, the % change WE compute.
+//   • a PORT (2065; carries only an annual vessel COUNT) gets a CITED-COUNT trace — no z-score, no
+//     "% vs 28d", NOT labelled "computed in Python". Reusing the chokepoint metric under a port
+//     would mislabel a static count as a computed anomaly.
+function UnflaggedTrace({ e }: { e: MonitorEntity }) {
+  if (e.type === 'chokepoint' && e.n_total != null && e.baseline != null) {
+    const n = Math.round(e.n_total).toLocaleString();
+    const base = Math.round(e.baseline).toLocaleString();
+    const pct = e.metric;
+    const pctStr = pct != null ? ` · ${pct > 0 ? '+' : ''}${pct.toFixed(1)}% vs 28d` : '';
+    return (
+      <Trace
+        layerId="chokepoints"
+        tier="measured · computed in Python"
+        raw="PortWatch AIS port-calls (daily)"
+        method="latest day vs trailing-28d baseline"
+        published={`${n}/day vs ${base} baseline${pctStr}`}
+        asOf={e.as_of}
+      />
+    );
+  }
+  // a PORT: a cited annual count, never a computed anomaly — omit method + published (fence #4)
+  return (
+    <Trace
+      layerId="ports"
+      tier="cited annual count — not a computed anomaly"
+      raw={
+        e.vessels != null
+          ? `annual vessel count: ${Math.round(e.vessels).toLocaleString()}`
+          : 'annual vessel activity'
+      }
+      asOf={e.as_of}
     />
   );
 }
