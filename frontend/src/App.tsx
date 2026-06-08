@@ -242,6 +242,13 @@ export default function App() {
   const boardRows = useMemo(() => [...rows, ...minorRows], [rows, minorRows]);
   const noop = useCallback(() => {}, []);
 
+  // scroll to + focus the monitor feed (the brief leads it) — used by the lede + onboarding
+  const scrollToBrief = useCallback(() => {
+    const el = document.getElementById('fr-monitor');
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el?.focus();
+  }, []);
+
   // browser-notify on new/escalated flags for watched entities
   useEffect(() => {
     if (data) notifyWatched(watched, flags);
@@ -358,11 +365,7 @@ export default function App() {
         <button
           type="button"
           className="fr-lede"
-          onClick={() => {
-            const el = document.getElementById('fr-monitor');
-            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            el?.focus();
-          }}
+          onClick={scrollToBrief}
           title="Read the full brief"
         >
           <span className="fr-lede-dot" />
@@ -379,16 +382,6 @@ export default function App() {
             keyboard-navigable.
           </h2>
           {data && <ViewToggle view={view} onChange={changeView} />}
-          {data && (
-            <button
-              type="button"
-              className="fr-cmdk-chip"
-              onClick={() => window.dispatchEvent(new Event('fr:open-palette'))}
-              title="Command palette — jump to a view, toggle a layer, or load a lens"
-            >
-              <span aria-hidden>⌘</span>K
-            </button>
-          )}
           {data && (
             <CommandPalette
               layers={layers}
@@ -562,7 +555,9 @@ export default function App() {
             )
           )}
           {loading && <div className="fr-loading">acquiring signal…</div>}
-          {view === 'globe' && data && !hist.mode && <Onboarding />}
+          {view === 'globe' && data && !hist.mode && (
+            <Onboarding headline={data.brief?.headline} onReadBrief={scrollToBrief} />
+          )}
         </section>
 
         {data && (

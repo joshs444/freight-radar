@@ -26,8 +26,8 @@ interface Command {
 const VIEW_LABELS: { id: AppView; label: string }[] = [
   { id: 'globe', label: 'Globe' },
   { id: 'board', label: 'Board' },
-  { id: 'data', label: 'Data feed' },
-  { id: 'ledger', label: 'Source ledger' },
+  { id: 'data', label: 'SQL' },
+  { id: 'ledger', label: 'Sources' },
 ];
 
 // ⌘K / Ctrl-K command palette — the one box to navigate the whole instrument: jump to any

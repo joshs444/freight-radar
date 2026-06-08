@@ -154,15 +154,10 @@ interface BusinessImpactProps {
 
 function BusinessImpact({ b }: BusinessImpactProps) {
   const [showWork, setShowWork] = useState(false);
-  if (!b) return null;
-  if (!b.lane_count) {
-    return (
-      <div className="fr-biz">
-        <div className="fr-biz-head">Business impact</div>
-        <div className="fr-biz-none">No exposure in your trade data.</div>
-      </div>
-    );
-  }
+  // Hide the block entirely when there's no modeled exposure — with the P0 signal gate most
+  // rows have none, so an empty "no exposure" card was just bloat. The "so what" still leads
+  // the rows that DO have exposure (and the collapsed row shows the headline number).
+  if (!b || !b.lane_count) return null;
   const d: Partial<CostBand> = b.est_delay_days || {};
   const cs = b.cost_stack || {};
   const carrying = cs.carrying_cost_of_delay_usd || b.carrying_cost_of_delay_usd;
@@ -349,6 +344,8 @@ function Row({
   const sparkColor = e.critical ? severityCss(e.severity) : '#aab3c0';
   const tl = trendLabel(computeTrend(ser?.values), e.flag?.kind);
   const isWatched = watched?.has(e.id);
+  // "so what" inline on the collapsed row: the modeled trade exposure, when there is any
+  const exposed = e.flag?.business?.lane_count ? money(e.flag.business.exposed_value_usd) : null;
   return (
     <div
       className={`fr-row ${active ? 'is-active' : ''} ${e.critical ? 'is-critical' : ''}`}
@@ -394,6 +391,7 @@ function Row({
                   · {tl.arrow} {tl.label}
                 </span>
               )}
+              {exposed && <span className="fr-row-exposed"> · {exposed} exposed</span>}
             </span>
           </div>
           {ser && <Sparkline values={ser.values} color={sparkColor} mark={scrubIndex} />}
@@ -403,6 +401,9 @@ function Row({
       {active && (
         <div className="fr-row-brief">
           {e.flag && <Markdown text={e.flag.brief_md} />}
+          {/* lead with "who cares" — the exposure — then the chart, then context (each self-
+              hides when empty), so a signal row answers "so what" before it asks you to read. */}
+          {e.flag && <BusinessImpact b={e.flag.business} />}
           <SparkHistory
             s={ser}
             dates={dates}
@@ -410,15 +411,6 @@ function Row({
             baseline={e.flag?.baseline ?? e.baseline}
             color={sparkColor}
           />
-          {tl && (
-            <div className={`fr-trendline ${tl.cls}`}>
-              Trending{' '}
-              <b>
-                {tl.arrow} {tl.label}
-              </b>
-              {tl.pct ? ` — ${tl.pct > 0 ? '+' : ''}${tl.pct}% over the last 10 days` : ''}
-            </div>
-          )}
           <CargoMix
             mix={e.cargo_mix}
             unit={e.type === 'chokepoint' ? 'transits' : 'port calls'}
@@ -435,7 +427,6 @@ function Row({
           {gatun?.available && gatun.portid === e.id && <GatunPanel gatun={gatun} />}
           {e.flag?.live_storm && <StormChip storm={e.flag.live_storm} />}
           {e.flag?.official_event && <OfficialEvent oe={e.flag.official_event} />}
-          {e.flag && <BusinessImpact b={e.flag.business} />}
           {e.flag && market && <MarketBlock market={market} flagId={e.flag.flag_id} />}
           {e.flag && news && <NewsBlock news={news} />}
           <div className="fr-row-meta">

@@ -1112,6 +1112,45 @@ body,
 .fr-onb-go:hover {
   background: #000;
 }
+.fr-onb-kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+.fr-onb-headline {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 14.5px;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.fr-onb-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fr-onb-skip {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+.fr-onb-skip:hover {
+  color: var(--ink);
+}
+/* the "so what" exposure note inlined on a collapsed signal row */
+.fr-row-exposed {
+  color: var(--amber);
+  font-weight: 600;
+}
 
 /* export affordances */
 .fr-brief-dl {
