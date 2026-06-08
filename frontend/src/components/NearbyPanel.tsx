@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { AppData, MonitorEntity } from '../types.ts';
 import { computeNearby, ASSOCIATION_ONLY } from '../lib/nearby.ts';
+import { useCatalog } from '../lib/catalog.ts';
 
 interface NearbyPanelProps {
   entity: MonitorEntity | null;
@@ -30,11 +31,12 @@ const FAMILY_LABEL: Record<string, string> = {
 // never cause, at every layer.
 export default function NearbyPanel({ entity, data, onClose }: NearbyPanelProps) {
   const [radius, setRadius] = useState<number>(750);
+  const catalog = useCatalog();
 
   const items = useMemo(() => {
     if (!entity || entity.lat == null || entity.lon == null) return [];
-    return computeNearby(entity.lat, entity.lon, radius, data);
-  }, [entity, radius, data]);
+    return computeNearby(entity.lat, entity.lon, radius, data, catalog);
+  }, [entity, radius, data, catalog]);
 
   const flag = entity?.flag ?? null;
   // Zone 1, place-attributable to THIS flag: its own cited news + storm + official event

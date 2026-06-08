@@ -1,5 +1,6 @@
 import type { AppData } from '../types.ts';
 import { gdacsReportUrl } from './sources.ts';
+import { effectiveSource, type Catalog } from './catalog.ts';
 
 // The P6 "Nearby" surface, client-side. For a selected SPINE entity (a port/chokepoint),
 // gather the CITED CONTEXT items already loaded in the browser that sit within a radius,
@@ -64,7 +65,7 @@ const SOURCES: Source[] = [
     layer: 'quakes',
     label: 'USGS earthquake',
     items: (d) => d.quakes?.items as GeoPoint[] | undefined,
-    source: (d) => d.quakes?.source ?? 'USGS',
+    source: (d) => d.quakes?.source ?? null,
     detail: (it) => (num(it.mag) != null ? `M${(num(it.mag) as number).toFixed(1)}` : null),
     url: (it) => str(it.url),
   },
@@ -72,7 +73,7 @@ const SOURCES: Source[] = [
     layer: 'news_geo',
     label: 'GDELT news',
     items: (d) => d.newsGeo?.items as GeoPoint[] | undefined,
-    source: (d) => d.newsGeo?.source ?? 'GDELT',
+    source: (d) => d.newsGeo?.source ?? null,
     detail: (it) => str(it.category_label) ?? str(it.domain),
     url: (it) => str(it.url),
   },
@@ -80,7 +81,7 @@ const SOURCES: Source[] = [
     layer: 'eonet',
     label: 'NASA natural event',
     items: (d) => d.eonet?.items as GeoPoint[] | undefined,
-    source: (d) => d.eonet?.source ?? 'NASA EONET',
+    source: (d) => d.eonet?.source ?? null,
     detail: (it) => str(it.category),
     url: (it) => str(it.url),
   },
@@ -88,7 +89,7 @@ const SOURCES: Source[] = [
     layer: 'marine',
     label: 'sea state',
     items: (d) => d.marine?.items as GeoPoint[] | undefined,
-    source: (d) => d.marine?.source ?? 'Open-Meteo',
+    source: (d) => d.marine?.source ?? null,
     detail: (it) =>
       num(it.wave_height_m) != null
         ? `${(num(it.wave_height_m) as number).toFixed(1)} m wave`
@@ -99,7 +100,7 @@ const SOURCES: Source[] = [
     layer: 'tides',
     label: 'water level',
     items: (d) => d.tides?.items as GeoPoint[] | undefined,
-    source: (d) => d.tides?.source ?? 'NOAA CO-OPS',
+    source: (d) => d.tides?.source ?? null,
     detail: (it) =>
       num(it.water_level_ft) != null ? `${(num(it.water_level_ft) as number).toFixed(1)} ft` : null,
     url: (it) => str(it.url),
@@ -108,7 +109,7 @@ const SOURCES: Source[] = [
     layer: 'streamflow',
     label: 'river stage',
     items: (d) => d.streamflow?.items as GeoPoint[] | undefined,
-    source: (d) => d.streamflow?.source ?? 'USGS',
+    source: (d) => d.streamflow?.source ?? null,
     detail: (it) =>
       num(it.stage_ft) != null ? `${(num(it.stage_ft) as number).toFixed(1)} ft stage` : null,
     url: (it) => str(it.url),
@@ -117,7 +118,7 @@ const SOURCES: Source[] = [
     layer: 'disruptions',
     label: 'GDACS hazard alert',
     items: (d) => d.disruptions?.events as GeoPoint[] | undefined,
-    source: (d) => d.disruptions?.source ?? 'GDACS',
+    source: (d) => d.disruptions?.source ?? null,
     detail: (it) => {
       const lvl = str(it.alertlevel);
       const ty = str(it.type_label);
@@ -131,17 +132,22 @@ const SOURCES: Source[] = [
 ];
 
 // Every cited CONTEXT item within `radiusKm` of (lat, lon), ordered ONLY by distance.
+// The source name comes from the sidecar; when a feed omits it, the fallback is resolved from the
+// registry `catalog` (fence #8) — never a hard-coded string, so the triangulation roster can't drift
+// from the SSOT the rest of the provenance work made authoritative.
 export function computeNearby(
   lat: number,
   lon: number,
   radiusKm: number,
-  data: AppData
+  data: AppData,
+  catalog?: Catalog | null
 ): NearbyItem[] {
   const hits: NearbyItem[] = [];
   for (const s of SOURCES) {
     const items = s.items(data);
     if (!items) continue;
-    const src = s.source(data);
+    const src =
+      s.source(data) ?? (catalog ? (effectiveSource(catalog, s.layer).source?.name ?? null) : null);
     for (const it of items) {
       if (typeof it.lat !== 'number' || typeof it.lon !== 'number') continue;
       const km = haversineKm(lat, lon, it.lat, it.lon);
