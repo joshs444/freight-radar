@@ -402,9 +402,21 @@ body,
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 8px 18px;
   background: var(--surface);
+  border: none;
   border-bottom: 1px solid var(--line);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.fr-lede:hover {
+  background: var(--surface-2, #f4f1ea);
+}
+.fr-lede:hover .fr-lede-tag {
+  color: var(--amber);
 }
 .fr-lede-dot {
   flex: none;
@@ -432,6 +444,31 @@ body,
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--ink-faint);
+  transition: color 0.12s ease;
+}
+/* the "show all minor anomalies" expander under the gated feed */
+.fr-show-minor {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 6px 12px 2px;
+  padding: 7px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+.fr-show-minor:hover {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--ink-faint);
 }
 .fr-main {
   flex: 1;

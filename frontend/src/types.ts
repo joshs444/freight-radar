@@ -744,6 +744,7 @@ export interface MonitorEntity {
   share_import?: number;
   share_export?: number;
   country?: string | null;
+  relevance?: number; // importance × magnitude × corroboration; see lib/relevance.ts
 }
 
 /** The globe only needs a subset of each marker's fields. Both the live shapes
@@ -767,6 +768,7 @@ export interface GlobeFlag {
   kind: string;
   headline: string;
   pct_change?: number;
+  relevance?: number; // drives marker size: the needle reads bigger than the blips
 }
 export type GlobeSnapshot = Omit<Snapshot, 'chokepoints'> & { chokepoints: GlobeChokepoint[] };
 

@@ -123,6 +123,8 @@ const STYLE: StyleSpecification = {
 };
 
 const sqrtScale = (v: number, k: number): number => Math.sqrt(Math.max(0, v)) * k;
+// flag marker core radius (px) from its relevance: a ~0 blip ≈ 4px, a ~0.9 needle ≈ 12px
+const flagPx = (d: GlobeFlag): number => 4 + (d.relevance ?? 0) * 9;
 
 // live AIS vessel dot color by coarse type (AIS only resolves cargo/tanker/etc.).
 // Vivid, higher-chroma so the live ships read clearly against the muted slate ports;
@@ -485,13 +487,16 @@ function buildLayers({
       parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: 1,
+      // halo scales with the core (relevance) so the needle's glow reads bigger than a blip's
+      getRadius: (d) => flagPx(d) + 8,
       radiusUnits: 'pixels',
-      radiusMinPixels: 15,
-      radiusMaxPixels: 15,
+      radiusMinPixels: 9,
+      radiusMaxPixels: 22,
       filled: true,
       stroked: false,
-      getFillColor: (d) => severityColor(d.severity, 34),
+      // dim the noise tail's glow so signal pops and minor anomalies recede to faint dust
+      getFillColor: (d) => severityColor(d.severity, (d.relevance ?? 0) >= 0.15 ? 40 : 18),
+      updateTriggers: { getRadius: selectedId, getFillColor: selectedId },
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
@@ -499,17 +504,24 @@ function buildLayers({
       parameters: MARKER_PARAMETERS,
       data: flags,
       getPosition: (d) => [d.lon, d.lat],
-      getRadius: (d) => (d.flag_id === selectedId ? 9 : 7),
+      // size by relevance: Hormuz (~0.9) reads ~13px, a 0.04-vessel blip ~4px. The needle
+      // is visibly bigger than the noise — the most direct triage affordance on a map.
+      getRadius: (d) => flagPx(d) + (d.flag_id === selectedId ? 2 : 0),
       radiusUnits: 'pixels',
-      radiusMinPixels: 7,
-      radiusMaxPixels: 9,
+      radiusMinPixels: 3.5,
+      radiusMaxPixels: 15,
       filled: true,
       stroked: true,
-      getFillColor: (d) => severityColor(d.severity, 255),
-      getLineColor: rgba([255, 255, 255], 255),
+      getFillColor: (d) => severityColor(d.severity, (d.relevance ?? 0) >= 0.15 ? 255 : 150),
+      getLineColor: (d) => rgba([255, 255, 255], (d.relevance ?? 0) >= 0.15 ? 255 : 150),
       lineWidthUnits: 'pixels',
       getLineWidth: (d) => (d.flag_id === selectedId ? 3.2 : 2),
-      updateTriggers: { getLineWidth: selectedId, getRadius: selectedId },
+      updateTriggers: {
+        getLineWidth: selectedId,
+        getRadius: selectedId,
+        getFillColor: selectedId,
+        getLineColor: selectedId,
+      },
       pickable: true,
       onClick: (info) => info.object && onSelectFlag(info.object),
     }),

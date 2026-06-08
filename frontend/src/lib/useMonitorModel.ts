@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { flagRelevance, RELEVANCE_FLOOR } from './relevance.ts';
 import type {
   AppData,
   CargoMix,
@@ -45,15 +46,17 @@ interface UseMonitorModelArgs {
 interface UseMonitorModelResult {
   scrubDate: string | null;
   rows: MonitorEntity[];
+  minorRows: MonitorEntity[];
   criticalCount: number;
   pickByPortid: (portid: string) => void;
   flagByPort: Record<string, Flag>;
   globeView: GlobeView;
 }
 
-// critical first (by severity), then normal by real traffic — not by noisy %
-const byCritThenSeverity = (a: MonitorEntity, b: MonitorEntity) =>
-  Number(b.critical) - Number(a.critical) ||
+// signal first (by computed relevance), then by traffic — relevance already folds in
+// magnitude, so this no longer lets a 13% wiggle on an empty port outrank a real move.
+const byRelevance = (a: MonitorEntity, b: MonitorEntity) =>
+  (b.relevance || 0) - (a.relevance || 0) ||
   (b.severity || 0) - (a.severity || 0) ||
   (b.weight || 0) - (a.weight || 0);
 
@@ -108,6 +111,7 @@ export function useMonitorModel({
 
     const choke: MonitorEntity[] = (data.snapshot?.chokepoints || []).map((c) => {
       const flag = flagByPort[c.portid] || null;
+      const relevance = flag ? flagRelevance(flag) : 0;
       return {
         id: c.portid,
         name: c.name,
@@ -125,29 +129,37 @@ export function useMonitorModel({
         capacity_total: c.capacity_total,
         flag,
         severity: flag ? flag.severity : null,
-        critical: !!flag,
+        // "critical" now means SIGNAL (relevance ≥ floor), not merely "has a flag" — so the
+        // count + styling stop calling 171 stat-blips critical.
+        critical: relevance >= RELEVANCE_FLOOR,
+        relevance,
         weight: c.n_total || 0,
       };
     });
     const chokeIds = new Set(choke.map((c) => c.id));
     const portFlags: MonitorEntity[] = Object.values(flagByPort)
       .filter((f) => !chokeIds.has(f.portid))
-      .map((f) => ({
-        id: f.portid,
-        name: f.entity,
-        type: 'port',
-        lat: f.lat,
-        lon: f.lon,
-        metric: f.pct_change,
-        flag: f,
-        severity: f.severity,
-        critical: true,
-        weight: 1e9,
-        cargo_mix: mixByPort[f.portid] || null,
-        share_import: portMetaById[f.portid]?.share_import,
-        share_export: portMetaById[f.portid]?.share_export,
-        country: portMetaById[f.portid]?.country,
-      }));
+      .map((f) => {
+        const relevance = flagRelevance(f);
+        return {
+          id: f.portid,
+          name: f.entity,
+          type: 'port' as const,
+          lat: f.lat,
+          lon: f.lon,
+          metric: f.pct_change,
+          flag: f,
+          severity: f.severity,
+          critical: relevance >= RELEVANCE_FLOOR, // was hard-coded true for all 171 — the bug
+          relevance,
+          baseline: f.baseline,
+          weight: 1e9,
+          cargo_mix: mixByPort[f.portid] || null,
+          share_import: portMetaById[f.portid]?.share_import,
+          share_export: portMetaById[f.portid]?.share_export,
+          country: portMetaById[f.portid]?.country,
+        };
+      });
     const topPorts: MonitorEntity[] = [...(data.snapshot?.ports || [])]
       .sort((a, b) => b.vessels - a.vessels)
       .slice(0, 40)
@@ -171,16 +183,29 @@ export function useMonitorModel({
     return { choke, portFlags, topPorts };
   }, [data, flags, scrubDate, scrubIndex, ts]);
 
-  const rows = useMemo(() => {
+  // The feed defaults to SIGNAL (relevance ≥ floor); the long noise tail of flagged-but-
+  // minor anomalies is split into `minorRows`, revealed only behind an explicit "show all".
+  // 'chokepoints' shows the full strategic set (only 28); 'watching' is never gated.
+  const { rows, minorRows } = useMemo(() => {
     const { choke, portFlags, topPorts } = sets;
-    let list: MonitorEntity[];
-    if (filter === 'watching')
-      list = [...choke, ...portFlags, ...topPorts].filter((e) => watched.has(e.id));
-    else if (filter === 'critical') list = [...choke, ...portFlags].filter((e) => e.critical);
-    else if (filter === 'chokepoints') list = choke;
-    else if (filter === 'ports') list = [...portFlags, ...topPorts];
-    else list = [...choke, ...portFlags];
-    return [...list].sort(byCritThenSeverity);
+    if (filter === 'watching') {
+      const w = [...choke, ...portFlags, ...topPorts].filter((e) => watched.has(e.id));
+      return { rows: [...w].sort(byRelevance), minorRows: [] as MonitorEntity[] };
+    }
+    if (filter === 'chokepoints') {
+      return { rows: [...choke].sort(byRelevance), minorRows: [] as MonitorEntity[] };
+    }
+    // the flagged universe for the active filter, split signal vs minor by relevance
+    const flagged =
+      filter === 'ports'
+        ? portFlags
+        : filter === 'critical'
+          ? [...choke, ...portFlags].filter((e) => e.critical)
+          : [...choke, ...portFlags];
+    const signal = flagged.filter((e) => e.critical).sort(byRelevance);
+    const minor = flagged.filter((e) => e.flag && !e.critical).sort(byRelevance);
+    // 'critical' is the strict view (no expander); 'all'/'ports' keep the minor tail behind it
+    return { rows: signal, minorRows: filter === 'critical' ? [] : minor };
   }, [sets, filter, watched]);
 
   const criticalCount = useMemo(
@@ -256,5 +281,5 @@ export function useMonitorModel({
     };
   }, [data, ts, scrubIndex]);
 
-  return { scrubDate, rows, criticalCount, pickByPortid, flagByPort, globeView };
+  return { scrubDate, rows, minorRows, criticalCount, pickByPortid, flagByPort, globeView };
 }

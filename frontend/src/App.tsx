@@ -21,6 +21,7 @@ import ViewToggle from './components/ViewToggle.tsx';
 import { useData } from './lib/useData.ts';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.ts';
 import { useMonitorModel } from './lib/useMonitorModel.ts';
+import { flagRelevance } from './lib/relevance.ts';
 import { useHistory } from './lib/useHistory.ts';
 import type {
   MonitorEntity,
@@ -209,20 +210,36 @@ export default function App() {
   // the derived monitor model: the entity universe, the filtered/sorted rows, the
   // critical count, the scrub-aware globe view, the search→entity lookup, and the
   // deep-link picker. All the intricate derivation lives in this one hook.
-  const { scrubDate, rows, criticalCount, pickByPortid, flagByPort, globeView } = useMonitorModel({
-    data,
-    flags,
-    ts,
-    filter,
-    scrubIndex,
-    watched,
-    selectEntity,
-    setFilter,
-  });
+  const { scrubDate, rows, minorRows, criticalCount, pickByPortid, flagByPort, globeView } =
+    useMonitorModel({
+      data,
+      flags,
+      ts,
+      filter,
+      scrubIndex,
+      watched,
+      selectEntity,
+      setFilter,
+    });
 
   // "play through history" (2019→now) — owns its own load/playhead state and derives the
   // synthetic globe view at the playhead week; the live view is untouched until entered.
   const hist = useHistory(data?.snapshot?.ports ?? []);
+
+  // Tag every globe flag with its relevance so the marker layer can size the needle bigger
+  // than the blips (P0-3). Same score the feed gates on, so the two surfaces agree.
+  const globeFlags = useMemo(
+    () =>
+      (hist.mode ? hist.flags : globeView.flags).map((f) => ({
+        ...f,
+        relevance: flagRelevance(f),
+      })),
+    [hist.mode, hist.flags, globeView.flags]
+  );
+
+  // The Board is the comprehensive analytical table — it keeps the FULL set (signal + the
+  // minor tail), so the gate only shapes the casual feed/globe, never the power-user view.
+  const boardRows = useMemo(() => [...rows, ...minorRows], [rows, minorRows]);
   const noop = useCallback(() => {}, []);
 
   // browser-notify on new/escalated flags for watched entities
@@ -338,11 +355,20 @@ export default function App() {
       {data?.world?.available && <WorldRibbon world={data.world} />}
 
       {data?.brief?.headline && (
-        <div className="fr-lede" role="status">
+        <button
+          type="button"
+          className="fr-lede"
+          onClick={() => {
+            const el = document.getElementById('fr-monitor');
+            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el?.focus();
+          }}
+          title="Read the full brief"
+        >
           <span className="fr-lede-dot" />
           <span className="fr-lede-text">{data.brief.headline}</span>
-          <span className="fr-lede-tag">this week</span>
-        </div>
+          <span className="fr-lede-tag">read the brief →</span>
+        </button>
       )}
 
       <div className="fr-main">
@@ -376,7 +402,7 @@ export default function App() {
           {view === 'board' && data && (
             <Suspense fallback={<div className="fr-globe-fallback">building the board…</div>}>
               <Board
-                rows={rows}
+                rows={boardRows}
                 data={data}
                 snapshot={data.snapshot}
                 timeseries={data.timeseries}
@@ -420,7 +446,7 @@ export default function App() {
                 <Globe
                   snapshot={hist.mode ? hist.snapshot : globeView.snapshot}
                   lanes={hist.mode ? [] : data.lanes}
-                  flags={hist.mode ? hist.flags : globeView.flags}
+                  flags={globeFlags}
                   ships={hist.mode ? null : data.ships}
                   storms={hist.mode ? [] : data.weather?.storms}
                   newsDots={hist.mode ? [] : (data.newsGeo?.items ?? [])}
@@ -542,6 +568,7 @@ export default function App() {
         {data && (
           <DataFeed
             rows={rows}
+            minorRows={minorRows}
             filter={filter}
             setFilter={setFilter}
             criticalCount={criticalCount}

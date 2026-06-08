@@ -464,6 +464,7 @@ interface UploadFeedProps {
 
 interface DataFeedProps {
   rows: MonitorEntity[];
+  minorRows: MonitorEntity[];
   filter: string;
   setFilter: (key: string) => void;
   criticalCount: number;
@@ -493,6 +494,7 @@ interface DataFeedProps {
 
 export default function DataFeed({
   rows,
+  minorRows,
   filter,
   setFilter,
   criticalCount,
@@ -522,6 +524,8 @@ export default function DataFeed({
   const filters = watched?.size
     ? [...FILTERS, { key: 'watching', label: `★ ${watched.size}` }]
     : FILTERS;
+  // the long tail of flagged-but-minor anomalies is hidden by default; one click reveals it
+  const [showMinor, setShowMinor] = useState(false);
   return (
     <aside className="fr-feed" id="fr-monitor" tabIndex={-1} aria-label="Monitor feed">
       {/* sticky controls — never scroll away, so you can always re-filter/search */}
@@ -529,7 +533,7 @@ export default function DataFeed({
         <div className="fr-feed-head">
           <span className="fr-feed-title">Monitor</span>
           <span className="fr-feed-count">
-            <b>{criticalCount}</b> critical · {rows.length} shown
+            <b>{criticalCount}</b> signal · {rows.length} shown
           </span>
         </div>
 
@@ -642,6 +646,37 @@ export default function DataFeed({
             gatun={gatun}
           />
         ))}
+
+        {minorRows.length > 0 && (
+          <button
+            type="button"
+            className="fr-show-minor"
+            onClick={() => setShowMinor((v) => !v)}
+            aria-expanded={showMinor}
+          >
+            {showMinor
+              ? '− hide minor anomalies'
+              : `+ ${minorRows.length} minor anomalies — small moves on low-traffic ports`}
+          </button>
+        )}
+        {showMinor &&
+          minorRows.map((e) => (
+            <Row
+              key={e.id}
+              e={e}
+              active={selected?.id === e.id}
+              onSelect={onSelect}
+              onHover={onHover}
+              series={series}
+              dates={dates}
+              news={e.flag ? news?.[e.flag.flag_id] : null}
+              market={market}
+              scrubIndex={scrubIndex}
+              watched={watched}
+              onToggleWatch={onToggleWatch}
+              gatun={gatun}
+            />
+          ))}
       </div>
       <div className="fr-feed-foot">
         <span>{source}</span>

@@ -22,14 +22,14 @@ interface BriefCardProps {
 }
 
 export default function BriefCard({ brief, onPickEntity, onExport }: BriefCardProps) {
-  // Default COLLAPSED so the brief doesn't steal the feed's height from the critical-issue
-  // rows on first paint — the collapsed header still shows the kicker + the computed stress
-  // headline, so it stays the always-on "what's going on" summary. Remembers if you open it.
+  // Default OPEN — the brief IS the answer to "what's happening", so it leads. (It used to
+  // default collapsed to protect the feed's height, but the feed now defaults to ~signal-only
+  // rows, so there's room for both.) Respect an explicit user collapse ('0') across visits.
   const [open, setOpen] = useState(() => {
     try {
-      return localStorage.getItem('fr_brief_open') === '1';
+      return localStorage.getItem('fr_brief_open') !== '0';
     } catch {
-      return false;
+      return true;
     }
   });
   const toggle = () =>
