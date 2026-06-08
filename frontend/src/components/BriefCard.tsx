@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MdInline } from '../lib/md.tsx';
 import { stressLevel } from '../lib/colors.ts';
+import { useCatalog, effectiveSource } from '../lib/catalog.ts';
 import type { Brief } from '../types.ts';
 
 // "What's moving in ocean freight" — a deterministic, fully-cited hero brief at the
@@ -19,6 +20,40 @@ interface BriefCardProps {
   brief: Brief | null;
   onPickEntity?: (portid: string) => void;
   onExport?: () => void;
+}
+
+// Each brief bullet already carries `cites` (the sidecar stems it was computed from) — the brief is
+// the surface a casual user actually reads, yet it was the LEAST-traced (P1-D). Render the cites as
+// small chips that link to the cited source, resolved through the same registry catalog every Trace
+// reads. Rendered OUTSIDE the bullet's click target — an <a> inside a <button> is invalid nesting.
+function CiteChips({ cites }: { cites: string[] }) {
+  const catalog = useCatalog();
+  if (!cites?.length) return null;
+  return (
+    <span className="fr-brief-cites">
+      {cites.map((cite) => {
+        const stem = cite.replace(/\.json$/, '');
+        const eff = effectiveSource(catalog, stem);
+        const url = eff.source?.url ?? null;
+        return url ? (
+          <a
+            key={cite}
+            className="fr-brief-cite is-link"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={eff.source?.name ? `cited from ${eff.source.name}` : undefined}
+          >
+            {stem} ↗
+          </a>
+        ) : (
+          <code key={cite} className="fr-brief-cite">
+            {stem}
+          </code>
+        );
+      })}
+    </span>
+  );
 }
 
 export default function BriefCard({ brief, onPickEntity, onExport }: BriefCardProps) {
@@ -106,6 +141,7 @@ export default function BriefCard({ brief, onPickEntity, onExport }: BriefCardPr
                   ) : (
                     <div className="fr-brief-li-inner">{inner}</div>
                   )}
+                  <CiteChips cites={b.cites} />
                 </li>
               );
             })}

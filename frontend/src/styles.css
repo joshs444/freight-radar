@@ -3194,6 +3194,33 @@ body,
   white-space: nowrap;
   align-self: center;
 }
+/* per-bullet cite chips (P1-D): the cited sidecars, linked to their source via the catalog.
+   indented 16px to sit under the text, past the 7px dot + 9px gap. */
+.fr-brief-cites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 7px 16px;
+}
+.fr-brief-cite {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.03em;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--surface-2, #f1f3f7);
+  border: 1px solid var(--line);
+  color: var(--ink-faint);
+  text-decoration: none;
+}
+a.fr-brief-cite.is-link {
+  color: #2f5d99;
+  border-color: #cfdcef;
+  background: #eef2fa;
+}
+a.fr-brief-cite.is-link:hover {
+  text-decoration: underline;
+}
 .fr-brief-foot {
   display: flex;
   justify-content: space-between;
