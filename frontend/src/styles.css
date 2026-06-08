@@ -4995,14 +4995,18 @@ td.w {
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   box-shadow: 0 14px 36px rgba(27, 34, 48, 0.18);
-  overflow: hidden;
+  overflow-y: auto; /* two zones can run tall — the whole panel scrolls, head stays pinned */
 }
 .fr-nearby-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
   padding: 12px 14px 8px;
+  background: var(--surface);
 }
 .fr-nearby-eyebrow {
   display: block;
@@ -5151,6 +5155,96 @@ a.fr-nearby-link:hover {
 }
 .fr-nearby-row.sw-disruptions {
   border-left-color: #c63434;
+}
+.fr-nearby-row.sw-storm {
+  border-left-color: #7a4fb0;
+}
+/* one real event ≠ N feeds: a co-located row that is the same storm as the chip above */
+.fr-nearby-same {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a5a1e;
+}
+
+/* the two structural zones (§3) — the separation IS the product */
+.fr-nearby-zone {
+  border-top: 1px solid var(--line);
+}
+.fr-nearby-zonelabel {
+  display: block;
+  padding: 9px 14px 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+}
+/* ZONE 2 is structurally fenced: a tinted band, an amber rule, place-INVARIANT content */
+.fr-nearby-zone.fenced {
+  background: #fbf7ef;
+  border-top: 2px solid #ecca8f;
+}
+.fr-nearby-zonelabel.fenced {
+  color: #8a5a1e;
+}
+.fr-nearby-natlist {
+  margin: 0;
+  padding: 2px 0 0;
+  list-style: none;
+}
+.fr-nearby-nat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 14px;
+}
+.fr-nearby-natz {
+  flex: none;
+  width: 52px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fr-nearby-natz.up {
+  color: #b0521e;
+}
+.fr-nearby-natz.down {
+  color: #2f6f8f;
+}
+.fr-nearby-natname {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--display);
+  font-size: 11.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fr-nearby-natfam {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  text-decoration: none;
+}
+a.fr-nearby-natfam:hover {
+  text-decoration: underline;
+  color: #2f5d99;
+}
+.fr-nearby-fencenote {
+  margin: 0;
+  padding: 6px 14px 11px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--ink-faint);
+  line-height: 1.5;
 }
 
 /* P6 cross-layer comparison: per-family cited-context counts in the Board (assoc only) */

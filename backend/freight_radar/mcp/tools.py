@@ -39,11 +39,12 @@ def get_layer_facts(layer_id: str) -> dict:
     return store.get_layer(layer_id)
 
 
-def nearby(lat: float, lon: float, radius_km: float = 750.0) -> dict:
-    """Cited CONTEXT facts (news, earthquakes, storms) within `radius_km` of a point,
-    ordered ONLY by distance and stamped association-only — never a stated cause, never a
-    ranking by severity. Use it to see what cited context co-locates with a place."""
-    return store.nearby(lat, lon, radius_km)
+def nearby(lat: float, lon: float, radius_km: float = 750.0, portid: str | None = None) -> dict:
+    """Cited CONTEXT facts (news, earthquakes, storms) within `radius_km` of a point, ordered ONLY
+    by distance and stamped association-only — never a stated cause, never a ranking by severity.
+    Pass `portid` to also fold in that flagged entity's OWN attached evidence (`here_specifically`).
+    Every result carries the fenced `national_context` band (place-invariant, not attributed here)."""
+    return store.nearby(lat, lon, radius_km, portid=portid)
 
 
 def verify(claim_layer: str, entity_id: str | None = None) -> dict:

@@ -237,11 +237,93 @@ _NEARBY_SOURCES = (
 _PLACE_KEYS = ("place", "name", "port", "title", "river")
 
 
-def nearby(lat: float, lon: float, radius_km: float = 750.0, out_dir=None) -> dict:
-    """CONTEXT facts within `radius_km` of a point, ordered ONLY by distance.
+def _flag_for_portid(out: Path, portid: str):
+    """The active flag at a portid (lifecycle != resolved), or None — used to fold a flagged
+    entity's OWN attached evidence into nearby()."""
+    flags = _read(out, "flags")
+    if not isinstance(flags, list):
+        return None
+    for f in flags:
+        if isinstance(f, dict) and f.get("portid") == portid and f.get("lifecycle") != "resolved":
+            return f
+    return None
 
-    A safe spatial read primitive: it returns cited, co-located context — never a score,
-    a ranking by severity, or a stated cause. Every item carries its source + distance.
+
+def _flag_attached_evidence(out: Path, flag: dict) -> dict:
+    """ZONE 1 place-attributable evidence for a flagged entity: its OWN cited news (news.json keyed
+    by flag_id) + live_storm + official_event — the SAME fold-in the frontend NearbyPanel does, so
+    the agent surface tells the identical 'here, specifically' story. Association only."""
+    fid = flag.get("flag_id")
+    news_doc = _read(out, "news")
+    articles = []
+    if isinstance(news_doc, dict):
+        entry = (news_doc.get("items") or {}).get(fid) or {}
+        for a in entry.get("items", []) or []:
+            articles.append(
+                {
+                    "title": a.get("title"),
+                    "url": a.get("url"),
+                    "source": a.get("source"),
+                    "published": a.get("published"),
+                }
+            )
+    return {
+        "flag_id": fid,
+        "entity": flag.get("entity"),
+        "news": articles,
+        "live_storm": flag.get("live_storm"),
+        "official_event": flag.get("official_event"),
+        "disclaimer": ASSOCIATION_ONLY,
+    }
+
+
+def _national_context(out: Path):
+    """ZONE 2 — the fenced national/global signals (signals_fdr.json, fdr_significant + national).
+    Place-INVARIANT by construction: a pure function of the global file, identical for every query,
+    NEVER distance-tagged, NEVER attributed to a point. Returns None when there are no signals."""
+    doc = _read(out, "signals_fdr")
+    if not isinstance(doc, dict):
+        return None
+    sig = [
+        s
+        for s in (doc.get("items") or [])
+        if isinstance(s, dict) and s.get("fdr_significant") and s.get("fenced") == "national"
+    ]
+    sig.sort(key=lambda s: abs(s.get("our_zscore") or 0.0), reverse=True)
+    if not sig:
+        return None
+    return {
+        "note": (
+            "National/global measured anomalies — a z-score we compute over cited public indices, "
+            "FDR-controlled. Place-INVARIANT: identical for every place, never distance-tagged, "
+            "never attributed to this point."
+        ),
+        "disclaimer": "Association only, never a stated cause.",
+        "signals": [
+            {
+                "name": s.get("name"),
+                "family": s.get("family"),
+                "our_zscore": s.get("our_zscore"),
+                "source": s.get("source"),
+                "source_url": s.get("source_url"),
+                "as_of": s.get("as_of"),
+            }
+            for s in sig
+        ],
+    }
+
+
+def nearby(
+    lat: float, lon: float, radius_km: float = 750.0, portid: str | None = None, out_dir=None
+) -> dict:
+    """CONTEXT facts within `radius_km` of a point, ordered ONLY by distance — the two-zone
+    'what's near here' surface (mirrors the frontend NearbyPanel).
+
+    `items` is ZONE 1's co-located cited context: never a score, a severity ranking, or a stated
+    cause; every item carries its source + distance. When `portid` names an active flagged entity,
+    `here_specifically` folds in that flag's OWN cited news + live_storm + official_event. ZONE 2's
+    `national_context` is the fenced national/global signal set — place-INVARIANT, never attributed
+    to this point. Co-location is association at every layer.
     """
     out = _store_dir(out_dir)
     hits = []
@@ -269,12 +351,22 @@ def nearby(lat: float, lon: float, radius_km: float = 750.0, out_dir=None) -> di
                     }
                 )
     hits.sort(key=lambda h: h["km"])  # distance only — no severity/evidence-density ranking
-    return {
-        "query": {"lat": lat, "lon": lon, "radius_km": radius_km},
+    result = {
+        "query": {"lat": lat, "lon": lon, "radius_km": radius_km, "portid": portid},
         "disclaimer": ASSOCIATION_ONLY,
         "count": len(hits),
         "items": hits,
     }
+    # ZONE 1 fold-in: a flagged entity's own attached evidence (news/storm/event)
+    if portid:
+        flag = _flag_for_portid(out, portid)
+        if flag:
+            result["here_specifically"] = _flag_attached_evidence(out, flag)
+    # ZONE 2: the fenced national band — added only when there are signals (keeps tmp-dir reads lean)
+    nat = _national_context(out)
+    if nat:
+        result["national_context"] = nat
+    return result
 
 
 def write_catalog(out_dir=None) -> Path:
