@@ -42,6 +42,11 @@ def pool_signals(data_dir: Path, q: float = 0.10) -> dict:
         except (OSError, ValueError):
             continue
         families.append(stem)
+        # provenance lives at the FILE level (one source/url/method per family), not per item —
+        # read it once and stamp it onto every row so each pooled signal stays click-to-traceable.
+        src = payload.get("source")
+        src_url = payload.get("source_url")
+        method = payload.get("method")
         for it in payload.get("items", []):
             z = it.get("our_zscore")
             if z is None:
@@ -55,6 +60,15 @@ def pool_signals(data_dir: Path, q: float = 0.10) -> dict:
                     "as_of": it.get("as_of"),
                     "value": it.get("latest_value", it.get("latest_price")),
                     "our_zscore": z,
+                    # the full raw->computed->published->cited chain, carried through the pool so
+                    # the richest measured tier is finally traceable at the point (P0-A).
+                    "source": src,  # RAW cited index (e.g. "FRED — BLS PPI")
+                    "source_url": src_url,  # canonical home of the cited series
+                    "method": method,  # the z-score WE compute (never the cited source's claim)
+                    "z_series": it.get("z_series"),  # 36-pt computed anomaly track
+                    # every signal here is national/global — no lat/lon, never place-attributable.
+                    # P2-A's place panels read this to keep them in a structurally-fenced band.
+                    "fenced": "national",
                 }
             )
 

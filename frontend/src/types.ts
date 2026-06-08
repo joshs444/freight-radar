@@ -725,6 +725,11 @@ export interface AppData {
 // The non-maritime measured anomalies — freight-mode rates (truckload/rail/air),
 // inventories-to-sales, commodities, metals, macro, labor. National + monthly (no geo),
 // so they surface as a feed panel, not globe markers. A z-score WE compute, FDR-gated.
+/** One computed-anomaly point on a signal's 36-month z-track (the raw index stays cited; the z is ours). */
+export interface SignalZPoint {
+  date: string;
+  z: number;
+}
 export interface SignalItem {
   family: string;
   id: string;
@@ -734,6 +739,12 @@ export interface SignalItem {
   value: number;
   our_zscore: number;
   fdr_significant: boolean;
+  // provenance carried through signal_pool.py (P0-A) — the full raw→computed→published→cited chain.
+  source: string; // RAW cited index, e.g. "FRED — BLS Producer Price Index"
+  source_url: string; // canonical home of the cited series
+  method: string; // the z-score WE compute over the cited series (never the source's own claim)
+  z_series: SignalZPoint[]; // 36-pt computed anomaly track (the sparkline)
+  fenced: string; // 'national' — no lat/lon, never place-attributable (P2-A's fence reads this)
 }
 export interface SignalsFdr {
   method?: string;

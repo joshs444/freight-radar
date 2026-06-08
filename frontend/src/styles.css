@@ -3153,12 +3153,29 @@ body,
   margin: 0;
   padding: 0;
 }
+.fr-sig-item {
+  border-top: 1px solid var(--line);
+}
 .fr-sig {
   display: flex;
   align-items: center;
   gap: 9px;
+  width: 100%;
   padding: 5px 0;
-  border-top: 1px solid var(--line);
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.fr-sig:hover {
+  background: var(--surface-hover, rgba(47, 93, 153, 0.04));
+}
+.fr-sig-caret {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
 }
 .fr-sig-z {
   flex: none;
@@ -3201,6 +3218,29 @@ body,
   font-size: 8.5px;
   color: var(--ink-faint);
   line-height: 1.5;
+}
+.fr-sig-trace {
+  margin: 2px 0 7px;
+  padding-left: 71px; /* align under the name column, past the 62px z-badge + gap */
+}
+/* national/computed signals trace in blue, distinct from the green maritime-measured tier */
+.fr-sig-trace .fr-prov-tier {
+  color: #2f5d99;
+  background: #eef2fa;
+  border-color: #cfdcef;
+}
+.fr-sig-spark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.fr-sig-spark-cap {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
 }
 
 /* --- Ask Freight Radar (grounded chat) ---------------------------------- */
