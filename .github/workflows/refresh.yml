@@ -90,6 +90,15 @@ jobs:
         # hard-fails this step (exit 1), so an absent spine never silently ships as a broken one.
         run: python -m freight_radar.contracts --demote ../frontend/public/data
 
+      - name: Provenance-parity deploy-gate (stamped source_url == registry root)
+        working-directory: backend
+        # P2-B: fail the refresh BEFORE it commits/ships if any freshly-published flag/signal
+        # source_url or license has drifted from the registry SSOT, or if the fenced national band
+        # is place-conditioned (fence #1). Stamping freezes URLs at build time; this is the gate
+        # that guarantees stale stamped data can never ship. Same checks as the pytest gate
+        # (tests/test_provenance_parity.py), here on the freshly-published deploy artifact.
+        run: python -m freight_radar.registry.parity ../frontend/public/data
+
       - name: Commit refreshed sidecars
         run: |
           git config user.name "freight-radar-bot"
