@@ -16,10 +16,21 @@ const SAT_DATE = (() => {
   return d.toISOString().slice(0, 10);
 })();
 
+interface FlagCat {
+  id: string;
+  label: string;
+  color: [number, number, number];
+  kinds: string[];
+}
+
 interface LayerPanelProps {
   layers: LayerVisibility;
   onToggle: (id: LayerId) => void;
   counts: Partial<Record<LayerId, number>>;
+  flagCats: FlagCat[];
+  flagCatCounts: Record<string, number>;
+  hiddenFlagCats: Set<string>;
+  onToggleFlagCat: (id: string) => void;
   ships: Ships | null;
   shipCoverage?: number;
   hasWind: boolean;
@@ -32,6 +43,10 @@ export default function LayerPanel({
   layers,
   onToggle,
   counts,
+  flagCats,
+  flagCatCounts,
+  hiddenFlagCats,
+  onToggleFlagCat,
   ships,
   shipCoverage,
   hasWind,
@@ -99,6 +114,32 @@ export default function LayerPanel({
                     )}
                     <span className="fr-layer-switch" aria-hidden="true" />
                   </button>
+
+                  {/* flag-type key + sub-toggles — colour-coded by disruption category; each chip
+                      doubles as the legend AND a filter (click to hide/show that category). */}
+                  {r.id === 'flags' && on && (
+                    <div className="fr-flagcat-key" aria-label="Flag types">
+                      {flagCats.map((c) => {
+                        const cn = flagCatCounts[c.id] ?? 0;
+                        if (!cn) return null;
+                        const shown = !hiddenFlagCats.has(c.id);
+                        return (
+                          <button
+                            type="button"
+                            key={c.id}
+                            className={`fr-flagcat ${shown ? 'on' : 'off'}`}
+                            onClick={() => onToggleFlagCat(c.id)}
+                            aria-pressed={shown}
+                            title={`${shown ? 'Hide' : 'Show'} ${c.label} flags on the globe`}
+                          >
+                            <i className="fr-flagcat-dot" style={{ background: rgbCss(c.color) }} />
+                            <span className="fr-flagcat-lbl">{c.label}</span>
+                            <span className="fr-flagcat-n">{cn}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* news topic key — shows only while the news layer is on */}
                   {r.id === 'news' && on && newsGeo && (

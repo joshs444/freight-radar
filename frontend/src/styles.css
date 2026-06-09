@@ -676,6 +676,52 @@ body,
 .fr-news-key-n {
   font-variant-numeric: tabular-nums;
 }
+/* flag-type key + sub-toggles: colour-coded disruption categories, each a clickable filter chip */
+.fr-flagcat-key {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 5px 4px 8px;
+}
+.fr-flagcat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 2px 3px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 8.5px;
+  color: var(--ink-faint);
+}
+.fr-flagcat:hover {
+  background: var(--hover);
+}
+.fr-flagcat.off {
+  opacity: 0.4;
+}
+.fr-flagcat.off .fr-flagcat-lbl {
+  text-decoration: line-through;
+}
+.fr-flagcat-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.fr-flagcat-lbl {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.fr-flagcat-n {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-dim);
+}
 /* the persistent anti-centrum provenance rail — a first-class element, not fine print */
 .fr-layers-foot {
   margin: 6px 5px 1px;

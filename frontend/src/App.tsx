@@ -22,6 +22,7 @@ import { useData } from './lib/useData.ts';
 import { useWatchlist, notifyWatched } from './lib/useWatchlist.ts';
 import { useMonitorModel } from './lib/useMonitorModel.ts';
 import { flagRelevance } from './lib/relevance.ts';
+import { FLAG_CATEGORIES, flagCategory } from './lib/colors.ts';
 import { useHistory } from './lib/useHistory.ts';
 import type {
   MonitorEntity,
@@ -157,6 +158,16 @@ export default function App() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   // a clicked CONTEXT dot — opens the in-app trace card (trace UP before OUT, P1-C)
   const [ctxPick, setCtxPick] = useState<ContextPick | null>(null);
+  // globe flag sub-toggles: which disruption categories (collapse/congestion/cargo/fleet) are hidden
+  const [hiddenFlagCats, setHiddenFlagCats] = useState<Set<string>>(new Set());
+  const toggleFlagCat = useCallback((id: string) => {
+    setHiddenFlagCats((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }, []);
   const [searchHits, setSearchHits] = useState<string[]>([]);
   // GFS wind forecast scrubber: 0 = now (analysis) … 4 = +4 days
   const [windFrame, setWindFrame] = useState(0);
@@ -240,6 +251,16 @@ export default function App() {
       })),
     [hist.mode, hist.flags, globeView.flags]
   );
+
+  // active flags per disruption category — feeds the LayerPanel sub-toggles (legend + filter)
+  const flagCatCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const f of globeFlags) {
+      const id = flagCategory(f.kind).id;
+      m[id] = (m[id] ?? 0) + 1;
+    }
+    return m;
+  }, [globeFlags]);
 
   // The Board is the comprehensive analytical table — it keeps the FULL set (signal + the
   // minor tail), so the gate only shapes the casual feed/globe, never the power-user view.
@@ -456,6 +477,7 @@ export default function App() {
                   selectedFlag={hist.mode ? null : selected?.flag || null}
                   onSelectFlag={hist.mode ? noop : onSelectFlagFromGlobe}
                   onPickContext={setCtxPick}
+                  hiddenFlagCats={hiddenFlagCats}
                   mapApiRef={mapApiRef}
                   windOn={hist.mode ? false : layers.wind}
                   windFrame={windFrame}
@@ -480,6 +502,10 @@ export default function App() {
             <LayerPanel
               layers={layers}
               onToggle={toggleLayer}
+              flagCats={FLAG_CATEGORIES}
+              flagCatCounts={flagCatCounts}
+              hiddenFlagCats={hiddenFlagCats}
+              onToggleFlagCat={toggleFlagCat}
               counts={{
                 flags: flags.length,
                 chokepoints: data.snapshot?.chokepoints?.length ?? 0,

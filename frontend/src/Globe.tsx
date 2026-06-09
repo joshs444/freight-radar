@@ -13,9 +13,10 @@ import {
   WAVE,
   TIDE,
   RIVER,
-  severityColor,
   newsCategoryColor,
   hazardColor,
+  flagCategory,
+  flagTypeColor,
 } from './lib/colors.ts';
 import { loadWind, makeWindLayer } from './lib/windLayer.ts';
 import type { WindData } from './lib/windLayer.ts';
@@ -155,6 +156,7 @@ interface LayerInputs {
   selectedId: string | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   onPickContext: (pick: ContextPick) => void;
+  hiddenFlagCats: Set<string>;
   layers: LayerVisibility;
   highlightIds: string[];
 }
@@ -179,9 +181,14 @@ function buildLayers({
   selectedId,
   onSelectFlag,
   onPickContext,
+  hiddenFlagCats,
   layers,
   highlightIds,
 }: LayerInputs) {
+  // sub-toggle filter: drop flags whose disruption category is hidden (color-coded by type now)
+  const shownFlags = hiddenFlagCats.size
+    ? flags.filter((f) => !hiddenFlagCats.has(flagCategory(f.kind).id))
+    : flags;
   // resolve the highlighted portids (from row-hover / search) to positions
   const posOf = new Map<string, [number, number]>();
   chokepoints.forEach((c) => posOf.set(c.portid, [c.lon, c.lat]));
@@ -539,7 +546,7 @@ function buildLayers({
       id: 'flags-halo',
       visible: layers.flags,
       parameters: MARKER_PARAMETERS,
-      data: flags,
+      data: shownFlags,
       getPosition: (d) => [d.lon, d.lat],
       // halo scales with the core (relevance) so the needle's glow reads bigger than a blip's
       getRadius: (d) => flagPx(d) + 8,
@@ -548,26 +555,30 @@ function buildLayers({
       radiusMaxPixels: 22,
       filled: true,
       stroked: false,
-      // dim the noise tail's glow so signal pops and minor anomalies recede to faint dust
-      getFillColor: (d) => severityColor(d.severity, (d.relevance ?? 0) >= 0.15 ? 40 : 18),
+      // coloured by disruption TYPE now (collapse/congestion/cargo/fleet), not severity; the noise
+      // tail's glow is dimmed so signal pops and minor anomalies recede to faint dust
+      getFillColor: (d) => flagTypeColor(d.kind, (d.relevance ?? 0) >= 0.15 ? 45 : 18),
       updateTriggers: { getRadius: selectedId, getFillColor: selectedId },
     }),
     new ScatterplotLayer({
       id: 'flags-ring',
       visible: layers.flags,
       parameters: MARKER_PARAMETERS,
-      data: flags,
+      data: shownFlags,
       getPosition: (d) => [d.lon, d.lat],
       // size by relevance: Hormuz (~0.9) reads ~13px, a 0.04-vessel blip ~4px. The needle
-      // is visibly bigger than the noise — the most direct triage affordance on a map.
+      // is visibly bigger than the noise — the most direct triage affordance on a map. Min bumped
+      // so even a flagged PORT pops clearly above the 5px-max baseline port dust.
       getRadius: (d) => flagPx(d) + (d.flag_id === selectedId ? 2 : 0),
       radiusUnits: 'pixels',
-      radiusMinPixels: 3.5,
+      radiusMinPixels: 4.5,
       radiusMaxPixels: 15,
       filled: true,
       stroked: true,
-      getFillColor: (d) => severityColor(d.severity, (d.relevance ?? 0) >= 0.15 ? 255 : 150),
-      getLineColor: (d) => rgba([255, 255, 255], (d.relevance ?? 0) >= 0.15 ? 255 : 150),
+      // coloured by disruption TYPE (see FLAG_CATEGORIES) — a strait collapse, a congestion backlog,
+      // a cargo-mix shift and a fleet shift now read as visibly different things on the map.
+      getFillColor: (d) => flagTypeColor(d.kind, (d.relevance ?? 0) >= 0.15 ? 255 : 150),
+      getLineColor: (d) => rgba([255, 255, 255], (d.relevance ?? 0) >= 0.15 ? 255 : 160),
       lineWidthUnits: 'pixels',
       getLineWidth: (d) => (d.flag_id === selectedId ? 3.2 : 2),
       updateTriggers: {
@@ -618,6 +629,7 @@ interface GlobeProps {
   selectedFlag: GlobeFlag | null;
   onSelectFlag: (flag: GlobeFlag) => void;
   onPickContext: (pick: ContextPick) => void;
+  hiddenFlagCats: Set<string>;
   mapApiRef: MutableRefObject<MapApi | null>;
   windOn: boolean;
   windFrame: number;
@@ -641,6 +653,7 @@ export default function Globe({
   selectedFlag,
   onSelectFlag,
   onPickContext,
+  hiddenFlagCats,
   mapApiRef,
   windOn,
   windFrame,
@@ -899,6 +912,7 @@ export default function Globe({
         selectedId: selectedFlag?.flag_id ?? null,
         onSelectFlag,
         onPickContext,
+        hiddenFlagCats,
         layers,
         highlightIds,
       }),
@@ -919,6 +933,7 @@ export default function Globe({
     selectedFlag,
     onSelectFlag,
     onPickContext,
+    hiddenFlagCats,
     layers,
     highlightIds,
   ]);

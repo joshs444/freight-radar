@@ -29,6 +29,69 @@ const RAMP: [number, number[]][] = [
   [100, [214, 66, 66]],
 ];
 
+// Flag disruption CATEGORIES — colour each anomaly by what it IS (not just how severe), so the map
+// reads as multi-type at a glance: a strait/port collapse looks different from a congestion backlog,
+// a cargo-mix change, or a fleet-size shift. `id` is the legend/filter key; each kind maps into one
+// family. These doubles as the globe legend AND the sub-toggle set (LayerPanel).
+export const FLAG_CATEGORIES: {
+  id: string;
+  label: string;
+  color: [number, number, number];
+  kinds: string[];
+}[] = [
+  {
+    id: 'collapse',
+    label: 'Collapse / drop',
+    color: [192, 57, 43], // crimson — throughput fell hard (the alarming disruptions)
+    kinds: [
+      'chokepoint_transit_collapse',
+      'chokepoint_persistent_collapse',
+      'port_activity_drop',
+      'cape_reroute',
+    ],
+  },
+  {
+    id: 'congestion',
+    label: 'Congestion / surge',
+    color: [217, 119, 6], // amber — backlog / buildup
+    kinds: ['port_congestion_spike', 'chokepoint_transit_spike'],
+  },
+  {
+    id: 'cargo',
+    label: 'Cargo-mix shift',
+    color: [37, 99, 235], // blue — a specific cargo type moved
+    kinds: ['port_cargo_type_drop', 'port_cargo_type_spike'],
+  },
+  {
+    id: 'fleet',
+    label: 'Fleet-size shift',
+    color: [139, 92, 176], // purple — vessel-size composition changed
+    kinds: ['chokepoint_vessel_size_shift'],
+  },
+];
+const FLAG_CAT_FALLBACK = {
+  id: 'other',
+  label: 'Other',
+  color: [120, 120, 130] as [number, number, number],
+  kinds: [] as string[],
+};
+const KIND_TO_CAT: Record<string, (typeof FLAG_CATEGORIES)[number]> = {};
+for (const c of FLAG_CATEGORIES) for (const k of c.kinds) KIND_TO_CAT[k] = c;
+
+/** The category a flag kind belongs to (for colour, legend, and sub-toggle filtering). */
+export function flagCategory(kind: string) {
+  return KIND_TO_CAT[kind] ?? FLAG_CAT_FALLBACK;
+}
+/** A flag's RGBA coloured by its disruption TYPE (not severity). */
+export function flagTypeColor(kind: string, alpha = 255): [number, number, number, number] {
+  const c = flagCategory(kind).color;
+  return [c[0], c[1], c[2], alpha];
+}
+export const flagTypeCss = (kind: string): string => {
+  const c = flagCategory(kind).color;
+  return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+};
+
 export function severityColor(
   s: number | null | undefined,
   alpha = 255
