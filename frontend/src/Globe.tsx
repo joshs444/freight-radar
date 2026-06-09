@@ -666,8 +666,11 @@ export default function Globe({
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: STYLE,
-      center: [70, 20],
-      zoom: 1.55,
+      // face the Indo-Pacific freight core on load — where the dense port-disruption cluster lives
+      // (E/S-Asia carries most of the relevance-passing flags). The old [70,20] put the Mideast
+      // straits near centre and pushed the Asian PORTS to the back, so the globe read 'all straits'.
+      center: [105, 18],
+      zoom: 1.62,
       minZoom: 0.8,
       maxZoom: 7,
       pitch: 0,
