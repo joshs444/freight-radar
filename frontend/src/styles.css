@@ -3348,6 +3348,28 @@ a.fr-brief-cite.is-link:hover {
 .fr-sigboard-body {
   padding: 0 13px 11px;
 }
+/* per-domain breakdown chips — the at-a-glance proof that disruption spans freight modes */
+.fr-sigboard-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px 0 4px;
+}
+.fr-sigboard-domain {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-dim);
+  background: #eef2fa;
+  border: 1px solid #cfdcef;
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+.fr-sigboard-domain b {
+  color: #2f5d99;
+  font-variant-numeric: tabular-nums;
+}
 .fr-sigboard-list {
   list-style: none;
   margin: 0;

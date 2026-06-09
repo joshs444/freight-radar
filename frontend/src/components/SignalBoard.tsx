@@ -55,6 +55,12 @@ export default function SignalBoard({ signals }: SignalBoardProps) {
     .sort((a, b) => Math.abs(b.our_zscore) - Math.abs(a.our_zscore));
   if (!sig.length) return null;
 
+  // per-domain breakdown so the breadth (which modes are firing) is legible at a glance, not just
+  // a flat list — the visible proof that disruption spans freight modes, not just the ocean.
+  const byFam = new Map<string, number>();
+  for (const s of sig) byFam.set(s.family, (byFam.get(s.family) ?? 0) + 1);
+  const famChips = [...byFam.entries()].sort((a, b) => b[1] - a[1]);
+
   return (
     <section className="fr-sigboard">
       <button
@@ -64,9 +70,10 @@ export default function SignalBoard({ signals }: SignalBoardProps) {
         aria-expanded={open}
       >
         <div className="fr-sigboard-titles">
-          <span className="fr-sigboard-kicker">Cross-domain signals</span>
+          <span className="fr-sigboard-kicker">Cross-domain disruption</span>
           <span className="fr-sigboard-sub">
-            {sig.length} measured anomalies beyond the straits — trucking, inventories, commodities
+            {sig.length} measured anomalies beyond the ocean — trucking · rail · air · warehousing ·
+            inventories · commodities · metals
           </span>
         </div>
         <span className="fr-sigboard-toggle" aria-hidden="true">
@@ -75,6 +82,13 @@ export default function SignalBoard({ signals }: SignalBoardProps) {
       </button>
       {open && (
         <div className="fr-sigboard-body">
+          <div className="fr-sigboard-domains">
+            {famChips.map(([fam, n]) => (
+              <span key={fam} className="fr-sigboard-domain">
+                {FAMILY_LABEL[fam] || fam} <b>{n}</b>
+              </span>
+            ))}
+          </div>
           <ul className="fr-sigboard-list">
             {sig.map((s) => {
               const up = s.our_zscore > 0;

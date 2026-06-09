@@ -583,6 +583,9 @@ export default function DataFeed({
     : FILTERS;
   // the long tail of flagged-but-minor anomalies is hidden by default; one click reveals it
   const [showMinor, setShowMinor] = useState(false);
+  // multi-domain count: the maritime signal flags AND the cross-domain (trucking/rail/air/inventory/
+  // commodity/metals/macro) anomalies, so the header never reads as "ocean only".
+  const crossCount = (signals?.items ?? []).filter((s) => s.fdr_significant).length;
   return (
     <aside className="fr-feed" id="fr-monitor" tabIndex={-1} aria-label="Monitor feed">
       {/* sticky controls — never scroll away, so you can always re-filter/search */}
@@ -590,7 +593,13 @@ export default function DataFeed({
         <div className="fr-feed-head">
           <span className="fr-feed-title">Monitor</span>
           <span className="fr-feed-count">
-            <b>{criticalCount}</b> signal · {rows.length} shown
+            <b>{criticalCount}</b> ocean
+            {crossCount > 0 && (
+              <>
+                {' · '}
+                <b>{crossCount}</b> cross-domain
+              </>
+            )}
           </span>
         </div>
 
