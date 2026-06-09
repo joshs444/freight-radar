@@ -3834,8 +3834,13 @@ a.fr-brief-cite.is-link:hover {
 /* --- History "play through 2019 -> now" --------------------------------- */
 .fr-history-enter {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  /* directly BELOW the view toggle, right-aligned — the original bug was both pinned to top:14px
+     right:14px, so this History CTA landed on top of Board/SQL/Sources and hid them. Dropping it
+     under the toggle (which is t14–46) clears it at every width, since both are right-anchored.
+     The only thing that can sit here is the NearbyPanel (also top-right, z-index 30) when an entity
+     is selected — it cleanly covers this z-index-6 button rather than colliding with it. */
+  top: 56px;
+  right: 16px;
   z-index: 6;
   display: flex;
   align-items: center;
@@ -3858,6 +3863,14 @@ a.fr-brief-cite.is-link:hover {
 .fr-history-enter:hover {
   transform: translateY(-1px);
   background: #2a3344;
+}
+/* phones: the top-right stacks toggle + Map-layers panel and the bottom-right has the Ask FAB —
+   no clean home for a secondary CTA. The play-through-history globe time-travel is a desktop
+   exploration; hide the floating entry on phones rather than overlap a control. */
+@media (max-width: 640px) {
+  .fr-history-enter {
+    display: none;
+  }
 }
 
 .fr-hist {
