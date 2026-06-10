@@ -1,6 +1,6 @@
 # Hardening plan — fix everything the adversarial review found, at the root
 
-**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; Wave 1 next.**
+**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; foundation track folded in (council-validated); Wave 1a executing.**
 Statuses in this file are kept true as waves land (that discipline is itself item H0-F).
 
 Source: a 37-agent adversarial review (18 dimensions — vision, docs, world model,
@@ -34,6 +34,66 @@ against the code before landing here — none were refuted.
 7. **Discoverability/packaging debt.** The flagship palette is unreachable,
    mobile collapses, and the repo's front door undersells and overclaims at
    the same time.
+
+## The foundation track (council-validated 2026-06-09)
+
+Root causes 2–4 are not fixed by patches — they're fixed by three small
+foundations. Each was pressure-tested against the real code by an independent
+architecture council (verdicts: build-modified — right move, smaller than the
+sketch). Wave items the foundations absorb are marked below; the rest of the
+waves stay as listed.
+
+- **F1 — the system remembers itself** (+ **F4 — the adjudication engine**).
+  Three thin, force-added JSONL ledgers under `data/state/` (the proven
+  `events_state.json` pattern — NOT per-run Parquet partitions, rejected on
+  `.git`-growth math; bulk history stays derivable from git + PortWatch):
+  `flags_ledger.jsonl` (one slim line per flag per run, ~41KB/wk),
+  `run_ledger.jsonl` (one line per run: spine `as_of`, stress, per-layer
+  freshness, ~2KB/wk), `claims.jsonl` + `adjudications.jsonl` (F4). New
+  `ledger.py` (append/read, CLI step in refresh.yml after the parity gate;
+  appends never inside `publish_static`, keeping the golden harness
+  deterministic). The ledger becomes the ONLY prior-flags source for
+  lifecycle (drops the `fct_flags` read — CI and local behave identically).
+  F4: every new flag registers a claim with resolution criteria
+  (`evaluate_after = as_of + 21d`, confirm = z still clears the bar on the
+  revised series truncated at `as_of`); the adjudicator's core
+  `evaluate_at(series, as_of, cfg)` is the same primitive H2-A's backtest
+  replays. Outcomes publish as a contracted `adjudications.json` — a public,
+  falsifiable hit-rate record (claims about the measured present adjudicated
+  against revised data; never a forecast). ADR-0009 records the design + the
+  hard rule: bulk per-run artifacts only ever via GitHub Releases, never git.
+  *Absorbs H1-A, half of H2-A, H4-E (option A), the run-ledger half of H1-E.*
+- **F2 — claim-first prose.** `derived/contract.py`'s `Claim` already exists;
+  the real gap is cites that resolve to layers, not VALUES. Add
+  `Cite{layer, query, value, fmt}` (JSON-pointer or a registered selector in
+  `honesty/selectors.py`), `slots` on `Claim`, and `CitedNarrative` (typed,
+  source-mandatory exemption for curated history blurbs/news titles). New
+  `honesty/render_check.py`: per-cite value equality against the published
+  sidecar + digit-run coverage (every number in rendered text is a template
+  literal or `fmt(cite.value)`). Migrate `narrative/brief.py` claim-first
+  with BYTE-IDENTICAL rendered text (golden test — voice must not regress);
+  `brief.json` only gains an additive `slots` field, frontend untouched.
+  Then the chat: `Fact` gains `path`/`fmt`, `check_chat.mjs` becomes
+  value-at-path (kills the substring oracle), and ask.ts's one client-side
+  derived number (the Gatún draft cut) moves into `gatun.py`'s published
+  payload. *Absorbs H5-C, the bag-of-numbers entailment + boilerplate-key
+  holes, and the firewall-skips-brief/captions/chat finding.*
+- **F3 — one shape registry generates the contracts.** New
+  `registry/shapes.py`: a deliberately tiny field-spec grammar (8 type
+  constructors, capped) keyed by output stem. Three renderers, one source:
+  `contracts.py` SIDECAR_CONTRACTS derived from Shapes (equality-tested
+  against today's literals in the migration commit, then literals deleted);
+  `types.gen.ts` for ~14 stems / ~35 interfaces (types.ts re-exports;
+  byte-identity gate extends `test_registry_codegen.py`); JSON Schema +
+  per-shape hash embedded in `catalog.json` (slice 2) so MCP/AI consumers
+  get a versioned contract through the existing `list_layers`. `useData.ts`
+  imports the generated CORE/OPTIONAL manifest (kills the dead-codegen
+  finding). Explicitly NOT built: dbt YAML generation (tables ≠ sidecars;
+  hand judgment in severity/descriptions stays) — the one real duplication
+  (flag `kind` values) gets a parity test. Typed validation is CI-only for
+  two weekly cycles before it may gate the production demote path. Derived
+  frontend-only UI shapes stay hand-written. *Absorbs H1-F, most of H5-F,
+  the schema_version gap; `max_age_days` (H1-E) gets its one home here.*
 
 ## Wave 0 — Truth reconciliation (docs say what is true) — ✅ EXECUTED 2026-06-09
 
@@ -88,13 +148,19 @@ README/FEATURES instead.
   label 5YEAR/AI-NATIVE as satellites in the index rather than front-door
   links.
 
-## Wave 1 — Production correctness — PENDING
+## Wave 1 — Production correctness — IN PROGRESS (1a executing 2026-06-09)
 
-- **H1-A** Flag lifecycle: append-only committed ledger
-  (`data/state/flags_ledger.jsonl`, keyed by lineage_run_id, force-added in
-  refresh.yml like events_state.json); seed `_load_prior_flags` from the
-  ledger when `fct_flags` is empty. Receipt: lifecycle continuity test across
-  two runs; production flags can be `ongoing`/`resolved` again.
+Runs as sub-waves of ≤3 parallel agents with disjoint file ownership.
+**1a:** F1 slices 1–2 (ledger + lifecycle + run ledger + ADR-0009) ·
+H1-B + H1-G · H1-D (all workflow edits, including the F1 refresh steps).
+**1b:** H1-C (golden re-bless) · F3 slice 1 (absorbs H1-F) · F2 slice 1.
+**1c:** H1-E remainder · H1-H · F4 slice (claims + adjudications) ·
+F2 slice 2 (chat oracle, absorbs H5-C).
+
+- **H1-A** Flag lifecycle — **absorbed by F1 slice 1** (see the foundation
+  track): committed `flags_ledger.jsonl` as the ONLY prior-flags source.
+  Receipt: lifecycle continuity test across two fresh-DB runs; production
+  flags can be `ongoing`/`resolved` again.
 - **H1-B** Cape-reroute exposure: flags carry structured chokepoint refs
   (Suez, Bab el-Mandeb) consumed by `_exposed_lanes`; delay/premium keyed off
   the Cape entry (10d, premium ≠ 0). Receipt: regression test — a Suez-routed
@@ -116,10 +182,10 @@ README/FEATURES instead.
   `max_age_days` so a dead feed actually demotes; post-publish assertion that
   snapshot `as_of` advanced; failure notification (issue-on-failure); UI
   stale-data badge past ~10 days.
-- **H1-F** Contract coverage: add contracts for `signals_fdr.json` (the file
-  actually consumed), stress, timeseries; add them to CORE_STEMS; make the
-  contracts CLI list uncontracted sidecars (its docstring already promises
-  this).
+- **H1-F** Contract coverage — **absorbed by F3 slice 1**: signals_fdr/
+  stress/timeseries get Shapes (contracts derive from them); the CLI's
+  uncontracted-sidecar listing falls out of the registry knowing every
+  output stem. One-line remnant: add stress/timeseries to CORE_STEMS.
 - **H1-G** ADR-0005 truth in code: extract one shared ordered publish step
   list that BOTH drivers iterate, so Temporal and publish_static cannot
   diverge again.
@@ -132,7 +198,9 @@ README/FEATURES instead.
 - **H2-A** Event-replay backtest: run detection week-by-week over the 2019→now
   archive, score against the curated event list (Ever Given, Red Sea,
   Baltimore, Hormuz…) for precision/recall/lead-time; publish the table as a
-  doc + CI artifact. The flags ledger (H1-A) feeds a live hit-rate scoreboard.
+  doc + CI artifact. **Half-absorbed by F1/F4**: `evaluate_at()` is the shared
+  replay primitive, and the live hit-rate scoreboard is a read of
+  flags_ledger + adjudications; the 2019→now archive sweep remains this item.
 - **H2-B** FDR calibration: scan-aware p-values (effective-looks correction or
   empirical nulls from block-bootstrapped residuals); count cargo-type tests
   in m; make the white-noise CI predicate exercise the full detect_series
@@ -180,8 +248,10 @@ README/FEATURES instead.
   `family_fdr_significant` (pooled is authoritative); flip
   `export(write_flags=)` default / delete the legacy preview path; replace
   the 26-adapter zoo in registry/layers.py with one lazy factory.
-- **H4-E** Substrate honesty: per-run Parquet partitions keyed by
-  knowledge_time (real bitemporality) or soften the docstring; fold
+- **H4-E** Substrate honesty — **option A chosen via F1**: the run ledger is
+  the knowledge-time record; soften the substrate docstring to point at it
+  (committed Parquet partitions rejected on growth math; bulk artifacts only
+  ever via GitHub Releases per ADR-0009). Remnant kept here: fold
   fct_flags + meta_attribution DDL into storage/schema.sql.
 
 ## Wave 5 — Tests, CI, supply chain — PENDING
@@ -192,10 +262,9 @@ README/FEATURES instead.
   job.
 - **H5-B** Un-skip Temporal durability tests in CI (retry probe in its own
   module; e2e against the hermetic fixture DB the dbt job already builds).
-- **H5-C** Chat grounding oracle: value-at-path assertions instead of
-  substring containment; assert every digit-run in answer text maps to a
-  registered fact; refresh.yml runs the data-coupled pytest subset before
-  committing.
+- **H5-C** Chat grounding oracle — **absorbed by F2 slice 2** (value-at-path
+  Facts + digit-run coverage). Remnant kept here: refresh.yml runs the
+  data-coupled pytest subset before committing.
 - **H5-D** Backend ruff + type-check gates (the noqa codes imply a linter
   that isn't there); fix implicit Optionals and the _connections annotation.
 - **H5-E** dbt: enforce source freshness in refresh.yml; extend the parity
@@ -204,9 +273,8 @@ README/FEATURES instead.
   dbt docs under Pages; `contract: enforced` on marts; label thresholds as
   vars with all-days label parity.
 - **H5-F** API/MCP: honor If-None-Match → 304 (with test); AST/import-graph
-  proof that MCP handlers only call read-only store functions; consume the
-  generated CORE_FILES manifest in useData (or stop emitting it); generate
-  TS types from contract shapes for the contracted sidecars.
+  proof that MCP handlers only call read-only store functions. The manifest
+  consumption + TS type generation halves are **absorbed by F3**.
 - **H5-G** Supply chain: SHA-pin all GitHub Actions; self-host the pinned
   duckdb-wasm bundle (lazy chunk, boot budget unaffected); Dockerfiles build
   from lockfiles; pin the Temporal image; bind compose ports to 127.0.0.1.
