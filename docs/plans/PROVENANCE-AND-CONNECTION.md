@@ -1,6 +1,11 @@
 # Provenance & Connection — Standpoint Plan
 
-> Status: REVIEW → PLAN (no code modified). All claims below verified against the real data files and components on 2026-06-08.
+> **Status: ✅ EXECUTED 2026-06-08 — the full P0 → P2 roadmap shipped + deployed the same
+> day.** Commits: `c3d8809` (P0-A) · `4b449d6` (P0-B) · `6cef3f4` (P1-A) · `6c600b4` (P1-D)
+> · `dc5099c` (P1-B) · `781cb04` (P1-C) · `58d6ad3` (P2-A) · `c9bfbe4` (P2-B) · `a912462`
+> (fence #8: nearby.ts fallbacks routed through the catalog). **P2-C (multi-flag stories)
+> deliberately not built** — the plan itself flags it the highest-risk, most-cuttable item.
+> All claims below verified against the real data files and components on 2026-06-08.
 
 ## 1. Vision
 

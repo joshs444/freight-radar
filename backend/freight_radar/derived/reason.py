@@ -6,9 +6,11 @@ argument): READ the published store, SELECT a fixed set of this-week facts, GROU
 only authoring — no model ever invents a number), and GATE the result fail-closed before it is
 written. Every value is read live, so the briefing is always current and always *entailed*.
 
-It runs OFFLINE (a ``python -m`` step, zero runtime LLM cost) — the static site only serves the
-artifact. It lives in derived/ (quarantined): nothing in the fact path imports it; refresh.yml
-runs it as a subprocess, never a Python import, so the AI firewall holds.
+There is NO model anywhere in this loop: selection, grounding, phrasing (the fixed templates),
+and gating are all deterministic Python. It runs OFFLINE (a ``python -m`` step, zero runtime
+LLM cost) — the static site only serves the artifact. It lives in derived/ (quarantined):
+nothing in the fact path imports it; refresh.yml runs it as a subprocess, never a Python
+import — the firewall a model WOULD sit behind, kept warm by the deterministic reasoner.
 """
 
 from __future__ import annotations
@@ -49,8 +51,9 @@ def _connections(flags: list, news: object, k: int = 3) -> list[tuple[str, list[
     co-occur with it — strictly the news ALREADY retrieved per flag, as association, never a cause.
 
     Every number stays entailed: the pct is read from ``flags``; the article count is the length
-    of that flag's own list inside the ``news`` layer (``_collect`` recurses into it). The model
-    authors no figure — it only joins a measured number to its cited, co-occurring reports.
+    of that flag's own list inside the ``news`` layer (``_collect`` recurses into it). The
+    template authors no figure — it only joins a measured number to its cited, co-occurring
+    reports.
     """
     items = news.get("items", {}) if isinstance(news, dict) else {}
     ranked = sorted(
@@ -142,8 +145,9 @@ def build(out_dir) -> dict:
         )
 
     # CONNECTED TO WORLD EVENTS — each top disruption joined to its co-occurring CITED news. The
-    # research (retrieval) is the deterministic per-flag news join; the AI only joins the measured
-    # number to those already-cited reports, as association. Grounded + gated like any other claim.
+    # research (retrieval) is the deterministic per-flag news join; the fixed template only joins
+    # the measured number to those already-cited reports, as association. Grounded + gated like
+    # any other claim.
     if isinstance(flags, list) and flags:
         news = _payload("news", out_dir)
         for text, cites, fid in _connections(flags, news):
@@ -161,17 +165,19 @@ def build(out_dir) -> dict:
     return {
         "tier": "DERIVED",
         "metric": None,
-        "agent_model": "claude (offline reasoner — the static site only serves this artifact)",
+        "agent_model": "deterministic template reasoner (no model in the loop)",
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "as_of": as_of,
         "method": (
-            "An offline agent reads the published store, grounds every claim through verify(), "
-            "and the briefing is gate-validated (attribution + abstention + the language "
-            "firewall) before it ships. No model is in the number path."
+            "An offline deterministic step reads the published store, grounds every claim "
+            "through verify(), and the briefing is gate-validated (attribution + abstention + "
+            "the language firewall) before it ships. Selection, phrasing (fixed templates), and "
+            "gating are all deterministic Python — no model anywhere in the loop."
         ),
         "disclaimer": (
-            "DERIVED — what an AI said about the cited facts. Every claim traces to a layer; "
-            "co-occurrence is association, never causation."
+            "DERIVED — templated commentary computed over the cited facts; no model wrote "
+            "this. Every claim traces to a layer; co-occurrence is association, never "
+            "causation."
         ),
         "claims": claims,
     }

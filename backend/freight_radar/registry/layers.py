@@ -63,7 +63,7 @@ class Producer(str, Enum):
     AIS = "ais"  # sidecar/ais_consumer.py — off the enricher loop
     EXTERNAL = "external"  # a separate Action step (GFS wind is heavy/slow)
     CLIENT = "client"  # rendered entirely client-side; no data file at all
-    AGENT = "agent"  # the OFFLINE reasoner (Claude Code) writes it; the site only serves it
+    AGENT = "agent"  # the OFFLINE reasoner (deterministic templates) writes it; the site only serves it
 
 
 @dataclass(frozen=True)
@@ -336,12 +336,17 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
     LayerDescriptor(
         id="lanes",
         derives_from="snapshot",
-        kind=Kind.SPINE,
+        kind=Kind.SPINE,  # ships with the spine's core export, but the arcs are NOT measured —
+        # the honesty_note below is the load-bearing disclosure (catalog + ledger render it).
         producer=Producer.CORE,
         module="freight_radar.export_snapshot",
         fetch_file="data/lanes.json",
         appdata_key="lanes",
         globe=Globe("lanes", "Freight", "lanes", "lane", True, 4),
+        honesty_note=(
+            "Schematic great-circle arcs from a fixed hand-maintained list of major trade "
+            "lanes; 'intensity' is an illustrative styling constant, not a measurement."
+        ),
     ),
     # ---- enrichers (run inside run_enrichers, in enrich_order) ----
     LayerDescriptor(
@@ -564,9 +569,9 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         # not in AppData — queryable via the read surface (catalog / MCP / SQL console).
         metric="12-month rolling z-score of a cited commodity price (the anomaly we compute)",
         source=Source(
-            "FRED (public domain · IMF Primary Commodity Prices)",
+            "IMF Primary Commodity Prices via FRED",
             "https://fred.stlouisfed.org",
-            "public domain",
+            "© IMF, free with attribution",
         ),
         honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
     ),
@@ -655,9 +660,9 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         manifest_sidecar=True,
         metric="12-month rolling z-score of a cited metals/bulk-energy price (the anomaly we compute)",
         source=Source(
-            "FRED (public domain · IMF Primary Commodity Prices)",
+            "IMF Primary Commodity Prices via FRED",
             "https://fred.stlouisfed.org",
-            "public domain",
+            "© IMF, free with attribution",
         ),
         honesty_note="We compute the z-score anomaly; the price stays cited context, never restated as ours.",
     ),
@@ -765,18 +770,19 @@ REGISTRY: tuple[LayerDescriptor, ...] = (
         globe=Globe("satellite", "Context", "satellite", "sat", False, 4),
         source=Source("NASA GIBS (VIIRS)", "https://gibs.earthdata.nasa.gov", "public domain"),
     ),
-    # ---- DERIVED: the reasoning agent's commentary (P6 capstone) ----
+    # ---- DERIVED: the offline reasoner's commentary (P6 capstone) ----
     LayerDescriptor(
         id="ai_briefing",
         kind=Kind.DERIVED,
-        producer=Producer.AGENT,  # written OFFLINE by Claude Code; the static site only serves it
+        producer=Producer.AGENT,  # written OFFLINE by the deterministic template reasoner; the static site only serves it
         module="freight_radar.derived.briefing",  # the quarantined validator namespace
         output="ai_briefing",
         manifest_sidecar=True,
         metric=None,  # DERIVED owns no number — by construction
         honesty_note=(
-            "AI commentary over the cited store — every claim traces to a layer, association-only, "
-            "read-only. The agent can recombine + order cited facts; it can never own or mutate a number."
+            "Templated commentary over the cited store (deterministic — no model in the loop) — "
+            "every claim traces to a layer, association-only, read-only. The reasoner recombines + "
+            "orders cited facts; it can never own or mutate a number."
         ),
     ),
 )

@@ -1,10 +1,11 @@
 """Industrial-metals & bulk-energy anomaly — a measured SIGNAL we own (P3).
 
-The dry-bulk side of the commodity signal: the raw observed input is a cited public-domain
-IMF price (aluminum, iron ore, nickel, zinc, lead, tin, coal, the energy index — the metals
-and bulk-energy that fill bulk carriers); the number WE own is its 12-month rolling z-score.
+The dry-bulk side of the commodity signal: the raw observed input is a cited IMF price
+(aluminum, iron ore, nickel, zinc, lead, tin, coal, the energy index — the metals and
+bulk-energy that fill bulk carriers); the number WE own is its 12-month rolling z-score.
 We show OUR anomaly, never restate the price as ours (G0). The family enrolls in the FDR gate.
-Keyless FRED public-domain series, by explicit allowlist.
+Keyless IMF Primary Commodity Prices series redistributed by FRED (© IMF, free with
+attribution), by explicit allowlist.
 """
 
 from __future__ import annotations
@@ -58,7 +59,7 @@ def compute_signal(series_by_id: dict[str, list[tuple[str, float]]], q: float = 
     rows.sort(key=lambda r: abs(r["our_zscore"]), reverse=True)
     return {
         "as_of": max((r["as_of"] for r in rows), default=""),
-        "source": "FRED (public domain · IMF Primary Commodity Prices)",
+        "source": "IMF Primary Commodity Prices via FRED (© IMF, free with attribution)",
         "source_url": "https://fred.stlouisfed.org",
         "method": "12-month rolling z-score we compute over the cited monthly price",
         "disclaimer": (

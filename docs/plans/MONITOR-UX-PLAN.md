@@ -1,6 +1,12 @@
 # Monitor + Globe UX Plan
 
-> **Status: PROPOSED (plan only — nothing built yet).** From a 5-agent deep review of the
+> **Status: ✅ EXECUTED 2026-06-05 — shipped + deployed the same day.** Commits: `db30e23`
+> (three-zone scroll fix + brief default-collapse — *the collapse half was later reversed;
+> see the note at Phase 1 item 1*) · `64495f7` (LayerPanel layer control) · `4acd24b`
+> (ship visibility — reorder + bump; *item 6's heading-chevron glyphs were deferred in
+> that commit and remain unbuilt*) · `3a47e22` (set-based search + two-way
+> cross-highlight) · `0876730` (the "near N of 28 chokepoints" honesty line).
+> From a 5-agent deep review of the
 > owner's verbatim feedback, benchmarked against best-in-class alert/issue panels + map
 > trackers and adversarially pressure-tested. Every structural claim was verified against
 > the actual code. Respects the non-negotiables: **honesty** (ships are a near-chokepoint
@@ -29,6 +35,13 @@ type mix is **112 generic vessel / 4 cargo / 3 passenger / 0 tanker** — so the
 ## Phase 1 — Quick wins (S-effort, independent, each dents a distinct complaint) — do first
 
 1. **Default-collapse the brief, keep its headline as the always-on "what's going on" line.**
+
+   > **⚠ Superseded 2026-06-08 by [FRONTEND-UX-OVERHAUL.md](FRONTEND-UX-OVERHAUL.md) P0-1**
+   > (commit `5718cf0`): the brief now defaults **OPEN**. The collapse existed to protect
+   > the feed's height; once the feed was gated to ~signal-only rows there was room for
+   > both, and the brief — the verbatim "where is the brief?" answer — leads. The code
+   > follows the later plan (`BriefCard.tsx`).
+
    `BriefCard.tsx` `useState(true)` → `false`, persisted via `localStorage 'fr_brief_open'`
    (mirrors `fr_wind_off`). Collapsed = a single clickable row showing the kicker + the
    computed stress headline (already in `.fr-brief-top`). This reclaims most of the

@@ -25,7 +25,7 @@ for module in modules_under("freight_radar", "freight_radar"):
 
 It walks the *entire* AST, so it follows a lazy `from ..facts import write` buried inside a function body, not just the top-of-file imports. A violation isn't a smell to argue about in review. It's a red X.
 
-**The receipt:** this check caught its own author. Twice. I was wiring an honesty *scorecard* and gave it an import of the abstention gate — which, two hops down the graph, reached the quarantined `derived/` namespace where the AI's output lives. The `nothing imports the derived namespace` test went red on the exact commit that broke it. The AI's output tier is supposed to be a dead-end sink — data flows *in*, nothing flows back *out* into the store — and for one commit I'd opened a path. A comment would have shrugged. The BFS didn't. The fix was to keep the gate as a CI-only check instead of a runtime import, and the fence held.
+**The receipt:** this check caught its own author. Twice. I was wiring an honesty *scorecard* and gave it an import of the abstention gate — which, two hops down the graph, reached the quarantined `derived/` namespace where the reasoner's output lives. The `nothing imports the derived namespace` test went red on the exact commit that broke it. The reasoner's output tier is supposed to be a dead-end sink — data flows *in*, nothing flows back *out* into the store — and for one commit I'd opened a path. A comment would have shrugged. The BFS didn't. The fix was to keep the gate as a CI-only check instead of a runtime import, and the fence held.
 
 That's the whole thesis in one anecdote: I am not disciplined enough to keep this boundary by hand, and I don't have to be.
 
@@ -62,13 +62,13 @@ The cheap fix is real: scan generated copy against a banned lexicon — `caused 
 
 ---
 
-## The hard case: putting an LLM in the loop without putting it in the number path
+## The hard case: designing for an LLM in the loop without putting it in the number path
 
 Then I added a reasoner — a step that writes a short situational briefing over the day's measured signals. This is where most "AI-native" products quietly betray the whole premise, because the easy way is to hand the figures to a model and let it write, and now a model that paraphrases a number can misstate one.
 
 Two structural moves keep it honest.
 
-**The number never passes through the model.** The reasoner that runs over the data is Claude Code, *offline*, at build time — it doesn't sit behind a runtime API the site calls, and it doesn't get to invent a figure. Selection, grounding, and the statistics are all deterministic Python. The model only ever *phrases* a claim that was already built and already grounded. A `Claim` with no citations is **unconstructable** — the type raises in `__post_init__` if you try — so "an ungrounded sentence" isn't a bug to catch, it's a state that can't exist.
+**The number never passes through the model — in fact, today there is no model in the loop at all.** The reasoner that runs over the data is deterministic Python with fixed phrasing templates, *offline*, at build time — it doesn't sit behind a runtime API the site calls, and it doesn't get to invent a figure. Selection, grounding, the statistics, even the phrasing: all deterministic. The only seat a model could ever occupy here is *phrasing* a claim that was already built and already grounded — and the gates below were built for exactly that occupant before deciding it wasn't yet worth the seat. A `Claim` with no citations is **unconstructable** — the type raises in `__post_init__` if you try — so "an ungrounded sentence" isn't a bug to catch, it's a state that can't exist.
 
 **The output is gated, fail-closed.** Before any briefing ships, a gate runs a conjunction: every number in the prose must be *entailed* by a cited source (string-decidable, no LLM judge grading its own homework), a bait battery of questions-with-no-honest-answer must all abstain, and no claim may cite a telemetry field. If any clause fails, the briefing doesn't ship — the build does not "degrade gracefully" into a confident wrong answer. It stops.
 

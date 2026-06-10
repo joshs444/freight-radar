@@ -1,6 +1,11 @@
 # 4. Cutting the GDELT attention feed
 
 Status: Accepted
+Date: 2026-06-05
+Forward note (2026-06-09): partially superseded — world-news dots later shipped
+via GDELT's raw 15-minute **GKG export** (`gdelt_news.py` → `news_geo`), which
+never touches the throttled DOC query API; the per-flag attention *trend* this
+ADR cut remains cut.
 
 ## Context
 

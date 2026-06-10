@@ -6,8 +6,8 @@ auto-flags disruptions** (chokepoint transit collapse, port congestion spike, Ca
 rerouting) into a severity-ranked "current issues" rail — each flag click-expanding into a
 plain-English "what's happening + why" brief.
 
-**Working name:** Freight Radar (alt: "Chokepoint"). Portfolio flagship in Josh's real
-ocean-freight domain; extends his existing durable-Temporal repo.
+**Working name:** Freight Radar (alt: "Chokepoint"). A flagship build in a real
+ocean-freight domain; extends the existing durable-Temporal work.
 
 ---
 
@@ -89,7 +89,7 @@ Make every flag a genuine detected anomaly with computed numbers.
 - `config/detection.yaml`; `tests/test_detectors.py` (fires on real Suez collapse; does NOT fire on weekend seasonality)
 - **DoD:** exporter emits `flags.json` from real history; map shows genuine anomalies ranked by visible severity, each brief contains the real numbers.
 
-### Wave 3 — Durable Temporal loop (interview-gold core) · ~3–4 days
+### Wave 3 — Durable Temporal loop (the durable core) · ~3–4 days
 Wrap fetch→detect→attribute→publish in a durable Temporal workflow on a Schedule — visibly always-on, crash-durable.
 - `FreightRadarWorkflow` (5 activities: fetch → compute+detect → llm_attribute → assemble → publish); RetryPolicy; continue-as-new
 - Idempotent `ensure_schedule()`; **flag dedup ledger** `flag_id=sha1(kind|entity|iso_week)` (attribute only `attributed_at IS NULL`)
@@ -114,18 +114,18 @@ Wrap fetch→detect→attribute→publish in a durable Temporal workflow on a Sc
 - Optional NOAA historical trails precomputed via DuckDB httpfs
 - **DoD:** when healthy, ship dots/trails animate in 2–3 hotspots with a "best-effort" badge; killing the socket leaves the map + every number unaffected.
 
-### Wave 7 — Polish + portfolio framing · ~2–3 days
+### Wave 7 — Polish + public framing · ~2–3 days
 - Bloom/glow, fly-to on flag click, auto-rotating attract globe, per-chokepoint severity sparkline
 - UI truthfulness: source + "as of `<date>`" everywhere; backbone labeled "daily-granularity, refreshed weekly by IMF"; AIS labeled best-effort
 - README leads with the auto-flag GIF + a "How it stays honest" section; deploy story documented
-- **DoD:** polished deployed demo, honest framing throughout, README hero GIF — ready for a hiring manager.
+- **DoD:** polished deployed demo, honest framing throughout, README hero GIF — ready for a first-time visitor.
 
 ---
 
 ## Demo milestones (earliest striking first)
 1. **W1** — dark globe, real chokepoints/ports glowing, clickable flags. *(the whoa frame)*
 2. **W2** — flags are REAL ("Suez transit fell 41% vs 28-day norm — 17 vs ~29/day"), with source + as-of.
-3. **W3** — durable Temporal agent visibly always-on; kill+restart → resumes. *(interview-gold)*
+3. **W3** — durable Temporal agent visibly always-on; kill+restart → resumes. *(the durability receipt)*
 4. **W4** — scrub the timeline, replay a real chokepoint collapse. *(the narrative GIF)*
 5. **W5** — the Cape-of-Good-Hope reroute story fires, cited.
 6. **W6** — optional live ship dots; killing the socket changes nothing.

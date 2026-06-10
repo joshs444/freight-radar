@@ -2,8 +2,9 @@
 
 The committed briefing must pass the full gate (validate + attribution + abstention +
 provenance); the gate must FIRE on an unentailed number, a causal claim, and a bad cite; and
-the reasoner must produce a gate-clean briefing from the live store. This is the eval that
-lets an LLM-authored briefing ship at all — a hallucinated number fails here, in CI.
+the reasoner must produce a gate-clean briefing from the live store. This is the eval any
+LLM-authored briefing would have to pass to ship — a hallucinated number fails here, in CI.
+(Today's reasoner is deterministic templates; the gate doesn't care who authored the claim.)
 """
 
 from __future__ import annotations

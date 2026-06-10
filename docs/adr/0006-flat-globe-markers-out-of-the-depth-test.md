@@ -1,6 +1,7 @@
 # 6. Take flat globe markers out of the deck.gl depth test
 
 Status: Accepted
+Date: 2026-06-05
 
 ## Context
 

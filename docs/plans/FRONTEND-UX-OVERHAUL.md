@@ -1,6 +1,15 @@
 # STANDPOINT — Frontend UX Overhaul Plan
 
-> Status: review + plan only. No code changed. All claims below were re-verified against the live source and `public/data/flags.json` on 2026-06-07.
+> **Status: ✅ EXECUTED (P0 + P1 core) 2026-06-08 — shipped + deployed the same day.**
+> Commits: `5718cf0` (P0-1 brief-as-hero · P0-2 relevance gate, `lib/relevance.ts` · P0-3
+> globe markers sized by relevance) · `7ba6375` (P1-2 so-what rows · P1-4 brief-first
+> onboarding + honest nav labels). **Still open:** P1-1 (top-movers digest), P1-3 (story
+> grouping — see PROVENANCE-AND-CONNECTION P2-C's caution before building), P1-5
+> (small-base headline rewrite; the exporter half landed separately in `70ad74e`), and P2 —
+> the P2 chrome/disclaimer dedup is now tracked in [HARDENING-PLAN.md](HARDENING-PLAN.md)
+> Wave 3 (H3-D). **Supersession note:** P0-1 deliberately reverses MONITOR-UX-PLAN Phase 1
+> item 1 (brief default-collapsed → default-open); the code follows this plan.
+> All claims below were re-verified against the live source and `public/data/flags.json` on 2026-06-07.
 
 ---
 
@@ -89,7 +98,7 @@ Effort: **S** ≈ <½ day, **M** ≈ 1–2 days, **L** ≈ multi-day. Reconciled
 - **Why:** Verified: 84% baseline <5/day, 70% <2/day, 0 corroboration, 5 exposed, severity = z-score so Rugao outranks LA-LB. This single hook is the highest-leverage noise cut in the whole review and it makes P0-1's hero brief *breathe*.
 - **Files:** `useMonitorModel.ts`, `DataFeed.tsx`, `Globe.tsx`, `flags.json` (read-only reference)
 - **Effort:** **M**
-- **Tradeoff:** A looser gate (0.15 / ~17 flags) shows more breadth for the portfolio story; a tighter one (0.2–0.25 / 5–8) is cleaner. Recommend shipping the score + a tunable cutoff constant, defaulting ~0.15–0.2, so it's a one-line tweak after eyeballing live.
+- **Tradeoff:** A looser gate (0.15 / ~17 flags) shows more breadth; a tighter one (0.2–0.25 / 5–8) is cleaner. Recommend shipping the score + a tunable cutoff constant, defaulting ~0.15–0.2, so it's a one-line tweak after eyeballing live.
 
 ---
 
@@ -149,7 +158,7 @@ Effort: **S** ≈ <½ day, **M** ≈ 1–2 days, **L** ≈ multi-day. Reconciled
 
 **P2-1 · Thin the first-load surface count via progressive disclosure**
 - **What:** Trim the ~16 default-`globe` surfaces (`App.tsx:300-606`): (a) collapse the always-open `LayerPanel` (15 rows, 7 niche layers off by default — `layers.gen.ts`) into a single **"Layers"** button that opens on demand (the palette already covers toggling); (b) **show only one time control at a time** — the GFS wind scrubber (`App.tsx:482-496`), the `TimeScrubber` (`:511-537`), and the "History play 2019→now" button can all be on-stage at once with three different time semantics; gate the wind scrubber behind the wind layer being the active focus; (c) collapse the triple-stated thesis (topbar tagline `:312-315` + provenance `:316-321` + Onboarding lede + LayerPanel foot) to one place.
-- **Why:** The sourced "super overcomplicated" complaint. Demote, don't delete — every capability stays for the portfolio story, the default screen just gets calm. — **Files:** `App.tsx`, `LayerPanel.tsx`, `layers.gen.ts` — **Effort: M/L**
+- **Why:** The sourced "super overcomplicated" complaint. Demote, don't delete — every capability stays discoverable, the default screen just gets calm. — **Files:** `App.tsx`, `LayerPanel.tsx`, `layers.gen.ts` — **Effort: M/L**
 
 ---
 

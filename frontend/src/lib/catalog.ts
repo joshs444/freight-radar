@@ -38,7 +38,7 @@ export const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
   SIGNAL: { label: 'measured · signal', cls: 'signal' },
   CONTEXT: { label: 'cited · context', cls: 'context' },
-  DERIVED: { label: 'derived · AI', cls: 'derived' },
+  DERIVED: { label: 'derived · templated', cls: 'derived' },
 };
 
 export interface EffectiveSource {

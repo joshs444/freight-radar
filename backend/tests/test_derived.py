@@ -1,6 +1,7 @@
 """P6 capstone — the DERIVED briefing is grounded, association-only, and admissible.
 
-The reasoner is offline (Claude Code), but its output is gated in CI like everything else:
+The reasoner is offline and deterministic (fixed templates), and its output is gated in CI like
+everything else:
 every claim cites a real layer, carries no causal/forecast verb, and owns no number. (The
 quarantine — derived/ can't reach the fact path, and nothing imports derived/ — is proven in
 test_layer_firewall.)

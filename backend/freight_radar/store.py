@@ -87,7 +87,7 @@ def catalog(out_dir=None) -> dict:
             "SPINE": "the freight chain we own end-to-end (ingest -> facts -> detect -> index)",
             "SIGNAL": "a Python scalar we compute over raw observed inputs",
             "CONTEXT": "someone else's cited raw value, shown as-is",
-            "DERIVED": "an AI agent's commentary over the store — cited, association-only, owns no number",
+            "DERIVED": "the offline reasoner's templated commentary over the store — cited, association-only, owns no number",
         },
         "counts": {
             "layers": len(layers),

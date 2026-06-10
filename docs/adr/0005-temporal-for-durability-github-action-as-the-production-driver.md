@@ -1,6 +1,7 @@
 # 5. Temporal for durability, a GitHub Action as the production driver
 
 Status: Accepted
+Date: 2026-06-05
 
 ## Context
 

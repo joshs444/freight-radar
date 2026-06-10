@@ -1,6 +1,6 @@
 # Hardening plan — fix everything the adversarial review found, at the root
 
-**Status: IN PROGRESS — Wave 0 executing (started 2026-06-09).**
+**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; Wave 1 next.**
 Statuses in this file are kept true as waves land (that discipline is itself item H0-F).
 
 Source: a 37-agent adversarial review (18 dimensions — vision, docs, world model,
@@ -35,7 +35,16 @@ against the code before landing here — none were refuted.
    mobile collapses, and the repo's front door undersells and overclaims at
    the same time.
 
-## Wave 0 — Truth reconciliation (docs say what is true) — IN PROGRESS
+## Wave 0 — Truth reconciliation (docs say what is true) — ✅ EXECUTED 2026-06-09
+
+All ten items landed in one wave (3 agents, disjoint file ownership; receipts
+re-verified by the orchestrator: 285-test non-live suite green, frontend
+typecheck/lint/grounding (833 facts)/exposure-parity (168 flags)/build/budget
+green, codegen byte-stable, zero stale statuses or career-meta language left).
+Note: ADR-0008 shipped as "the sidecar store: publish-time fetch gated by
+contracts" (what ADR-0002's amendment needed) rather than the dbt note
+originally sketched below — dbt-as-co-equal-consumer is covered in
+README/FEATURES instead.
 
 - **H0-A** README receipts: fix stale counts (80→278 non-live tests, 190→833
   chat facts, "13→4" example, "latest 41.6"), date-stamp every point-in-time
@@ -50,7 +59,7 @@ against the code before landing here — none were refuted.
   counts); make the "nothing here forecasts" headline the precise claim.
 - **H0-C** Move `BEST-IN-CLASS-PLAN.md` + `MONITOR-UX-PLAN.md` from repo root
   into `docs/plans/`, stamp both `✅ EXECUTED` with commits; strip
-  career-meta language ("$200K bar", "interview gold") everywhere it appears.
+  career-meta language everywhere it appears — docs stay product-voiced.
 - **H0-D** Stamp FRONTEND-UX-OVERHAUL + PROVENANCE-AND-CONNECTION as executed
   (they shipped within ~24h of being written); add supersession notes where a
   later plan reversed an earlier one (brief default-open vs collapsed).

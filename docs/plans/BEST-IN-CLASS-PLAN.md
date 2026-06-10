@@ -1,6 +1,12 @@
 # Freight Radar — Best-in-Class Plan
 
-> **Status: PROPOSED (plan only — nothing built yet).** Produced 2026-06-05 from a
+> **Status: ✅ EXECUTED 2026-06-05 — all three phases shipped + deployed the same day.**
+> Commits: `f07986b` (Phase 1: packaging pass + credibility CI gate) · `4801052` + `aa079fb`
+> (Phase 2: boot path off the eager critical path, consolidated gate, claim-level chat
+> provenance + adversarial refusal eval) · `f8068c1` (WAP), `7c8eefb` (port hierarchy),
+> `3506ddb` (history annotations), `9ebfe43` (hero lede + decisive score), `3da07de`
+> (ADRs + Mermaid diagram + root tidy) (Phase 3).
+> Produced 2026-06-05 from a
 > 16-agent benchmark: each of 7 dimensions was researched against the real best-in-class,
 > then audited against the actual code + live renders, then synthesized and adversarially
 > pressure-tested (the critic re-verified the load-bearing claims against the live repo).
@@ -10,13 +16,13 @@
 
 ## Headline
 
-**The substance already clears the $200K bar — the gap is packaging, enforcement, and
+**The substance is already best-in-class — the gap is packaging, enforcement, and
 first-30-second legibility**, plus one outright credibility bug and one self-inflicted
 metrics wound. A reviewer who reads the code deeply *will* be impressed: the
 no-model-in-the-number-path contract is real and code-enforced, the verbatim grounding
 eval (190 facts / 39 questions / 0 failures) is stronger than an LLM-judge eval, the
-Temporal durability + three fail-loud ETL guards + STL/CUSUM/PELT detection are genuine
-staff-grade work, and the README's "How it stays honest" prose is top-tier. The problem is
+Temporal durability + three fail-loud ETL guards + STL/CUSUM/PELT detection are genuinely
+production-grade work, and the README's "How it stays honest" prose is top-tier. The problem is
 the 30-second scan never reaches the code — it hits a GitHub About line that says "Live …
 dark globe" (the app is light-theme and the whole thesis is *never live*), a README with
 no demo link or motion media, test counts that contradict each other, and CI that gates
@@ -44,7 +50,7 @@ touch them.
   artifact. Only *add* a refusal block + wire into CI; never weaken to fuzzy match.
 - **Temporal durable orchestration + idempotency** — bounded retries, crash-replay,
   `INSERT OR REPLACE` on PKs, week-stable `flag_id`, dedup ledger proven to make zero calls
-  on rerun. Interview gold.
+  on rerun. Hard-won and proven.
 - **The three fail-loud ETL guards** — join-coverage gate, fetch-completeness check,
   silent-column-drop refusal, each pinned by deterministic tests. Sharpen into a WAP/DQ
   suite (Phase 3), don't replace.
@@ -113,7 +119,7 @@ count-reconciliation below from silently regressing.
    dismiss + localStorage exactly. It currently occludes ~a third of the hero globe.
 9. **Persistent provenance chip** near the stress gauge: mono bordered chip "COMPUTED IN
    PYTHON · IMF PORTWATCH · NO MODEL IN THE NUMBER PATH", reusing chip styling. States only
-   what's true; turns the constraint into the thing a judge remembers. **Place it near the
+   what's true; turns the constraint into the thing a reader remembers. **Place it near the
    gauge, away from the chat surface** (so it never implies chat *wording* is model-free).
 10. **The pytest CI half (S).** New `ci.yml` on push+PR running `uv run pytest -q` (non-live
     set) — the backend tests currently run in *no* workflow. **Prove it with a red→green
@@ -145,7 +151,7 @@ count-reconciliation below from silently regressing.
     deck/maplibre stay preloaded") — or a future reader will "restore" the bug. Re-measure
     LCP against the new Lighthouse gate.
 
-## Phase 3 — Higher-effort senior-signal builds (now backed by the gate)
+## Phase 3 — Higher-effort credibility builds (now backed by the gate)
 
 14. **Write-Audit-Publish + enumerable DQ suite.** Land each PortWatch pull into
     `stg_*` tables, promote the three guards into a warn/error DQ suite run against STAGING,
@@ -169,7 +175,7 @@ count-reconciliation below from silently regressing.
     on the first-paint surface near the gauge; make the score the unmistakable ~42px hero
     with the amber badge as the **only** saturated color in the top band (desaturate ribbon
     arrows). The brief is buried below the "Monitor" header today. *Depends on #5.*
-18. **Docs as senior signal.** Add `docs/adr/` (4-6 Nygard-format ADRs reusing existing
+18. **Docs as an engineering record.** Add `docs/adr/` (4-6 Nygard-format ADRs reusing existing
     prose: static-sidecar-over-live-API; DuckDB single source of truth; template-prose / no
     model in number path; cut GDELT; Temporal-for-durability vs the Action driver); upgrade
     the ASCII seam to ONE GitHub-native **Mermaid** diagram; link the strongest Verification
@@ -186,7 +192,7 @@ count-reconciliation below from silently regressing.
 - **First-load wow beat** — on first load only (no auto-rotate, skipped under
   reduced-motion), one ~3 s great-circle flyTo to the highest-stress chokepoint, then hand
   control over. Make the feed-row flyTo distance-aware (~900-3000 ms, ease-out).
-- **Mobile / touch** *(restored — a hiring manager on a phone is a real eval path)*:
+- **Mobile / touch** *(restored — a first-time visitor on a phone is a real eval path)*:
   hover-only tooltips are unreachable on touch and the legend is 9px — add tap-to-pin
   tooltips and bump touch targets.
 - **Suspense globe skeleton** (faint graticule + ghosted dots) replacing the bare
@@ -195,8 +201,8 @@ count-reconciliation below from silently regressing.
 - **a11y polish** — honor reduced-motion in the history `setInterval` play loop, add the
   `<main>` landmark, audit WCAG 2.2 target-size (24px) + focus-not-obscured.
 - **`?debug` per-answer reasoning trace** in the chat (intent_matched, entity_resolved,
-  retrieval_keys, facts_pulled, sources) — demonstrates span/trace thinking a staff-AI
-  interviewer probes. *(The other "senior-vocabulary" grab-bag items were cut as low-signal.)*
+  retrieval_keys, facts_pulled, sources) — demonstrates real span/trace observability
+  thinking. *(The other vocabulary-driven grab-bag items were cut as low-signal.)*
 
 ---
 

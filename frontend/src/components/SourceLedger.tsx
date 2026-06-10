@@ -75,7 +75,7 @@ const TIER: Record<string, { label: string; cls: string }> = {
   SPINE: { label: 'measured · spine', cls: 'spine' },
   SIGNAL: { label: 'measured · signal', cls: 'signal' },
   CONTEXT: { label: 'cited · context', cls: 'context' },
-  DERIVED: { label: 'derived · AI', cls: 'derived' },
+  DERIVED: { label: 'derived · templated', cls: 'derived' },
 };
 const ORDER = ['SPINE', 'SIGNAL', 'CONTEXT', 'DERIVED'];
 
@@ -210,7 +210,7 @@ export default function SourceLedger() {
       {brief && brief.claims?.length > 0 && (
         <div className="fr-brief-derived" data-testid="fr-brief-derived">
           <div className="fr-brief-derived-h">
-            <span className="fr-tier derived">derived · AI commentary</span>
+            <span className="fr-tier derived">derived · templated commentary</span>
             <span className="fr-brief-derived-by">{brief.agent_model}</span>
           </div>
           {(() => {

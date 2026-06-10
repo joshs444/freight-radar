@@ -45,14 +45,14 @@ This plan is the **remaining lower-tier but foundational** work.
 1. **Incremental + deploy-each-phase.** Every phase ends: tests green (`pytest -m "not
    live"` 70+ · `npm run test:chat` · `npm run test:parity`) + `npm run build` clean +
    headless-verified (0 console errors, globe/wind/ships render, fly-to works) +
-   committed (NO `Co-Authored-By` trailer — public portfolio repo) + pushed + **live
+   committed + pushed + **live
    receipt** polled past the GitHub-Pages CDN lag.
-2. **Never break the live site.** It's a job-hunt flagship. Each refactor is verified to
+2. **Never break the live site.** It's the public flagship. Each refactor is verified to
    preserve behaviour before the next. Prefer many small safe commits over one big risky one.
 3. **Honesty + free/keyless are unchanged constraints.** No new paid services/keys; the
    "never say live", source-cited, deterministic-number ethos stays.
 4. **Foundation = type safety + clean seams.** The point of this plan is that a future
-   contributor (or hiring reviewer) sees a typed, linted, well-structured codebase — the
+   contributor (or reviewer) sees a typed, linted, well-structured codebase — the
    types lock in the data contracts between the Python publisher and the React reader.
 5. **Resume after compact:** re-read this file, then `git log --oneline -25` to see which
    phases are committed; pick up at the first unchecked box.

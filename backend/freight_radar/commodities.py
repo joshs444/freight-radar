@@ -7,8 +7,9 @@ authority-laundering — G0). The family of z-scores enrolls in the FDR gate (mu
 a basket of commodities doesn't manufacture "anomalies". It is a SIGNAL, not the freight spine:
 self-contained, association-only, and it never bridges into the freight detector.
 
-Source: FRED public-domain commodity series (IMF Primary Commodity Prices) — keyless, by an
-explicit allowlist (not a comment), per the critic. Degrades to absent on any failure.
+Source: IMF Primary Commodity Prices, redistributed by FRED (© IMF, free with attribution) —
+keyless, by an explicit allowlist (not a comment), per the critic. Degrades to absent on any
+failure.
 """
 
 from __future__ import annotations
@@ -23,8 +24,9 @@ from .multiplicity import control_z
 
 log = logging.getLogger(__name__)
 
-# Explicit public-domain allowlist (FRED series id -> name, unit). These are IMF Primary
-# Commodity Prices redistributed by FRED in the public domain — no proprietary index here.
+# Explicit free-source allowlist (FRED series id -> name, unit). These are IMF Primary
+# Commodity Prices redistributed by FRED — © IMF, free with attribution (not public domain);
+# no paid/proprietary index here.
 FRED_COMMODITIES: tuple[tuple[str, str, str], ...] = (
     ("POILBREUSDM", "Brent crude oil", "$/bbl"),
     ("PNGASEUUSDM", "Natural gas (EU)", "$/mmbtu"),
@@ -112,7 +114,7 @@ def compute_signal(series_by_id: dict[str, list[tuple[str, float]]], q: float = 
     as_of = max((r["as_of"] for r in rows), default="")
     return {
         "as_of": as_of,
-        "source": "FRED (public domain · IMF Primary Commodity Prices)",
+        "source": "IMF Primary Commodity Prices via FRED (© IMF, free with attribution)",
         "source_url": "https://fred.stlouisfed.org",
         "method": "12-month rolling z-score we compute over the cited monthly price",
         "disclaimer": (

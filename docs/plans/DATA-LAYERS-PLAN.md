@@ -318,7 +318,7 @@ Per-entity tonnage/mix fields fold into the existing per-chokepoint records:
 | Layer | Source | Free? | Keyless? | Honesty handling |
 |---|---|---|---|---|
 | Market | FRED `fredgraph.csv` | ✅ | ✅ (needs browser UA) | **Public-domain — the licence-safe primary.** 1–2d lag → durable, not freshest. |
-| Market | Stooq CSV, Yahoo v8 | ✅ | ✅ (verified live) | Fresh cross-check. **Stooq forbids redistribution without consent / is personal-non-commercial; Yahoo ToS is gray** — cite clearly, keep app portfolio/non-commercial; prefer FRED for the durable layer. |
+| Market | Stooq CSV, Yahoo v8 | ✅ | ✅ (verified live) | Fresh cross-check. **Stooq forbids redistribution without consent / is personal-non-commercial; Yahoo ToS is gray** — cite clearly, keep the app non-commercial; prefer FRED for the durable layer. |
 | Market | FBX / WCI / SCFI / BDI | ✅ to view | ❌ **not keyless JSON** | SCFI login-walled, BDI Baltic-licensed, FBX/WCI attribution-gated HTML → **manual cited weekly values, `manual:true` + attribution, never scraped.** |
 | Market | Bunker (VLSFO) | n/a | n/a | Ship & Bunker 403s bots, no API → **`bunker_vlsfo` is `estimate:true`, `basis:"modeled_from_brent"`**, references S&B for humans to check. |
 | Internal | ArcGIS `weJ1QsnbMYJlCHdG` (disruptions, edges, spillovers, chokepoints) | ✅ | ✅ (verified live) | Same producer as the flags → OT/RED match is **un-hedged corroboration**. Spillovers labelled **"IMF modeled, structural, static"**; `distance_km` is a radius not a berth-hit. |

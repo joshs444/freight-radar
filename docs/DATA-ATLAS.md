@@ -7,7 +7,7 @@
 
 ## The thesis — in one paragraph
 
-Standpoint takes **only free, public data** — keyless or free-key, never a metered or paid feed — and assembles it into a single 3-D globe of world situational awareness. One domain is the **measured spine** (ocean freight, daily and per-entity, where we run real change-point detection). Everything else is either a **measured signal** (a national index where *we* compute the anomaly) or **cited context** (someone else's number shown as-is, possibly-related, never a stated cause). An offline AI reads the published result and **connects** the measured facts to the cited context — as association only, never causation, never a forecast. The honesty boundary isn't a promise; it's a compile-time fact (a static import-graph firewall that forbids a context layer from ever writing a measured number).
+Standpoint takes **only free, public data** — keyless or free-key, never a metered or paid feed — and assembles it into a single 3-D globe of world situational awareness. One domain is the **measured spine** (ocean freight, daily and per-entity, where we run real change-point detection). Everything else is either a **measured signal** (a national index where *we* compute the anomaly) or **cited context** (someone else's number shown as-is, possibly-related, never a stated cause). An offline reasoner (deterministic templates — no model in the loop) reads the published result and **connects** the measured facts to the cited context — as association only, never causation, never a forecast. The honesty boundary isn't a promise; it's a compile-time fact (a static import-graph firewall that forbids a context layer from ever writing a measured number).
 
 **34 live layers today** — `11 spine · 8 signal · 14 context · 1 derived` — every one free and cited.
 
@@ -32,7 +32,7 @@ flowchart LR
   end
   subgraph OUT["STATIC JSON SIDECARS → the app"]
     GLOBE["3-D globe<br/>+ Monitor feed"]
-    BRIEF["AI briefing<br/>(offline reasoner)"]
+    BRIEF["briefing (ai_briefing.json)<br/>(offline template reasoner)"]
   end
   PW --> DUCK --> DET --> GLOBE
   FRED --> SIG --> GLOBE
@@ -56,7 +56,7 @@ No live API at runtime: the weekly Action rebuilds the DuckDB warehouse from sou
 | **SPINE** *(measured)* | The deep, daily, per-entity domain we run real detection on. The flags come from here. | `flags`, `stress` from IMF PortWatch |
 | **SIGNAL** *(measured)* | A national index where **we** compute the anomaly (a 12-month rolling z-score), FDR-controlled. | `freight_rate` (truckload +4.8σ), `slack` |
 | **CONTEXT** *(cited)* | Someone else's number, shown exactly as published — possibly-related, never a stated cause. | `quakes`, `news_geo`, `wind` |
-| **DERIVED** *(AI)* | An offline reasoner's prose over the cited store — every claim traces to a layer. | `ai_briefing` |
+| **DERIVED** *(templated)* | The offline reasoner's templated prose over the cited store — every claim traces to a layer. Deterministic today; the gates were built for a model that isn't in the loop. | `ai_briefing` |
 
 Promotion `context → measured` is gated: we only "own" a number when we compute a defensible statistic over raw observed inputs in Python.
 
@@ -72,7 +72,8 @@ The one domain with free, daily, per-entity granularity good enough for real cha
 | **IMF PortWatch — ports** → `snapshot` `ports` `timeseries` | Daily port-call counts + capacity for ~2,000 ports, by cargo type. We compute STL deseasonalization → 28-day rolling z → PELT change-point → a gated flag. | daily (weekly refresh) | PortWatch terms (free) | spine |
 | **IMF PortWatch — chokepoints** → `chokepoints` `flags` | Daily transit calls for 28 maritime chokepoints by vessel type (container / dry-bulk / tanker / ro-ro) + capacity DWT. | daily (weekly refresh) | PortWatch terms (free) | spine |
 | *(derived from the above)* `stress` | Global Ocean Freight Stress Index 0–100 = economic-weighted breadth × worst-chokepoint depth. | weekly | — (computed) | spine |
-| *(derived)* `lanes` `world` `events` `brief` | Great-circle lanes, world daily totals, lifecycle events, the templated weekly brief. | weekly | — (computed) | spine |
+| *(derived)* `world` `events` `brief` | World daily totals, lifecycle events, the templated weekly brief. | weekly | — (computed) | spine |
+| *(schematic)* `lanes` | Hand-maintained great-circle arcs of the major trade lanes; `intensity` is an illustrative styling constant, **not a measurement**. | static | — (illustrative) | spine (schematic) |
 | **AISStream** → `ships` | A point-in-time sample of live vessel positions near the chokepoints (observed, **not** all ships). | live sample | AISStream terms (free-key) | context |
 | **Panama Canal Authority** → `gatun` | Gatún lake level → percentile → minimum projected Neopanamax draft (ft). | ~weekly | ACP terms (free) | signal |
 
@@ -87,12 +88,12 @@ The cross-domain layer surfaced in the **Signal Board**: trucking, rail, air, in
 | **Transport labor** `labor` | Transportation & warehousing · trade-transport-utilities · truck-transportation · manufacturing employment | monthly | public domain (BLS CES) | signal |
 
 ### 3 · Commodities & metals — measured signals
-The cargo that moves through the chokepoints, priced. Free **FRED** (IMF Primary Commodity Prices); we own the z-score anomaly, the price stays cited.
+The cargo that moves through the chokepoints, priced. **IMF Primary Commodity Prices**, redistributed by FRED (© IMF, free with attribution — not public domain); we own the z-score anomaly, the price stays cited.
 
 | Family (layer) | Series we take | Cadence | License | Role |
 |---|---|---|---|---|
-| **Commodities** `commodities` | Brent crude · EU natural gas · Wheat · Maize (corn) · Soybeans | monthly | public domain (IMF PCPS via FRED) | signal |
-| **Metals & bulk energy** `metals` | Aluminum · Iron ore · Nickel · Zinc · Lead · Tin · Copper · Australian coal · Energy Index | monthly | public domain (IMF PCPS via FRED) | signal |
+| **Commodities** `commodities` | Brent crude · EU natural gas · Wheat · Maize (corn) · Soybeans | monthly | © IMF, free with attribution (IMF PCPS via FRED) | signal |
+| **Metals & bulk energy** `metals` | Aluminum · Iron ore · Nickel · Zinc · Lead · Tin · Copper · Australian coal · Energy Index | monthly | © IMF, free with attribution (IMF PCPS via FRED) | signal |
 
 ### 4 · Water, canal & marine — context
 Physical conditions at the maritime constraints.
@@ -135,10 +136,10 @@ Geo-located world news near the chain, and per-flag corroborating headlines.
 |---|---|---|---|---|
 | **FRED + Stooq** → `market` | Cited market indicators shown as published, never restated as ours. | daily | public domain (FRED) / Stooq terms | context |
 
-### 9 · Derived — the AI layer
+### 9 · Derived — the briefing layer
 | Layer | What it is | Role |
 |---|---|---|
-| `ai_briefing` | An **offline** reasoner (Claude Code, zero runtime cost) reads the published store, grounds every claim through `verify()`, connects measured facts to cited context as association, and is gate-checked fail-closed before it ships. | derived |
+| `ai_briefing` | An **offline** deterministic template reasoner (no model in the loop, zero runtime cost) reads the published store, grounds every claim through `verify()`, connects measured facts to cited context as association, and is gate-checked fail-closed before it ships. | derived |
 
 ---
 
@@ -147,7 +148,7 @@ Geo-located world news near the chain, and per-flag corroborating headlines.
 1. **The spine generates the flags.** Only PortWatch has the daily per-entity depth to support change-point detection, so the *alerts* come from maritime. (This is why the straits dominate — by data availability, not by choice.)
 2. **The signals ride alongside.** The FRED families (freight rate, macro, slack, labor, commodities, metals) are national + monthly — too coarse for per-entity detection, but each yields an FDR-controlled z-score, surfaced in the **Signal Board** next to the flags. "Truckload freight rate +4.8σ" sits beside "Strait of Hormuz −92%."
 3. **Context corroborates, never creates.** A storm or quake can attach to a flag when it co-occurs in space + time, but it can never *raise* a flag and is never written as a cause. The import-graph firewall makes that a compile error.
-4. **The AI connects them.** The offline briefing joins a measured disruption to its co-occurring cited news / hazards — "Hormuz −92% co-occurs with 4 cited reports (NPR, CNBC, NYT)" — labelled association, gate-verified.
+4. **The briefing connects them.** The offline templated briefing joins a measured disruption to its co-occurring cited news / hazards — "Hormuz −92% co-occurs with 4 cited reports (NPR, CNBC, NYT)" — labelled association, gate-verified.
 
 ---
 

@@ -1,10 +1,11 @@
-"""The AI briefing — the DERIVED reasoner's output + its honesty gates (P6 capstone).
+"""The DERIVED briefing — the reasoner's output + its honesty gates (P6 capstone).
 
-The reasoner is **offline**: Claude Code (the Agent SDK) reads the published store and writes
-``ai_briefing.json`` on the weekly cadence; the static site only *serves* it, so the live cost
-is **zero** — no LLM is ever called on a page-view. This module is the VALIDATOR (not a runtime
-model call): it enforces, in CI, the exact firewall the plan demands of a non-deterministic
-reasoner —
+The reasoner is **offline and deterministic**: a ``python -m`` step (reason.py — fixed
+templates, no model in the loop) reads the published store and writes ``ai_briefing.json`` on
+the weekly cadence; the static site only *serves* it, so the live cost is **zero** — no LLM is
+ever called anywhere. This module is the VALIDATOR (not a runtime model call): it enforces, in
+CI, the exact firewall the plan demands of a non-deterministic reasoner, so a model could only
+ever be wired in BEHIND these gates —
 
   * **grounded** — every claim cites ≥1 layer that exists in the store (zero cites = fail, the
     same gate the human chat already passes);
@@ -13,7 +14,7 @@ reasoner —
   * **labeled** — stamped with the agent_model that said it.
 
 It imports nothing from the fact path; nothing in the fact path imports it (test_derived +
-test_layer_firewall prove the quarantine). So the agent reasons over everything (leverage) but
+test_layer_firewall prove the quarantine). So the reasoner reads everything (leverage) but
 every utterance is cited, association-only, and physically unable to corrupt the store (honesty).
 """
 

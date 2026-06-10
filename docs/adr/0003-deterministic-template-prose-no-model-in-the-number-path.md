@@ -1,6 +1,7 @@
 # 3. Deterministic template prose — no model in the number path
 
 Status: Accepted
+Date: 2026-06-05
 
 ## Context
 

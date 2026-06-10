@@ -1,6 +1,7 @@
 # 2. DuckDB as the single source of truth (local tables only)
 
-Status: Accepted
+Status: Accepted (scope amended 2026-06-09 — see below)
+Date: 2026-06-05
 
 ## Context
 
@@ -40,3 +41,24 @@ the warehouse is the only source of truth for everything that follows.
   is in DuckDB, the rest of the pipeline runs offline and deterministically.
 - The committed DB is gitignored and rebuilt fresh on each refresh, so the
   warehouse is reproducible from source rather than a hand-maintained artifact.
+
+## Scope amendment (2026-06-09)
+
+As originally written, "Ingest is the **only** writer" and "every enricher …
+**never reaches an upstream directly**" claim more than the system does. Three
+things were never DuckDB-mediated:
+
+- detection itself writes back into the warehouse — `run_detection` upserts
+  `fct_flags` (a second writer, inside the trust boundary);
+- the publish step `CREATE OR REPLACE`s the substrate index tables
+  (`dim_entity` / `fct_observation`, `substrate.py`) as it runs;
+- the CONTEXT/SIGNAL enrichers **fetch their upstreams live at publish time**
+  and write JSON sidecars that never pass through DuckDB at all.
+
+The honest scope of this decision: **DuckDB is the single source of truth for
+the measured PortWatch spine** — every number derived from PortWatch history
+(detection baselines, snapshots, timeseries, the stress index) reads from the
+one local file, and the publish of that spine has zero upstream dependency at
+render time. The sidecar tier is a deliberately different pattern —
+publish-time fetch, gated by data contracts — recorded as its own decision in
+[ADR 8](0008-sidecar-store-publish-time-fetch-gated-by-contracts.md).

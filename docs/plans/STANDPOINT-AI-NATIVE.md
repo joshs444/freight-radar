@@ -1,8 +1,17 @@
 # Standpoint — The AI-Native Architecture
 
+> **Status: ✅ EXECUTED 2026-06-07 — Steps 0–9 shipped.** Commits: `97fea96` (the
+> `derived/contract.py` keystone) · `a12e444` (Steps 0+1) · `12d0701` (Step 2, pooled FDR)
+> · `e195a43` (Step 3, the abstention demo) · `e1b40c2` + `b270694` (Step 4) · `7ffc263`
+> (Steps 5+6, `hyp_*` firewall-first + dark) · `b06cef9` (Steps 7+8, the fail-closed gate
+> + the offline reasoner) · `7299cec` (Step 9, slack + labor). A strategy satellite of
+> [STANDPOINT-VISION.md](STANDPOINT-VISION.md). _Truth note (2026-06-09): the deployed
+> briefing prose is deterministic templates routed through the gate — honest stamping of
+> `agent_model` is [HARDENING-PLAN.md](HARDENING-PLAN.md) H0-H._
+
 ## 1. Executive summary
 
-Standpoint's next chapter is not "add an AI reasoner." It is to make **one substrate, one grounding gate, one multiplicity control, and one capability firewall** the single foundation that the reasoner, the signals board, bitemporal time-travel, and the `hyp_*` association tier all *query* — never a feature each bolts its own honesty onto. The AI-native thesis is inverted from the industry default: **the depth lives in offline, deterministic-where-possible reasoning that emits cited artifacts a static site serves at zero marginal cost — the LLM renders and judges, it never selects or decides.** Every claim is a type that *cannot hold an ungrounded sentence*, every "significant" means the same thing across the whole test universe, and the agent's tool layer is physically read-only — these are CI facts, not comments, and they are the exact, falsifiable opposite of centrum-ai's unfalsifiable "99.7% cascade." The portfolio thesis fits on one screen: *an AI that structurally cannot fabricate causation, with a fail-closed gate that proves it.*
+Standpoint's next chapter is not "add an AI reasoner." It is to make **one substrate, one grounding gate, one multiplicity control, and one capability firewall** the single foundation that the reasoner, the signals board, bitemporal time-travel, and the `hyp_*` association tier all *query* — never a feature each bolts its own honesty onto. The AI-native thesis is inverted from the industry default: **the depth lives in offline, deterministic-where-possible reasoning that emits cited artifacts a static site serves at zero marginal cost — the LLM renders and judges, it never selects or decides.** Every claim is a type that *cannot hold an ungrounded sentence*, every "significant" means the same thing across the whole test universe, and the agent's tool layer is physically read-only — these are CI facts, not comments, and they are the exact, falsifiable opposite of centrum-ai's unfalsifiable "99.7% cascade." The thesis fits on one screen: *an AI that structurally cannot fabricate causation, with a fail-closed gate that proves it.*
 
 **The one foundational decision everything depends on:** wire `build_substrate` into `refresh.yml` and make `fct_observation` the single, all-tier, append-only, per-run-`knowledge_time`-stamped read corpus — because every other pillar is a query over it, and a clever reasoner over a SPINE-only, single-snapshot, un-accumulated index is just centrum with better manners.
 
@@ -47,7 +56,7 @@ This is where the three critiques are load-bearing and I resolve the central dis
 
 ### The disagreement: LLM vs deterministic template — resolved
 
-The cargo-cult critique is correct and I am adopting it: **the honesty constraints are so tight they squeeze the model's degrees of freedom to near zero, so the LLM must justify itself against a Jinja-template null hypothesis — and mostly it can't.** The pillar's three-agent planner/generator/evaluator split with per-signal-family subagents is **cut**: with ~30 weeks of data and ~22 layers, that's multi-agent theater solving a context-window problem that doesn't exist, and a reviewer who knows agents will read it as resume-driven design. The honest division of labor:
+The cargo-cult critique is correct and I am adopting it: **the honesty constraints are so tight they squeeze the model's degrees of freedom to near zero, so the LLM must justify itself against a Jinja-template null hypothesis — and mostly it can't.** The pillar's three-agent planner/generator/evaluator split with per-signal-family subagents is **cut**: with ~30 weeks of data and ~22 layers, that's multi-agent theater solving a context-window problem that doesn't exist, and a reviewer who knows agents will read it as architecture theater. The honest division of labor:
 
 | Job | Owner | Why |
 |---|---|---|
@@ -56,7 +65,7 @@ The cargo-cult critique is correct and I am adopting it: **the honesty constrain
 | **Association** (lead-lag stats) | **`hyp_*` math** (scipy) | Not an LLM job |
 | **Phrasing** a pre-selected, pre-grounded, pre-typed `Claim[]` into readable English | **LLM, single cited call** | The *only* genuinely-LLM job, and it's small |
 
-**The fence (cargo-cult critique):** the model may only *rewrite a deterministically-built `Claim[]` into prose*, with attribution re-checked after. **The LLM never chooses a claim, only renders one.** If a future change can't articulate what the template can't do, ship the template — it's the more honest artifact and the better portfolio story ("I proved the LLM was unnecessary in the author seat").
+**The fence (cargo-cult critique):** the model may only *rewrite a deterministically-built `Claim[]` into prose*, with attribution re-checked after. **The LLM never chooses a claim, only renders one.** If a future change can't articulate what the template can't do, ship the template — it's the more honest artifact and the better story ("I proved the LLM was unnecessary in the author seat").
 
 ### The selection-function fix (honesty-erosion critique — load-bearing)
 
@@ -79,7 +88,7 @@ The load-bearing API constraint *dictates* the shape: **Citations and Structured
 
 ## 4. hyp_* — ML-within-honesty (guardrails first)
 
-This is the tier most likely to quietly become centrum. The discipline is inverted from everything else: **build the rendering firewall before the math, and ship the math dark.** All three critiques converge here — the fence is the portfolio piece, the math is a footnote.
+This is the tier most likely to quietly become centrum. The discipline is inverted from everything else: **build the rendering firewall before the math, and ship the math dark.** All three critiques converge here — the fence is the headline, the math is a footnote.
 
 ### The firewall FIRST (honesty-erosion critique — non-negotiable sequencing)
 
@@ -141,7 +150,7 @@ Each is the proven template: FRED public-domain allowlist → imported `parse_se
 
 ### The FDR fix (pulled FORWARD per founder-reality critique)
 
-This is the one "refactor existing code" item worth doing *early*: today each family runs its **own isolated `control_z`** — four silos of 5–6 tests, so "significant" silently means four different things. A sharp interviewer spots it. Add `signals/pool.py`: collect every signal's z + `two_sided_p`, run **one** `control_z(zs, q=0.10, m=len(all))`, write `signals_fdr.json`; `compute_signal` emits z-only, **all significance re-stamped from the pooled gate.** The spine detector (`run_detection.py:334`, `m=n_tested`) stays its own family — ports and macro are different universes; pooling them would be dishonest.
+This is the one "refactor existing code" item worth doing *early*: today each family runs its **own isolated `control_z`** — four silos of 5–6 tests, so "significant" silently means four different things. A sharp reviewer spots it. Add `signals/pool.py`: collect every signal's z + `two_sided_p`, run **one** `control_z(zs, q=0.10, m=len(all))`, write `signals_fdr.json`; `compute_signal` emits z-only, **all significance re-stamped from the pooled gate.** The spine detector (`run_detection.py:334`, `m=n_tested`) stays its own family — ports and macro are different universes; pooling them would be dishonest.
 
 ### The board
 
@@ -191,7 +200,7 @@ GATE = validate           # tier==DERIVED, metric None, cites ∈ REGISTRY  [exi
 
 3. **Abstention battery** — `tests/abstention/bait.jsonl`: ungroundable geopolitics ("will Hormuz close?"), forecast bait, causal bait ("did the quake cause the drop?"), phantom-entity bait. Each must produce **zero claims**. The literature is blunt models "fail to abstain… generating spurious arguments" — this is the eval most likely to catch real erosion. A **living fixture**: every escaped leak becomes a permanent test. *(High-leverage, under-specified AI use per the cargo-cult critique: use a model to **adversarially generate** new baits — the LLM belongs in the adversary seat, where it's irreplaceable.)*
 
-4. **No-telemetry-into-DERIVED.** `provenance_clean()` asserts no cite/`derives_from` edge resolves to a telemetry/analytics layer — enforced like the SPINE-immutability firewall. The agent's tools are read-only *and* telemetry-blind: no tool returns view counts or "popular ports." We can *prove* the model never optimized for engagement because it was never shown it — the portfolio-legible inverse of centrum's 99.7%.
+4. **No-telemetry-into-DERIVED.** `provenance_clean()` asserts no cite/`derives_from` edge resolves to a telemetry/analytics layer — enforced like the SPINE-immutability firewall. The agent's tools are read-only *and* telemetry-blind: no tool returns view counts or "popular ports." We can *prove* the model never optimized for engagement because it was never shown it — the legible inverse of centrum's 99.7%.
 
 **Scorecard (`derived/scorecard.json`, on the Source Ledger):** reports the gate's receipts — `{n_claims, n_entailed, n_abstained_bait, causal_tokens=0, telemetry_edges=0, judge_model, run_id, knowledge_time}`. **Honesty-erosion critique fix: cut any cross-claim density/coverage scalar** (`n_significant/n_claims`) — it reads as "how sure Standpoint is this week," a confidence proxy the moment it renders near the globe.
 
@@ -208,14 +217,14 @@ Each step is shippable and verified-live (real receipt, not "the step ran"). Fou
 | **0** | Wire `freight_radar.substrate` into `refresh.yml` (after publish, before contracts). | A corpus that *exists*. | `fct_observation` sidecar live + queryable in the DuckDB-WASM console |
 | **1** | Per-run `knowledge_time` from `ctx.as_of`; `CREATE OR REPLACE` → append Parquet ledger; relax `source_observed_at==date_key`; add `store.as_of()`. | Time-travel is a *query*; restatements become revision rows. | Restatement fixture: old `as_of` returns old value |
 | **2** | Pooled FDR (`signals/pool.py`) + `signals_fdr.json`. | "Significant" means one thing across 22 signals. | Board header shows pooled `expected_false`; per-family silos gone |
-| **3 ⭐** | **The abstention demo, end-to-end, live:** centrum "99.7%" as a `tier=CONTEXT,method=external_claim` row in the Board; `bait.jsonl` green in CI; `scan_rendered()` extended; public scorecard. | **The single most hireable artifact.** | Live screenshot of claimed-vs-measured row + green CI badge |
+| **3 ⭐** | **The abstention demo, end-to-end, live:** centrum "99.7%" as a `tier=CONTEXT,method=external_claim` row in the Board; `bait.jsonl` green in CI; `scan_rendered()` extended; public scorecard. | **The single most legible artifact.** | Live screenshot of claimed-vs-measured row + green CI badge |
 | **4** | All tiers land in `fct_observation` (SIGNAL via `dim_entity`, CONTEXT counts); signals board reads it. | The join key for `hyp_*`; the sparkline. | Board sparkline replays as-of z-series |
 | **5** | `<AssociationStamp/>` + `data/hyp/` import-graph fence **(CI-blocking, before any math)**. | The dark-tier firewall. | CI fails on a deliberate un-stamped `data/hyp/` fetch |
 | **6** | `hyp/associate.py` (single lead-lag fn, pooled BH, as-of read, writes `data/hyp/`). | Measured cross-layer association, dark. | `expected_false` in every block; not on the globe |
 | **7** | `derived/gate.py` (attribution + abstention + provenance) **before** `reason.py`. | The fail-closed honesty gate. | Gate rejects a hand-crafted unfaithful briefing |
 | **8** | `derived/reason.py` (single cited Pass-1 → validated Pass-2), wire into `refresh.yml`. | Briefing *derived*, not hand-authored. | `ai_briefing.json` numbers re-derive from sidecars on refresh |
 | **9** | `energy.py` / `slack.py` / `labor.py`. | Signal breadth. | Three new SIGNAL rows, firewall-clean |
-| **—** | *Fenced indefinitely:* chat unification onto `verify()`. | One grounding engine. | Defer — refactoring a working surface is motion when the clock is the job hunt |
+| **—** | *Fenced indefinitely:* chat unification onto `verify()`. | One grounding engine. | Defer — refactoring a working surface is motion, not progress |
 
 ---
 
@@ -226,11 +235,11 @@ Each step is shippable and verified-live (real receipt, not "the step ran"). Fou
 - **BET: the store-as-index, no embeddings.** Right *because* the structured store is already tier-stamped and lineage-bound. **Kill-criterion:** if retrieval ever needs fuzzy semantic match over free text, revisit — but it won't on `fct_observation`.
 - **BET: the LLM-judge entailment label** (§8.1) is the one un-mechanized surface. **Kill-criterion:** if a claim isn't string-decidable, reject it — never let the judge be the primary gate.
 - **BET: `hyp_*` will mostly find noise.** That's the *feature*. **Kill-criterion:** if a single block ever renders on the globe without `<AssociationStamp/>`, the firewall failed and the moat is breached — that's the one un-survivable bug on the public flagship.
-- **BET: the briefing may be templateable.** Default to the template; make the LLM *prove* it's necessary in the author seat. Shipping the template is the *more* honest portfolio story.
+- **BET: the briefing may be templateable.** Default to the template; make the LLM *prove* it's necessary in the author seat. Shipping the template is the *more* honest story.
 
-### The single most hireable demo
+### The single most legible demo
 
-**Step 3.** The abstention demo wired live + the bait battery green in CI + a public scorecard. It needs Steps 0–1 of substrate and the language firewall — *nothing else* — and it's buildable in days. The entire portfolio thesis in one screenshot + one CI badge: *"I built an AI that structurally cannot fabricate causation, and here's the failing-closed gate that proves it."* A hiring manager spends 90 seconds on the repo; that screen is the 90 seconds.
+**Step 3.** The abstention demo wired live + the bait battery green in CI + a public scorecard. It needs Steps 0–1 of substrate and the language firewall — *nothing else* — and it's buildable in days. The entire thesis in one screenshot + one CI badge: *"I built an AI that structurally cannot fabricate causation, and here's the failing-closed gate that proves it."* A first-time reviewer spends 90 seconds on the repo; that screen is the 90 seconds.
 
 ### What to explicitly NOT build yet
 
@@ -251,6 +260,6 @@ Each step is shippable and verified-live (real receipt, not "the step ran"). Fou
 3. **Write `signals/pool.py`** — collect all signal z's, one `control_z`, write `signals_fdr.json`, re-stamp `fdr_significant` from the pool. Cheap, high-credibility, fixes a real correctness bug. *(Step 2 — pulled forward.)*
 4. **Build `derived/contract.py`** (the `RetrievedObservation` / `Claim` / `AssociationObj` types + `ground_or_abstain`) — so every later pillar inherits the gate instead of inventing one. No model call yet; this is pure types.
 5. **Stand up `tests/abstention/bait.jsonl` + the attribution check skeleton in `derived/gate.py`** — the gate exists *before* the reasoner writes anything, so the first real briefing is gated, not hand-blessed.
-6. **Ship Step 3 — the abstention demo — and stop to look at it.** That's the deliverable a staff-AI-eng interviewer remembers: a fail-closed honesty gate over a real substrate, the falsifiable opposite of "99.7%."
+6. **Ship Step 3 — the abstention demo — and stop to look at it.** That's the deliverable a reviewer remembers: a fail-closed honesty gate over a real substrate, the falsifiable opposite of "99.7%."
 
 The through-line: **build the store, prove it point-in-time correct and all-tier, gate it with one verify / one FDR / one firewall — *then* let the agent talk.** If the foundation is right, the "AI" is almost an afterthought — and admitting that is the most senior, most honest thing this architecture can say.

@@ -1,7 +1,7 @@
 """The honest-no demo — an agent grounds every claim through ``store.verify()`` before it
 speaks, and SUPPRESSES the ones the measured store can't back.
 
-This is the runnable artifact behind the 5-year plan's most hireable demo: a consumer (here a
+This is the runnable artifact behind the 5-year plan's abstention demo: a consumer (here a
 deterministic stand-in for an LLM agent; live, Claude Code calls the same thing via the
 ``verify`` MCP tool) refuses to assert anything the store doesn't measure. A grounded claim is
 cited with full provenance; an ungrounded geopolitics/forecast claim is dropped with the honest

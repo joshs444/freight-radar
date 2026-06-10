@@ -310,7 +310,12 @@ and the heavy build stays in the weekly Action.
   passes its correctness gate (known entity pairs resolve to one `entity_key`, zero silent
   mis-joins).
 
-### P3 — Measured commodity / energy / macro signal cluster  · _Month 4.5–6_ · effort M–L · 🟡 **first signal SHIPPED 2026-06-06**
+### P3 — Measured commodity / energy / macro signal cluster  · _Month 4.5–6_ · effort M–L · ✅ **6 signal families SHIPPED 2026-06-06/07**
+- **✅ Shipped (the 6–8 exit met):** six FDR-gated signal families live — commodities
+  (`8d3a976`), freight/industrial macro (`eb88ed2`), metals & bulk energy (`b9746bb`),
+  freight transport-cost / BLS PPI by mode (`f6f927c`), and slack + labor (`7299cec`) —
+  plus the board's signals band (`SignalBoard`), all enrolled in the **pooled** FDR gate
+  (`12d0701`).
 - **✅ Shipped (the loop, proven end-to-end):** the **commodity-price anomaly** SIGNAL
   (`commodities.py`) — an allowlisted set of FRED public-domain series (IMF Primary Commodity
   Prices, keyless) → **our** 12-month rolling z-score, enrolled in the FDR gate (the price stays
@@ -320,7 +325,7 @@ and the heavy build stays in the weekly Action.
   (Wheat/Brent/Soybeans), queryable in the store (catalog + MCP + a `commodities` view in the
   in-browser console). _(The firewall caught a real layering bug — a SIGNAL importing the FDR
   helper from `detect/` — so `multiplicity.py` was relocated out of the detector namespace.)_
-  Remaining: more series-families (energy / macro CLI) toward the 6–8 exit + the board signals band.
+  The remaining series-families + the board signals band followed within a day (the bullet above).
 - **Goal:** the cleanest, highest-value **promotions** — raw observed input + a defensible
   Python anomaly we own.
 - **Data:** World Bank Pink Sheet (keyless, ~70 commodities → our 12-mo rolling z); FRED
@@ -333,14 +338,24 @@ and the heavy build stays in the weekly Action.
 - **Exit:** 6–8 measured signals live, each cleared all promotion gates; the board auto-gains a
   signals band.
 
-### P4 — Context-ring breadth I: hazards · hydrology · conflict · infrastructure  · _Month 6–8_ · effort L
+### P4 — Context-ring breadth I: hazards · hydrology · conflict · infrastructure  · _Month 6–8_ · effort L · 🟡 **machinery + first slice SHIPPED EARLY 2026-06-06**
+- **✅ Shipped early (2026-06-06):** the **⌘K command palette** (`dc6e4e4`), the **Source
+  Ledger** view (`8846474`) with the honesty self-grade strip (`5d51d02`), the
+  **upstream-drift detector** — declarative sidecar contracts + CI gate + live monitor
+  (`3501b7d`, `93cce56`) — and a first slice of the context ring on the globe: streamflow
+  (`f0e696f`), tides (`2276459`), marine wave-height (`4b54713`), EONET natural events
+  (`0f88266`), space weather (`de3d0b4`), GDACS hazards (`e285246`). _Genuinely remaining:
+  the rest of the data menu below (EMSC, GVP, JTWC, UCDP, IODA/OONI, OpenSky…) — a
+  **capacity-bounded menu under the STANDPOINT-5YEAR layer cap** (see the precedence note
+  at the end of [§11](#11-review-pass-2--tightening-before-execution-incorporated)), not a
+  commitment._
 - **Goal:** broaden the cited-context ring across the natural-hazard, water, conflict, and
   infra domains; ship the **Layer Catalog + ⌘K palette + Source Ledger** (needed *before* the
   source count climbs).
 - **Data (license-clean only):** EMSC seismic, GVP volcanoes, JTWC cyclones, geoBoundaries +
   Natural Earth basemap, USGS streamflow, GloFAS/GFMS floods, IODA + OONI internet outages,
   OpenSky/ADSB.lol flights, NOAA SWPC space weather. **Conflict → UCDP, not ACLED** (critic:
-  ACLED bars commercial use; this is a portfolio piece). CC-BY-NC sources (TeleGeography,
+  ACLED bars commercial use; this project can't carry that license risk). CC-BY-NC sources (TeleGeography,
   OpenSanctions, Cloudflare Radar, GPSJam, Global Fishing Watch) **flagged NC — caution**.
 - **Build:** the catalog UI; an **upstream-drift detector** (a scheduled contract-check that
   pings the maintainer when a feed's schema/availability changes — the named-but-unbuilt
@@ -348,7 +363,11 @@ and the heavy build stays in the weekly Action.
 - **Exit:** ~15–20 new context layers live + discoverable; daily+weekly shards run without
   holding the lock; drift detector green.
 
-### P5 — Context-ring breadth II: human-impact + climate + presets/dashboards  · _Month 8–10_ · effort L
+### P5 — Context-ring breadth II: human-impact + climate + presets/dashboards  · _Month 8–10_ · effort L · 🟡 **lenses SHIPPED EARLY 2026-06-06**
+- **✅ Shipped early (2026-06-06):** curated, shareable **Lenses** (`dc6e4e4`; URL-stamp
+  fix `baecd75`). _Genuinely remaining: the offline-precomputed exposure scalars
+  (WorldPop/GHSL/WorldCover zonal stats — workstream B is unbuilt), the 1–2 proven climate
+  rasters, and per-domain dashboards — the same capacity-bounded-menu rule as P4._
 - **Goal:** complete the world-awareness footprint; make 50 layers navigable.
 - **Data:** **offline-precomputed** exposure scalars (WorldPop/GHSL/WorldCover summed *inside*
   hazard footprints — **strictly "within-footprint", never "affected"/"impacted"**, lint-
@@ -361,7 +380,16 @@ and the heavy build stays in the weekly Action.
 - **Exit:** ~15 human-impact/climate layers live; exposure scalars pass within-footprint tests;
   lenses one-click load + share.
 
-### P6 — The honest cross-layer surface **+ the reasoning agent** (the capstone, LAST)  · _Month 10–12_ · effort L
+### P6 — The honest cross-layer surface **+ the reasoning agent** (the capstone, LAST)  · _Month 10–12_ · effort L · ✅ **largely SHIPPED EARLY 2026-06-06/07**
+- **✅ Shipped early:** the proximity-only **Nearby** surface (`99e329b`), the Board's
+  cross-layer **comparison matrix** (`8851830`), and the **DERIVED tier end-to-end** — the
+  offline, fail-closed-gated reasoner runs in the weekly refresh
+  (`derived/reason.py`; `ca8f329`, gate `b06cef9`, connections `4f1227e`), with the
+  `hyp_*` association tier landed firewall-first + dark (`7ffc263`). _Truth note: the
+  deployed briefing prose is deterministic templates routed through the gate — stamping
+  that honestly (`agent_model`, the "AI" badge) is
+  [HARDENING-PLAN.md](HARDENING-PLAN.md) H0-H. Genuinely remaining: the elevated
+  standalone Briefing view (today it renders inside the Source Ledger)._
 - **Goal:** the brand's two sharpest knives, built as the anti-centrum statement and the most
   honesty-hardened things in the project: a **proximity-only "Nearby" panel** + comparison
   matrix, and — fused here, **dead last** — the **DERIVED reasoning agent** that narrates over
@@ -475,7 +503,7 @@ above:
   re-stating a source's own anomaly as ours is barred (G0).
 - **Not actually free → dropped/swapped:** ACLED → **UCDP**; IOM DTM → **UNHCR**; FRED proprietary
   series → **public-domain allowlist**; CC-BY-NC sources (TeleGeography, OpenSanctions, Cloudflare
-  Radar, GPSJam, GFW) flagged **NC-caution** for a commercial-adjacent portfolio. See the caveats
+  Radar, GPSJam, GFW) flagged **NC-caution** for a commercial-adjacent public site. See the caveats
   section of [DATA-SOURCES.md](DATA-SOURCES.md).
 - **New workstreams the plan had named but not built:** upstream-drift detector; cold-start
   backfill; grounded-chat scaling for lazy data; `.git`-bloat / data-retention; free-key rotation;
@@ -578,6 +606,11 @@ not bad design — it's overbuilding before the boring invariants are real._ Inc
   outward through the catalog in priority order. **Freight is the front door, not the ceiling.**
   "Do it all" = a long, gated, capacity-bounded march — never all-at-once; the cap + retirement are
   what make breadth survivable for a single maintainer.
+
+> **Precedence (2026-06-09):** [STANDPOINT-5YEAR.md](STANDPOINT-5YEAR.md) governs
+> *strategy* — depth over breadth, the hard layer cap, the retirement policy. This plan's
+> P4–P5 breadth lists are a **capacity-bounded menu under that cap**, never a competing
+> commitment: "do it all" means *eligible for the menu*, not *will be built*.
 
 ---
 

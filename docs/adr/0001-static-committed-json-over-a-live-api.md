@@ -1,6 +1,7 @@
 # 1. Static committed JSON over a live API
 
 Status: Accepted
+Date: 2026-06-05
 
 ## Context
 

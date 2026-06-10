@@ -1,8 +1,8 @@
 # Standpoint
 
-**World signals on one honest 3D globe. Ocean-freight throughput is the measured spine — a statistical engine auto-flags transit collapses, congestion, Cape-of-Good-Hope reroutes, and cargo-specific drops from free, public IMF PortWatch data — while geo-tagged world news, storms, hazards, satellite and wind ride alongside as cited, possibly-related context. Every figure is computed in Python from source; no model is in the number path, and nothing here forecasts.** _(Formerly Freight Radar; repo slug + URL keep the old name.)_
+**World signals on one honest 3D globe. A statistical engine flags ocean-freight disruptions — transit collapses, congestion, Cape-of-Good-Hope reroutes, cargo-specific drops — from free, public IMF PortWatch data; geo-tagged news, storms, hazards and market signals ride alongside as cited, possibly-related context. Every figure is computed in Python from source, and we never forecast: the only future-dated values anywhere are a source model's own published output (NOAA GFS wind, the ACP's projected draft), labelled as theirs.** _(Formerly Freight Radar; repo slug + URL keep the old name.)_
 
-[**▶ Live demo**](https://joshs444.github.io/freight-radar/) · [**📊 Data Atlas**](docs/DATA-ATLAS.md) ([PDF](docs/DATA-ATLAS.pdf)) · [**How it stays honest** ↓](#how-it-stays-honest)
+[**▶ Live demo**](https://joshs444.github.io/freight-radar/) · [**📊 Data Atlas**](docs/DATA-ATLAS.md) ([PDF](docs/DATA-ATLAS.pdf)) · [**Full feature ledger**](docs/FEATURES.md)
 
 [![CI](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/ci.yml)
 [![Deploy](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml/badge.svg)](https://github.com/joshs444/freight-radar/actions/workflows/deploy.yml)
@@ -11,62 +11,56 @@
 
 ![Standpoint — the globe](docs/hero.png)
 
-Every number traces back to source. Nothing is hand-waved — the stress index decomposes into its parts, the brief's figures are computed in Python (never by a model), and the chat will only state a number it can cite to a source file.
+## In 30 seconds
 
----
+- **What** — a 3D globe, an analytics board, an in-browser SQL console, and a source ledger over one tier-stamped data store: 28 maritime chokepoints, 2,065 ports, cross-domain measured signals, and cited world context.
+- **Why it's different** — honesty is enforced by machines, not adjectives: numbers are computed in Python from cited public data, the chat and the briefing can only state what they can cite, and a stale claim in this README fails a test.
+- **Verified** — 285 deterministic backend tests · 82 dbt tests · 833 chat facts grounding-checked, 0 ungrounded (all green, 2026-06-09).
+- **Runs itself** — a weekly GitHub Action re-ingests, re-detects, and redeploys the static site; no servers, no API keys in the page.
+- **Look around** — [the globe](https://joshs444.github.io/freight-radar/), [the board](https://joshs444.github.io/freight-radar/#v=board), [SQL over the store](https://joshs444.github.io/freight-radar/#v=data), [the source ledger](https://joshs444.github.io/freight-radar/#v=ledger).
+
+**Contents** · [What it is](#what-it-is) · [How it stays honest](#how-it-stays-honest) · [Receipts](#receipts) · [Architecture](#the-one-architectural-seam) · [Stack](#stack) · [Run it](#run-it) · [How this was built](#how-this-was-built) · [Go deeper](#go-deeper)
 
 ## What it is
 
-The world's seaborne trade funnels through ~28 maritime chokepoints (Suez, Hormuz, Malacca, Panama, the Taiwan Strait…). When one seizes up, the shock ripples through supply chains weeks before it shows up in the financial press. Standpoint watches all of them — plus ~2,000 ports — on a 3D globe, runs real change-point detection over the history, and surfaces only the disruptions that clear a statistical bar — then layers cited world context (news, storms, hazards, satellite, wind) around them so you can read what's happening together.
+The world's seaborne trade funnels through 28 maritime chokepoints (Suez, Hormuz, Malacca, Panama, the Taiwan Strait…). When one seizes up, the shock ripples through supply chains weeks before it reaches the financial press. Standpoint watches all of them — plus 2,065 ports — runs real change-point detection over the history, and surfaces only the disruptions that clear a statistical bar, with cited world context layered around them.
 
-It's built on free, public **IMF PortWatch** data and a durable **Temporal** workflow, and it's scrupulous about saying only what the data supports.
+| A real detected flag | Replay the history |
+|---|---|
+| ![flag detail](docs/flag-detail.png) | ![time scrubber](docs/timescrubber.png) |
 
-| The whoa frame | A real detected flag | Replay the collapse |
-|---|---|---|
-| ![globe](docs/hero.png) | ![flag detail](docs/flag-detail.png) | ![time scrubber](docs/timescrubber.png) |
+- **Four views, one store** — ◐ **Globe** (MapLibre v5 + deck.gl: chokepoints, traffic-sized ports, an AIS sample, lane arcs, context layers), ▦ **Board** (a dense, sortable table over the same data — now/normal/Δ%/z/trend/cargo mix), ⌗ **SQL** (a DuckDB-WASM console: real SQL over the published store, in the browser, no backend), § **Sources** (the registry catalog rendered as a human-readable provenance ledger).
+- **Statistical detection, not threshold alarms** — STL residual → rolling z **and** CUSUM **and** a `ruptures` PELT breakpoint gate, FDR-controlled, cargo-aware (a port's dominant cargo stream is detected on its own), national-dependence-weighted, holiday-aware, with an explicit flag lifecycle (`new → ongoing → escalated → resolved`).
+- **Global Ocean Freight Stress Index + 2019→now history** — a decomposable 0–100 blend of breadth (economic-weighted mean deviation) and depth (the single worst chokepoint) in the top bar, and a History mode that replays the full PortWatch record with the real shocks marked (COVID, Ever Given, the Red Sea crisis).
+- **Cross-domain Signal Board** — freight-mode rates (truckload/rail/air), inventories, commodities, metals, macro, labor: z-scores *we* compute over cited public indices, FDR-controlled, association only — beside the port flags, so the product reads multi-domain, not straits-only.
+- **Trace, the one provenance primitive** — click any datapoint → its raw input → the computation we ran → the published number → the cited source (linked, licensed, dated). Rendered identically on flags, signals, context dots, and the brief.
+- **Grounded chat · read-only MCP server · gated briefing** — "Ask Standpoint" runs entirely in the browser and only states numbers it can trace to a source file (enforced in CI); agents read the same store over MCP (`list_layers` / `get_layer_facts` / `nearby` / `verify` — no write tool, asserted at import); the weekly DERIVED briefing ships only through a fail-closed gate (every number entailed by its citations, zero forecast/causal language, a bait battery that must refuse).
+- **Cited context ring** — geo-tagged GDELT news, live NHC + GDACS storms, an animated GFS wind field, NASA GIBS satellite, USGS quakes, official hazard alerts: possibly-related context, structurally unable to touch the fact tables.
+- **Business exposure** — point a trade CSV at it; each disruption maps to *your* lanes with a banded cost-of-disruption stack, coverage reporting, and a "show your work" method panel.
 
-- **Light globe** — MapLibre v5 native globe + deck.gl (interleaved) renders 28 chokepoints as crisp amber marks and ~2,065 ports sized into a hierarchy by real vessel traffic (big ports read first), plus sampled live AIS vessels and great-circle lane arcs. A **layer panel** groups every overlay into **Freight** (the measured spine — flags / chokepoints / ports / vessels / lanes) and **Context** (cited, possibly-related signals — news / storms / wind / satellite), each with live counts and fenced by a "possibly-related context, not a stated cause" caption + a persistent provenance footer. It answers honestly what the vessels are (a point-in-time AIS sample near the chokepoints, not all ships).
-- **Board view (◐ Globe / ▦ Board)** — a sphere can't be sorted, so a one-click toggle swaps the globe for a dense, Bloomberg-terminal-style **analytical board** over the *same* data: a sortable table of the 28 chokepoints + flagged ports (now/day · normal · Δ% · z-score · 120-day trend · cargo mix), topped by the stress strip and flanked by a cited **Signals rail**. The table header reads "measured · freight spine · computed in Python"; the rail separates a **measured signal** (Gatún — numbers *we* compute over the cited ACP record) from **context** (GDELT/USGS/GDACS shown as-is, "possibly-related, not a cause"). Pure re-presentation — zero new data or compute; click a row, hover to cross-highlight, deep-link with `#v=board`.
-- **Filterable monitor feed** — every monitored chokepoint + flagged port, filterable to **All / Critical / Chokepoints / Ports**, sorted critical-first then by real traffic. Click any row → the globe flies to it and a plain-English brief expands with the *real* numbers ("Shanghai port calls fell to 18 on 2026-05-25, 79% below its 28-day norm, z = −7.1"). **Search** by name, country, or status (`country:japan`, `is:critical`) lights every match on the globe; hovering a row rings its mark.
-- **Cargo-aware detection** — beyond the blended counts, the engine reads the per-cargo-type flows the warehouse already carries. A port's **dominant cargo stream** is detected on its own — so a brief reads *"Hong Kong container calls −38% (z −7.3), tanker +32%"* instead of a muddied total, surfacing moves a total-only view erases. Each chokepoint's **average vessel size** (transiting tonnage ÷ vessel count) is tracked as an axis **orthogonal to the count** (≈ −0.08 correlation), catching fleet-mix shifts the count can't see — e.g. *Yucatan Channel +34%, bigger ships, count flat*. Every row shows its **vessel mix**; chokepoints add avg vessel size + transiting tonnage.
-- **National-dependence weighting** — each port carries its share of its *country's* maritime trade (an IMF systemic-importance score). A country's **sole gateway** (Mombasa ≈ 99.8% of Kenya's trade) now outranks an equally-busy port that is one of many — and a flagged systemic port says *"handles ~N% of {country}'s maritime imports"* on its brief, with a National-dependence chip in the row.
-- **Global Ocean Freight Stress Index (0–100)** — one at-a-glance number in the top bar, with a 30-day sparkline and week-over-week momentum. It **blends breadth** (an economic-weighted mean of every chokepoint's deviation from its normal throughput) **with depth** (the single worst chokepoint), so a concentrated crisis at one strategic strait isn't averaged away. Both components are exposed for inspection.
-- **"This week" brief** — a deterministic hero card that assembles 3–6 plain-English, fully-cited bullets from the sidecars at publish time. The figures are string-substituted from real computations; the prose is a template, so no statistic can be hallucinated.
-- **Ask Standpoint** — a grounded chat that runs **entirely in the browser** over the loaded data (no backend, no API key). It answers "what's going on with Hormuz / what's the biggest risk / am I exposed / why does oil matter / how many ships are out today / any storms near a port" — and **only ever states a number it can trace to a source file** (enforced by a test).
-- **World Today ribbon** — a global pulse across the top: ships in transit, port calls, and cargo delivered/shipped per day, each with a today-vs-last-week trend + sparkline. Real daily sums from the DB.
-- **Natural hazards / official events** — IMF PortWatch (**GDACS**) cyclone/flood/earthquake alerts that hit monitored ports, matched by exact port ID, with flag corroboration when contemporaneous and the GDACS magnitude (e.g. "max wind 213 km/h") shown.
-- **Live storm layer** — *active* tropical cyclones from **NHC** `CurrentStorms` (Atlantic + E/Central Pacific, the official US cone) **and GDACS** (every other basin — the W-Pacific / Indian-Ocean systems near Malacca / Hormuz / Taiwan / Luzon that NHC never issues), deduped (NHC stays authoritative), attached to any flag within 500 km as a *possibly related* physical driver — **never** a stated cause. Each active system is **plotted on the globe** (a pulsing storm-blue marker) with an **active-cyclone count in the header** that lists them and flies you to each. Distinct from the curated historical hazards above; fetched server-side (the NHC feed sends no CORS header) and silent off-season.
-- **Ambient wind layer** — an animated global **wind field** flows across the whole globe (thousands of GPU particles), so weather is visible *everywhere*, not just at storms. Real **NOAA GFS** 10 m wind, baked into small u/v PNGs at publish time and rendered with `weatherlayers-gl` on its own overlay; a **forecast scrubber** sweeps the field now → +4 days (GFS f000–f096). Free, keyless, US-gov public domain; labelled "updated weekly".
-- **Geo-tagged world news** — one dot per real, geo-located article from a recent **GDELT 2.0 GKG** window, coloured by topic (**economy · trade & logistics · energy · conflict · disaster**); click a dot to open the source article. Pulled from GDELT's keyless raw 15-min export in the weekly job, filtered Python-side to business/disruption themes, de-duped and capped. **Context only** — a possibly-related signal near a place, never a stated cause of a freight number and never a forecast; it carries no computed metric and rides the sidecar registry (structurally it can't touch the fact tables). Free, keyless.
-- **Earthquakes** — one terracotta dot per **USGS** M4.0+ event in the past 7 days, sized by magnitude; click for the USGS event page. Public-domain, keyless, **observed** (never a model output). **Context only** — a co-located, co-timed physical event the reader weighs near a flagged port, never a stated cause; sidecar-only, so it can't touch the fact tables. The same one-append pattern as the news layer (proving the layer registry: a new context layer = one Python module + a registry tuple + one render).
-- **Real satellite imagery** — a toggleable **NASA GIBS** VIIRS true-color basemap drapes actual cloud systems and storms over the globe; dated and cited, off by default so it doesn't disturb the light look. Free, keyless.
-- **Live vessel positions** — **real AIS** vessel positions near the 28 chokepoints (free **aisstream.io** key → a ~70 s snapshot at publish), plotted as crisp teal dots with name/heading tooltips. A point-in-time *sample* near the chokepoints (honestly not "all ships"), sampled at refresh — replaced the old simulated trails.
-- **Panama Canal leading indicator** — the **ACP**'s own Gatun Lake level + projected max-draft CSVs (free, keyless). Lake level drives the transit draft, so a draft cut shows up here *weeks before* the PortWatch transit count falls — a signal the count data structurally can't provide.
-- **Business exposure** — point a trade CSV (LOCODEs or port names, region column optional) and each disruption maps to *your* lanes with a banded **Cost-of-Disruption stack** (carrying cost + reroute premium), coverage reporting, and a "show your work" method panel.
-- **Time-scrubber** — replay the trailing 120 days; chokepoint glow dims/brightens by each day's real count and a flag pulses on the actual date it was detected.
-- **Self-refreshing in production** — a scheduled **GitHub Action** (`refresh.yml`, weekly + on-demand) rebuilds the DuckDB from PortWatch, re-runs detection + every enricher, and commits the changed sidecars; that push auto-deploys. So the live site stays current without anyone running anything by hand.
-- **Durable loop (verified in a test harness)** — the same fetch → detect → attribute → enrich → publish steps are wrapped in a **Temporal** workflow + Schedule, with durability proven end-to-end on Temporal's time-skipping test server (kill the worker mid-run, it re-drives from the last completed activity). The scheduled Action above is the always-on production driver of those identical `publish_static` steps.
-
----
+The full inventory, in depth: **[docs/FEATURES.md](docs/FEATURES.md)**.
 
 ## How it stays honest
 
-This is the part that matters, and it's enforced in the **UI**, not just the README:
+Enforced in the UI and in CI, not just stated here:
 
-- **Never called "live."** PortWatch is **daily-granularity, refreshed weekly** by the IMF. Every tile shows its source and the data's own `as of <date>`. The value here is the auto-flagging + attribution, not refresh speed.
-- **Numbers are computed in Python, from source — the prose is deterministic-template.** Every brief, every flag, and the weekly digest are templates with values string-substituted from real calculations. **No model is in the number path**, so nothing can be hallucinated. (There is a stub seam for optional local-LLM *wording* polish on new flags, structurally forbidden from touching a figure — but production prose is template-only, and that's the point, not a limitation.)
-- **The chat states nothing it can't cite.** "Ask Standpoint" runs client-side over the loaded sidecars; each answer records the raw values it used and the source file each came from. A node test (`npm run test:chat`) runs the engine over a battery of questions and **fails if any cited fact isn't found in its source sidecar** — 190 facts checked, 0 ungrounded.
-- **The stress index is decomposable, not a black box.** Its method string, its `breadth` and `depth` components, and the per-chokepoint contributors all ship in `stress.json`; deviation is measured vs each chokepoint's *normal* (80th-pct of 120 days), so a sustained level-shift the rolling baseline has adapted to still reads as stressed — the same Strait-of-Hormuz lesson the detector learned.
-- **High precision over a busy rail.** A change-point gate (STL residual → rolling z **AND** CUSUM **AND** a `ruptures` PELT breakpoint within 7 days) suppresses one-day blips. On the current data it cuts 13 raw z-detections down to **4 gate-confirmed** anomalies — and shows the rest winding down through an explicit **lifecycle** (`new → ongoing → escalated → resolved`).
-- **The Cape-reroute detector doesn't cry wolf.** It only fires on a real Red-Sea-down / Cape-up divergence. On the current window (Red Sea +6.3%, Cape +0.9%) there is no divergence, so **it honestly does not fire** — and says so.
-- **Official corroboration, dated — never a false cause.** A natural-hazard layer pulls **IMF PortWatch / GDACS** official events (tropical cyclones, floods, earthquakes) that hit monitored ports (matched by the exact port IDs GDACS lists) or chokepoints (by proximity). A flag is only corroborated by a hazard that is genuinely *contemporaneous* (±30 days). Today's flags are geopolitical/congestion with **no** weather overlap — and the UI says so, showing the hazard events with their own dates rather than implying they're live.
-- **Garnish is labelled as garnish.** The AIS vessel dots and the GFS wind are *optional* sidecars the flag engine never reads — labelled as a real AIS *sample near the chokepoints* (not "all ships") and "GFS wind, updated weekly" (never real-time). Both degrade to absent on any fetch failure; no number on the page moves.
-- **Holiday-aware.** Benign seasonal dips (Lunar New Year, Christmas, Golden Week) are suppressed so the rail doesn't call a holiday a crisis.
-- **Avg vessel size is a fleet-mix signal, not "utilization."** Transiting capacity (DWT) ÷ vessel count is the mean ship size — capacity here is a *flow*, not a ceiling, so there is no honest denominator for a "utilization %." The data audit explicitly refused to build one; the cargo-attribution briefs stay precise too (they report which type moved against the others, never a false "total steady").
-- **Wouldn't ship a feature on a fragile endpoint — rebuilt it the robust way.** The first cut of a GDELT news layer used the **DOC 2.0 query API**, which rate-limits a single IP so aggressively (HTTP 429 even cold) that the weekly CI — on GitHub's *shared* IP — would publish an empty layer every run. Rather than ship something that silently breaks, that version was **cut** (reasoning in [`DATA-AUDIT-PLAN.md`](docs/plans/DATA-AUDIT-PLAN.md)). The geo-tagged news layer was later rebuilt the durable way: on GDELT's **keyless raw 15-min export master** — a tiny static download that never throttles — pulled and parsed in the weekly Python job. Same bar both times: an empty, pipeline-polluting feed fails it; a robust, cited one clears it.
-- **The ETL fails loud, not silent — Write-Audit-Publish.** Each fresh pull lands in **staging** tables; an enumerable data-quality suite (the fail-loud guards as named pass/fail checks) audits it; and only on a clean verdict are the rows **atomically swapped** into the live `fct_*` table inside one DuckDB transaction, with a deterministic `lineage_run_id` recorded. A renamed upstream column (which would land all-`NULL`), a dropped pagination page, or a decayed `portid`→geometry join is an **error-severity** check that **raises** and leaves the prod fact table exactly unchanged — the pipeline refuses to publish bad data rather than briefly serving a half-empty map.
+- **Never called "live."** PortWatch is daily-granularity, refreshed weekly by the IMF. Every tile shows its source and the data's own `as of <date>`; the value is the auto-flagging + attribution, not refresh speed.
+- **No model is in the number path.** Every figure is computed in Python from source. Prose is deterministic-template — and the one model-shaped artifact, the DERIVED briefing, is fail-closed-gated so an ungrounded number cannot ship.
+- **The chat states nothing it can't cite.** Each answer records the raw values it used and the source file each came from; CI runs the engine over a question battery and fails on any ungrounded fact.
+- **Measured vs context is a hard fence.** Measured layers carry a metric we compute and own. Context layers (news, storms, quakes…) are cited as published, labelled "possibly related — never a stated cause," and ride a sidecar registry that structurally cannot write to the fact tables.
+- **Detectors that decline to fire.** The Cape-reroute detector stays silent without a real Red-Sea/Cape divergence — and says so. Holiday dips are suppressed. The stress index decomposes into published components, not a black box.
+- **The ETL fails loud — Write-Audit-Publish.** Fresh pulls land in staging, a data-quality suite audits them, and only a clean verdict swaps atomically into the live tables with a recorded `lineage_run_id`. Bad upstream data leaves prod exactly unchanged.
+- **Receipts are tested.** [`backend/tests/test_readme_receipts.py`](backend/tests/test_readme_receipts.py) fails CI if this README rots: retired stale claims cannot reappear, point-in-time figures must carry their date, and stated counts are checked against the code where cheap.
 
----
+## Receipts
+
+Re-derived, not asserted — every receipt names its date:
+
+- **285 deterministic backend tests** passing, 0 failures (`pytest -m "not live"`, run 2026-06-09): detection, cargo-aware, ETL guards, WAP, Temporal durability, narrative, MCP read-only, the honesty suite — including this README's own receipts test.
+- **Chat grounding** — 833 facts across 39 questions, 0 ungrounded; 6/6 adversarial bait questions refused (run 2026-06-09).
+- **dbt** — 10 models, **82 data tests**, hermetic-fixture CI; reconciled to the Python pipeline exactly: stress index max |Δ| = 0 across all 120 daily points (2026-06-08 refresh: 41.6 / "high", data through 2026-05-31).
+- **Published store** (2026-06-08 refresh, data through 2026-05-31) — 28 chokepoints + 2,065 ports in the snapshot; 168 flags on the rail.
+- **Build-moment receipts** (initial-backfill row counts, prod guard dispatches, headless-Chrome frontend runs) are kept, dated, in [docs/FEATURES.md](docs/FEATURES.md#build-time-verification-receipts).
 
 ## The one architectural seam
 
@@ -101,63 +95,9 @@ flowchart LR
 ```
 
 - **Tier 1 — reliable backbone (load-bearing):** IMF PortWatch. All flags + severity are computed off this tier.
-- **Tier 2 — live garnish (non-load-bearing):** aisstream vessel positions near the chokepoints + NOAA GFS wind particles, both write-only sidecars the flag engine ignores; degrade to absent on failure.
+- **Tier 2 — live garnish (non-load-bearing):** aisstream vessel positions + NOAA GFS wind, write-only sidecars the flag engine ignores; they degrade to absent on failure.
 
----
-
-## dbt analytics layer (`dbt/`)
-
-DuckDB is a **substrate**, not a single app's private store — the globe is one view of
-it; a second, co-equal consumer is a **dbt project** (`dbt-duckdb`) pointed at the same
-`data/freight_radar.duckdb`. dbt doesn't re-fetch anything: it declares the pipeline's
-landed tables as **sources** and re-expresses the transforms as a `raw → staging → marts`
-lineage, with the **fail-loud ETL guards re-expressed as dbt tests**.
-
-```
-sources (main.*)            staging (views, main_staging)        marts (tables, main_marts)
-  dim_chokepoint  ─┐          stg_chokepoints / stg_ports          mart_chokepoint_pressure   ← export_snapshot._chokepoints
-  dim_port         ├──────▶   stg_chokepoint_daily / _port_daily ▶ mart_port_activity         ← export_snapshot._ports
-  fct_chokepoint_daily        stg_flags                            int_chokepoint_stress ─▶ mart_freight_stress_index  ← narrative/stress.py
-  fct_port_daily  ─┘                                               mart_active_flags          ← detection serving
-  fct_flags
-```
-
-- **Re-expression, not new analysis.** The marts reproduce the existing numbers — the
-  28-day rolling baseline (`pct_change`/`z-score`), the per-port latest snapshot, and the
-  **Global Ocean Freight Stress Index** (80th-pctile normal → deviation squash → causal
-  3-day smoothing → `100·(0.6·breadth + 0.4·depth)`). The pipeline's named constants are
-  dbt `vars`, so the SQL reads them instead of hard-coding magic numbers, and DuckDB's
-  `round_even` matches Python's banker's rounding so the figures are identical, not merely close.
-- **The ETL guards become dbt tests.** Generic schema tests (`not_null`, `unique`,
-  `relationships`, `accepted_values`, `dbt_utils.accepted_range`,
-  `unique_combination_of_columns`) plus **singular tests** for the heavier invariants:
-  the **D1 join-coverage gate** (`portid`→geometry ≥ 0.95), the **cargo-mix reconciliation**
-  (leaf vessel types sum to the headline totals — the warehouse echo of the D2
-  silent-column-drop guard), and a stress-index range check. `dbt build` materializes 4
-  tables + 6 views and runs **82 tests** — green or the build fails.
-- **Reconciled to the Python pipeline, exactly.** Every materialized figure was diffed
-  against the functions it re-expresses: the stress index matches on **all 120 daily
-  points** (max |Δ| = 0; latest = `41.6 / "high"`), chokepoint pressure on all 28×5
-  computed fields, port activity on portcalls/vessels + full-precision shares — **0
-  mismatches**. The dbt marts and the globe trace to the same arithmetic.
-- **Isolation.** dbt writes to `main_staging` / `main_marts`; the app + API still read
-  `main` only, so the analytics layer never collides with the pipeline's own tables and
-  the production refresh job never imports dbt.
-- **CI is hermetic.** The 32 MB prod warehouse is gitignored, so CI rebuilds a tiny
-  fixture DB from committed CSVs (`dbt/ci/`) using the **exact prod DDL** and runs
-  `dbt build` against it — the dbt layer is enforced on every push, not decorative.
-- **Warehouse-portable.** Models are plain SQL on the standard `source()`/`ref()` lineage;
-  `profiles.yml` carries a commented **BigQuery** target showing the same models run on a
-  cloud warehouse by swapping the adapter. DuckDB is the live, tested target.
-
-```bash
-cd backend && uv sync --extra dbt                                   # dbt-core + dbt-duckdb
-uv run dbt deps  --project-dir ../dbt --profiles-dir ../dbt         # vendor dbt_utils
-uv run dbt build --project-dir ../dbt --profiles-dir ../dbt         # models + tests (dev target)
-uv run dbt docs generate --project-dir ../dbt --profiles-dir ../dbt # lineage + data dictionary
-```
-
----
+DuckDB is a substrate, not a private app store: a co-equal **dbt project** (`dbt/`) re-expresses the transforms as a `raw → staging → marts` lineage with the ETL guards as dbt tests, reconciled to the Python numbers exactly — see [docs/FEATURES.md](docs/FEATURES.md#dbt-analytics-layer-dbt).
 
 ## Stack
 
@@ -165,73 +105,50 @@ uv run dbt docs generate --project-dir ../dbt --profiles-dir ../dbt # lineage + 
 |---|---|
 | Ingest | Python 3.12, `httpx` async, verified ArcGIS queries with `resultOffset` pagination |
 | Storage / detection substrate | **DuckDB** (single file; window functions for rolling baselines) |
-| Analytics layer | **dbt** (`dbt-core` + `dbt-duckdb`) — `raw → staging → marts` re-expression of the transforms, ETL guards as dbt tests, hermetic-fixture CI; reconciled to the Python pipeline exactly. See [dbt analytics layer](#dbt-analytics-layer-dbt) |
-| Detection | `statsmodels` STL(7, robust) → rolling z-score, CUSUM, `ruptures` PELT change-point gate; config-driven YAML. Runs on blended counts **plus** per-cargo-type dominant streams and an orthogonal avg-vessel-size (DWT/vessel) axis; port severity blends national-dependence share |
-| Orchestration | **Temporal** (`temporalio`) — one durable workflow, 6 activities, RetryPolicy, a Schedule, a dedup ledger |
-| API | FastAPI read-only (`/snapshot` `/flags` `/lanes` `/manifest` `/health`) with ETags |
-| Frontend | **React + Vite + TypeScript** (strict; a typed `src/types.ts` mirrors the Python sidecar contract), **MapLibre GL v5 globe**, **deck.gl v9** via `MapboxOverlay(interleaved)`, token-free CARTO light basemap; filterable Monitor feed (flags · exposure · market · news · sparklines/trend), top-bar **stress gauge**, "this week" **brief** card, and a client-side grounded **chat** |
-| Narrative | Stress index + event ledger + weekly brief computed at publish time (`narrative/`), registered in the same enricher registry as every other sidecar |
-| Deploy | docker-compose (temporal · worker · schedule-init · api · frontend); frontend also runs free/static |
-
----
+| Analytics layer | **dbt** (`dbt-core` + `dbt-duckdb`) — guards as tests, hermetic-fixture CI, exact Python parity |
+| Detection | `statsmodels` STL → rolling z, CUSUM, `ruptures` PELT gate; FDR-controlled; cargo-aware + avg-vessel-size axis; national-dependence severity |
+| Orchestration | **Temporal** (`temporalio`) — one durable workflow, RetryPolicy, a Schedule, a dedup ledger |
+| API / agents | FastAPI read-only with ETags · a read-only **MCP server** over the published store |
+| Frontend | **React + Vite + TypeScript** (strict), **MapLibre GL v5 globe**, **deck.gl v9** interleaved, **DuckDB-WASM** SQL console, client-side grounded chat |
+| Deploy | GitHub Pages (static, weekly self-refresh via Actions) · docker-compose for the full Temporal loop |
 
 ## Run it
 
-### Backend
 ```bash
+# Backend
 cd backend
 uv venv --python 3.12 .venv && source .venv/bin/activate
 uv pip install -e .
-
 python -m freight_radar.backfill            # 180-day PortWatch backfill -> data/freight_radar.duckdb
 python -m freight_radar.publish             # detect + snapshot + manifest -> frontend/public/data/
 python -m freight_radar.export_timeseries   # the scrubber's per-day series
-python -m freight_radar.sidecar.ais_consumer --demo   # optional simulated ship trails
+pytest -m "not live"                        # the deterministic suite (285 tests as of 2026-06-09)
+pytest -m live                              # + live PortWatch contract tests (network)
 
-pytest -m "not live"     # 80 deterministic tests (detection, cargo-aware, ETL guards, WAP, temporal, narrative…)
-pytest -m live           # + the live PortWatch contract tests (network)
-```
-
-### Frontend
-```bash
+# Frontend
 cd frontend
 npm install
 npm run dev          # http://localhost:5173
 npm run build        # static bundle -> dist/  (deploy anywhere)
 npm run test:chat    # honesty test: every chat fact must trace to a source sidecar
-```
 
-### Full durable loop (Docker)
-```bash
-docker compose up   # temporal (persistent) + worker + schedule-init + api + frontend
+# Full durable loop (Docker)
+docker compose up    # temporal + worker + schedule-init + api + frontend
 # Temporal Web UI: http://localhost:8233 · app: http://localhost:8080 · api: http://localhost:8000
 ```
-Kill the worker mid-run and restart it — Temporal re-drives the in-flight workflow from its last completed activity. That durability is the point.
 
----
+Kill the worker mid-run and restart it — Temporal re-drives the in-flight workflow from its last completed activity. dbt commands live in [docs/FEATURES.md](docs/FEATURES.md#dbt-analytics-layer-dbt).
 
-## Verification (receipts, not assertions)
+## How this was built
 
-- **Data plumbing** — 180-day backfill = 4,984 chokepoint + 363,440 port daily rows; `portid`→geometry join 1.00; live contract test green; idempotent re-pull adds 0 rows, 0 PK duplicates.
-- **Detection** — flag numbers spot-checked against the raw DuckDB (Shanghai 18 vs 85.96, Hong Kong 30 vs 41.64…); detector tests incl. *fires on a real collapse, not on weekly seasonality*, *PELT gate suppresses spurious spikes*, *Cape fires on divergence / quiet when parallel*, *holiday suppresses a benign dip*.
-- **Cargo-aware detection** — tests prove the dominant-cargo detector fires on a container-only drop while the blended total is flat **and** stays additive (an evenly-spread drop yields the blended flag only, never a duplicate); the avg-vessel-size detector fires on a size shift with a flat count and `NULLIF`-guards zero-traffic days. The per-entity cargo mix is asserted to sum exactly to the headline total (PortWatch's leaf-type invariant).
-- **National-dependence weighting** — a sole gateway outranks an equally-busy peer at identical vessel count; weights stay in the 0.6–1.0 band; the dependence brief line fires for a systemic port (Mombasa ≈ 99.8% of Kenya) and is silent for a minor one.
-- **Live storm layer** — fixture tests prove NHC/GDACS normalization, the NOAA-duplicate dedup (NHC kept authoritative), and radius + lifecycle matching; verified against the live feeds (server-side, CORS-safe) with the honest dormant state when no storm is within 500 km of a flag.
-- **ETL guards** — unit-pinned and **prod-verified by dispatching the weekly Action**: a full backfill ran the silent-column-drop guard, the fetch-completeness `verify_count` (server count == paged rows for both layers), and the non-retryable join-coverage gate with zero false-raises.
-- **Durable loop** — the workflow runs end-to-end on Temporal's in-process time-skipping test server; a 2nd identical run makes **zero** attribution calls (dedup ledger); RetryPolicy re-drives a transient failure. (Production regenerates sidecars via the same `publish_static` steps; the Temporal path is the always-on orchestration of those identical steps.)
-- **Narrative layer** — the stress index reads `calm` on an all-normal system and `high` when a single strategic strait collapses (the depth term isn't averaged away); a sustained level-shift still scores stressed at the latest day; the event ledger diffs appeared/escalated/resolved across runs; and the brief is verified to **never state a number the stress index contradicts** (the stale-flag trap).
-- **Grounded chat** — `npm run test:chat` runs the engine over 39 questions and asserts **every cited fact exists in its source sidecar** (190 facts, 0 ungrounded).
-- **Frontend** — headless-Chrome screenshots confirm the globe renders (WebGL2 + interleaved deck.gl), the stress gauge + "this week" brief render, the chat answers with citations, flags are clickable (fly-to + real brief), and the scrubber replays real history — all with **0 console errors**.
-- **Business depth** — a real-world CSV (LOCODEs, alternate spellings, no region column) resolves instead of silently zeroing; coverage is reported ("X of N lanes modeled"); the cost-of-disruption stack's total is exactly carrying + reroute premium (no fabricated lines), with working capital held separate (locked ≠ lost) and a "show your work" method panel.
-- **Hazard corroboration** — synthetic GDACS events prove the matcher: exact port-ID matches + chokepoint proximity, old/non-infra events dropped, and a flag is corroborated **only** by a contemporaneous (±30d) hazard — never a stale one (no false causation).
-- **80/80** non-live backend tests pass (+ chat-grounding 190 facts/0 ungrounded + exposure-parity 0 mismatches).
+Standpoint is an AI-orchestrated build: multi-agent workflows did the bulk of the implementation, with planning, adversarial-review, and verification passes between waves — the working method is documented in [docs/plans/EXECUTION-PLAYBOOK.md](docs/plans/EXECUTION-PLAYBOOK.md). The architecture decisions are human-owned and recorded as [ADRs](docs/adr/). The trust model deliberately does not depend on who typed the code: every claim class has a machine gate in CI — chat grounding, golden-master sidecars, dbt↔Python parity, the briefing's fail-closed gate, and this README's own receipts test.
+
+## Go deeper
+
+- [**docs/FEATURES.md**](docs/FEATURES.md) — the full feature ledger, in depth.
+- [**docs/DATA-ATLAS.md**](docs/DATA-ATLAS.md) — every data source: tier, license, cadence, what we compute from it.
+- [**docs/adr/**](docs/adr/) — the architecture decision records.
+- [**docs/plans/**](docs/plans/) — the wave-by-wave build plans, kept for provenance (the shipped waves — including [BEST-IN-CLASS-PLAN.md](docs/plans/BEST-IN-CLASS-PLAN.md) and [MONITOR-UX-PLAN.md](docs/plans/MONITOR-UX-PLAN.md) — are done + deployed).
+- [**docs/plans/STANDPOINT-VISION.md**](docs/plans/STANDPOINT-VISION.md) — the forward vision: from a freight globe to an honest world-awareness platform, one shippable phase at a time.
 
 Data: [IMF PortWatch](https://portwatch.imf.org/) (CC BY 4.0). Basemap © OpenStreetMap © CARTO.
-
-See [`docs/plans/`](docs/plans/) for the full wave-by-wave build plans and verified data contracts, and [`docs/adr/`](docs/adr/) for the architecture decision records. The shipped waves (including [`BEST-IN-CLASS-PLAN.md`](BEST-IN-CLASS-PLAN.md)) are done + deployed.
-
-**The year vision** — evolving Standpoint from a freight globe into an honest world-awareness platform (every relevant *free* dataset, one globe + board, hub-and-spoke of ownership enforced by construction) — is mapped in [`docs/plans/STANDPOINT-VISION.md`](docs/plans/STANDPOINT-VISION.md), with the full free-source catalog (93 sources, each tagged measured-vs-context) in [`docs/plans/DATA-SOURCES.md`](docs/plans/DATA-SOURCES.md). Both came out of a multi-agent research pass with an adversarial critic; we execute it one shippable phase at a time.
-
-**The 5-year strategy** — where Standpoint goes once the year-one build is done: the product/company decision tree (portfolio piece → side project → real product, behind falsifiable revenue gates), the platform north-star (scale the *invariant*, not the layer count), the "verifiable world-model" positioning, and the honesty-at-scale governance that keeps the brand un-bribable under growth — is in [`docs/plans/STANDPOINT-5YEAR.md`](docs/plans/STANDPOINT-5YEAR.md). Synthesized by a 14-agent strategy workflow (ground → diverge → adversarial critique → synthesize); the critics cut what didn't survive.
-
-**The AI-native architecture** — how the honest reasoner, the measured signals board, bitemporal time-travel, and an ML hypothesis (`hyp_*`) tier all become queries over *one* substrate with *one* grounding gate, *one* multiplicity control, and *one* capability firewall — is in [`docs/plans/STANDPOINT-AI-NATIVE.md`](docs/plans/STANDPOINT-AI-NATIVE.md). Its thesis, after a 13-agent workshop with adversarial critics: the reasoner is the *last, smallest* consumer, not the keystone — the LLM only *phrases* a deterministically-built, pre-grounded `Claim[]` (a claim with zero citations is unconstructable by type), and a fail-closed CI gate (attribution + abstention + the language firewall) is what lets an LLM ship at all. The falsifiable opposite of "a deterministic AI predicts cascades 99.7%."
