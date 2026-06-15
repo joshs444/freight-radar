@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-06-10T03:03:54+00:00",
-  "as_of": "2026-05-31",
+  "generated_at": "2026-06-15T08:44:16+00:00",
+  "as_of": "2026-06-07",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 41.6 (label: high), with 168 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 33.7 (label: elevated), with 186 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -16,28 +16,28 @@
       "section": "lead"
     },
     {
-      "text": "Strait of Hormuz shows a transit change of -92.4% versus its baseline \u2014 a measured reading, never a stated cause.",
+      "text": "Strait of Hormuz shows a transit change of -93.0% versus its baseline \u2014 a measured reading, never a stated cause.",
       "cites": [
         "flags"
       ],
       "section": "spine"
     },
     {
-      "text": "Our freight-cost signal flags the Truckload freight rate at a +4.84 z-score \u2014 an anomaly we computed, association only.",
+      "text": "Our freight-cost signal flags the Truckload freight rate at a +3.68 z-score \u2014 an anomaly we computed, association only.",
       "cites": [
         "freight_rate"
       ],
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 85.22 ft, in the 39.1th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 85.1 ft, in the 36.3th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Strait of Hormuz transit change of -92.4% (measured) co-occurs this week with 4 cited news reports (NPR, CNBC, The New York Times, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Strait of Hormuz transit change of -93.0% (measured) co-occurs this week with 4 cited news reports (The New York Times, Al Jazeera, Reuters, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -46,25 +46,16 @@
       "flag_id": "b74be045769441ea"
     },
     {
-      "text": "Chittagong activity change of -56.2% (measured) co-occurs this week with 4 cited news reports (Prothom Alo English, The Daily Star, Daily Bonik Barta, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Gustavia activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (eTNW, Le Journal de Saint-Barth, Travel And Tour World, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "bf5d19895223543d"
+      "flag_id": "1366b1a5addf70f2"
     },
     {
-      "text": "Colombo activity change of -46.7% (measured) co-occurs this week with 4 cited news reports (Magzter, Maritime Gateway, \u2026) \u2014 possibly-related context, never a stated cause.",
-      "cites": [
-        "flags",
-        "news"
-      ],
-      "section": "connection",
-      "flag_id": "e026ab9c3521834d"
-    },
-    {
-      "text": "Cited context this week: 172 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 176 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"

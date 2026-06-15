@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-08T08:12:40+00:00",
+  "generated_at": "2026-06-15T08:38:00+00:00",
   "indicators": {
     "brent": {
-      "value": 97.66,
-      "change_pct": -0.15,
+      "value": 83.31,
+      "change_pct": -10.52,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/BZ=F",
       "name": "Brent crude",
@@ -13,10 +13,10 @@
       "stale": false
     },
     "wti": {
-      "value": 94.73,
-      "change_pct": -1.34,
+      "value": 80.41,
+      "change_pct": -10.69,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/CL=F",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": false
     },
     "natgas": {
-      "value": 3.133,
-      "change_pct": -2.52,
+      "value": 3.046,
+      "change_pct": -4.36,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/NG=F",
       "name": "Henry Hub gas",
@@ -35,10 +35,10 @@
       "stale": false
     },
     "eurusd": {
-      "value": 1.1522,
-      "change_pct": -0.97,
+      "value": 1.1612,
+      "change_pct": 0.73,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/EURUSD=X",
       "name": "EUR/USD",
@@ -46,10 +46,10 @@
       "stale": false
     },
     "usdcny": {
-      "value": 6.7828,
-      "change_pct": 0.26,
+      "value": 6.7563,
+      "change_pct": -0.14,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "Yahoo Finance",
       "source_url": "https://finance.yahoo.com/quote/CNY=X",
       "name": "USD/CNY",
@@ -59,10 +59,10 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 732,
-      "change_pct": -0.15,
+      "value": 625,
+      "change_pct": -10.52,
       "change_basis": "modeled",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
@@ -81,7 +81,7 @@
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
     },
-    "bce0e2fdd63be992": {
+    "4ca42c7991379d9e": {
       "entity": "Kerch Strait",
       "linked": [
         "brent"
