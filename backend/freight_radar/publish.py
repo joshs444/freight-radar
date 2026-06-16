@@ -5,7 +5,9 @@ published snapshot/flags so the frontend (and /api/health) can show freshness.
 
 ``publish_static`` runs the whole publish WITHOUT Temporal (detect -> snapshot ->
 manifest) — used for the free static-deploy path and CI, and to regenerate the
-committed JSON. The Temporal workflow is the always-on version of the same steps.
+committed JSON. The Temporal workflow is the always-on version of the same steps:
+every post-export step lives in the ONE ordered ``PUBLISH_STEPS`` registry below,
+iterated by BOTH drivers, so the two paths cannot silently diverge (ADR-0005).
 """
 
 from __future__ import annotations
@@ -14,6 +16,7 @@ import json
 import logging
 import os
 import tempfile
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -121,25 +124,29 @@ def write_manifest(out_dir: Path, lineage: dict | None = None) -> dict:
     return manifest
 
 
-def publish_static(db=None, out_dir=None) -> dict:
-    """Detect -> run ALL enrichers (registry) -> snapshot/lanes -> manifest, no Temporal."""
-    from .detect import run_detection
-    from .enrich import build_ctx, run_enrichers
+# --- the shared publish step list (H1-G) ------------------------------------
+# ONE ordered registry of every post-export publish step, iterated by BOTH
+# drivers — ``publish_static`` below and the Temporal ``assemble_snapshot``
+# activity (temporal/activities.py) — so the static and durable paths cannot
+# silently diverge again (ADR-0005's "identical steps" claim, made structural).
+# ``write_manifest`` stays each driver's explicit closing step.
 
-    out = Path(out_dir) if out_dir else publish_dir()
-    db = Path(db) if db else db_path()
-    from .honesty.scorecard import write as write_scorecard
-    from .store import write_catalog
 
-    from .claimed_vs_measured import write as write_claimed_vs_measured
+def _step_signal_pool(db: Path, out: Path) -> None:
+    # pooled FDR across all signal families -> signals_fdr.json (one m, one q)
     from .signal_pool import write as write_signal_pool
 
-    run_detection.run(db, flags_json=out / "flags.json")
-    run_enrichers(build_ctx(db=db, out=out))  # exposure + news + timeseries (+ future layers)
-    export(db_path=db, out_dir=out, write_flags=False)
-    write_signal_pool(out)  # pooled FDR across all signal families -> signals_fdr.json (one m, one q)
-    write_claimed_vs_measured(out)  # centrum's claimed 99.7% vs our measured stress (the contrast)
+    write_signal_pool(out)
 
+
+def _step_claimed_vs_measured(db: Path, out: Path) -> None:
+    # centrum's claimed 99.7% vs our measured stress (the contrast)
+    from .claimed_vs_measured import write as write_claimed_vs_measured
+
+    write_claimed_vs_measured(out)
+
+
+def _step_substrate(db: Path, out: Path) -> None:
     # the substrate: build the thin unifying index (fct_observation + dim_entity) over the
     # published DB and export it to a Parquet sidecar, stamped with THIS run's knowledge_time
     # (the bitemporal keystone). Additive + degrade-to-absent — never blocks the publish.
@@ -152,8 +159,49 @@ def publish_static(db=None, out_dir=None) -> dict:
     except Exception as e:  # noqa: BLE001 — the index is optional; an absent one just hides
         log.warning("substrate export skipped: %r", e)
 
-    write_scorecard(out)  # the honesty scorecard (Harness Layer 4) — registry-derived, free
-    write_catalog(out)  # the agent-legible read surface entry point (store/catalog.json)
+
+def _step_scorecard(db: Path, out: Path) -> None:
+    # the honesty scorecard (Harness Layer 4) — registry-derived, free
+    from .honesty.scorecard import write as write_scorecard
+
+    write_scorecard(out)
+
+
+def _step_catalog(db: Path, out: Path) -> None:
+    # the agent-legible read surface entry point (store/catalog.json)
+    from .store import write_catalog
+
+    write_catalog(out)
+
+
+PUBLISH_STEPS: tuple[tuple[str, Callable[[Path, Path], None]], ...] = (
+    ("signal_pool", _step_signal_pool),
+    ("claimed_vs_measured", _step_claimed_vs_measured),
+    ("substrate", _step_substrate),
+    ("scorecard", _step_scorecard),
+    ("catalog", _step_catalog),
+)
+
+
+def run_publish_steps(db: Path, out: Path) -> list[str]:
+    """Run every post-export publish step, in registry order; returns the names run."""
+    for _name, step in PUBLISH_STEPS:
+        step(db, out)
+    return [name for name, _ in PUBLISH_STEPS]
+
+
+def publish_static(db=None, out_dir=None) -> dict:
+    """Detect -> run ALL enrichers (registry) -> snapshot/lanes -> PUBLISH_STEPS -> manifest."""
+    from .detect import run_detection
+    from .enrich import build_ctx, run_enrichers
+
+    out = Path(out_dir) if out_dir else publish_dir()
+    db = Path(db) if db else db_path()
+
+    run_detection.run(db, flags_json=out / "flags.json")
+    run_enrichers(build_ctx(db=db, out=out))  # exposure + news + timeseries (+ future layers)
+    export(db_path=db, out_dir=out, write_flags=False)
+    run_publish_steps(db, out)  # signal pool, claimed-vs-measured, substrate, scorecard, catalog
     # NB: graceful-rot self-demotion (freight_radar.contracts --demote) runs as an explicit
     # step in refresh.yml AFTER publish — kept out of publish_static so the golden harness +
     # per-layer tests (which call publish_static against a hermetic fixture) stay deterministic.

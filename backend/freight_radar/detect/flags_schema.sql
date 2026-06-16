@@ -5,6 +5,11 @@
 -- flag_id is dedup-stable per (kind, portid, ISO-week): a given anomaly keeps the
 -- same id across reruns within its week, so Wave 3's attribution ledger and the
 -- INSERT OR REPLACE upsert below both no-op on an identical rerun.
+--
+-- The published flags.json additionally carries `chokepoints` (structured refs on
+-- cape_reroute flags, H1-B) plus source_url/license — JSON-contract fields derived
+-- at emission, deliberately NOT columns here: fct_flags stays the table of computed
+-- numbers (see run_detection._upsert_flags / _write_json).
 
 CREATE TABLE IF NOT EXISTS fct_flags (
     flag_id        VARCHAR PRIMARY KEY,   -- sha1(kind|portid|isoYear-Wweek)[:16]

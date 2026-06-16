@@ -233,3 +233,38 @@ def test_holiday_suppresses_benign_dip():
     spike = replace(inside, flag_id="h3", kind="chokepoint_transit_spike")
     res2 = apply_holiday_suppression([spike], HOLIDAY_CFG)
     assert res2[0].severity == 80, "spikes are not seasonal -> not suppressed"
+
+
+# --- 5. ledger-backed prior rows drive the lifecycle (F1 / ADR-0009) ---------
+
+
+def test_lifecycle_seeds_from_ledger_rows(tmp_path):
+    """Prior rows read back from the committed flags ledger drive escalated /
+    resolved exactly like the old ``fct_flags`` read did — including a resolved
+    tombstone whose brief is rebuilt from the slim ledger numbers (the ledger
+    deliberately drops the prose)."""
+    from freight_radar import ledger
+
+    def _row(f: Flag) -> dict:
+        return {k: getattr(f, k) for k in ledger.FLAG_FIELDS}
+
+    active = _flag("led01", "chokepoint_transit_collapse", "cpL", 50)
+    gone = _flag("led02", "chokepoint_transit_spike", "cpM", 80)
+    ledger.append_flags("2026-05-25", [_row(active), _row(gone)], tmp_path)
+    prior = ledger.prior_flags(tmp_path)
+    assert set(prior) == {"led01", "led02"}
+
+    # cpL jumps past the hysteresis margin; cpM no longer trips this run
+    hotter = _flag("led01", "chokepoint_transit_collapse", "cpL",
+                   50 + CFG.escalate_margin + 15)
+    out = apply_lifecycle([hotter], prior, CFG)
+    by_port = {f.portid: f for f in out}
+    assert by_port["cpL"].lifecycle == "escalated"
+
+    tomb = by_port["cpM"]
+    assert tomb.lifecycle == "resolved"
+    assert tomb.severity == int(round(80 * CFG.resolve_decay))
+    assert tomb.headline.startswith("[Resolved]")
+    assert (tomb.lat, tomb.lon) == (1.0, 2.0), "geometry survives the ledger round-trip"
+    # the rebuilt brief cites the real recorded numbers, nothing invented
+    assert "z = -4" in tomb.brief_md and "_Resolved:" in tomb.brief_md

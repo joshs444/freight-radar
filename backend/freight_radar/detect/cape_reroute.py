@@ -13,8 +13,11 @@ to its immediately-preceding window:
 A ``cape_reroute`` flag fires iff the Red Sea side is DOWN and the Cape side is UP,
 each by at least ``cape_min_divergence`` percent. Exactly one flag is emitted,
 placed at the Cape's lat/lon, entity "Red Sea → Cape of Good Hope reroute", with
-both real magnitudes stated in the brief. If the data shows no such divergence the
-detector simply returns None — it never fabricates the signal.
+both real magnitudes stated in the brief. Because that entity is a story string —
+not a chokepoint name — the published flag also carries structured ``chokepoints``
+refs (``CAPE_CHOKEPOINTS``) so exposure can match lanes routed through the legs the
+diversion avoids. If the data shows no such divergence the detector simply returns
+None — it never fabricates the signal.
 
 Severity scales with how far past the trigger both legs moved (the combined
 absolute divergence, saturating at ~60pp), weighted up because a reroute is a
@@ -35,6 +38,11 @@ from .detectors import (
 
 CAPE_KIND = "cape_reroute"
 CAPE_ENTITY = "Red Sea → Cape of Good Hope reroute"
+# The real chokepoints this reroute disrupts, by the canonical names the routing
+# model uses (business/exposure.py CORRIDOR / REROUTE_DELAY). CAPE_ENTITY above is
+# deliberately descriptive and matches no lane's route — exposure consumes these
+# structured refs instead, so the signature flag never reads as $0 exposure (H1-B).
+CAPE_CHOKEPOINTS = ("Suez Canal", "Bab el-Mandeb Strait")
 
 
 def _window_pct(values: pd.Series, window: int) -> tuple[float, float, float]:

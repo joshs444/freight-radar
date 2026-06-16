@@ -47,3 +47,18 @@ and the durable orchestration are not divergent reimplementations.
 - There are two code paths for "run the pipeline" (the Action's `publish_static`
   and the Temporal workflow). This is an accepted cost; it is bounded because
   both drive the **same** step functions, so behavior cannot silently diverge.
+
+## Amendment (2026-06-09): the step list is now shared code, not a claim
+
+The "cannot silently diverge" consequence above did, in fact, silently diverge:
+`publish_static` grew post-export steps (the pooled-FDR signal pool,
+claimed-vs-measured, the substrate export, the honesty scorecard, the store
+catalog) that no Temporal activity ran, so a Temporal-driven publish shipped
+without `signals_fdr.json`, the scorecard, or the catalog. The guarantee is now
+structural rather than asserted: `publish.py` defines `PUBLISH_STEPS` — ONE
+ordered `(name, step)` registry covering every post-export publish step — and
+both drivers iterate it via the same `run_publish_steps()` (`publish_static`
+directly; the Temporal `assemble_snapshot` activity after its export). A new
+step added to the registry reaches both paths for free, and
+`tests/test_publish_steps.py` pins the registry's contents and asserts neither
+driver calls a step writer outside it.

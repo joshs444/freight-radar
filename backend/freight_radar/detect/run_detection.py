@@ -21,10 +21,11 @@ import numpy as np
 import pandas as pd
 
 from ..config import DEFAULT_DB_PATH, REPO_ROOT
+from ..ledger import prior_flags
 from ..multiplicity import control_z
 
 log = logging.getLogger(__name__)
-from .cape_reroute import detect_cape_reroute
+from .cape_reroute import CAPE_CHOKEPOINTS, CAPE_KIND, detect_cape_reroute
 from .detectors import (
     DetectionConfig,
     Flag,
@@ -486,25 +487,19 @@ def _detect_cape_reroute(
     return [flag] if flag else []
 
 
-def _load_prior_flags(con: duckdb.DuckDBPyConnection) -> dict[str, dict]:
-    """Most-recent prior ``fct_flags`` state keyed by flag_id (for lifecycle).
+def _load_prior_flags(state_dir: Path | None = None) -> dict[str, dict]:
+    """Most-recent prior flag state keyed by flag_id (for lifecycle), read from
+    the committed flags ledger (``data/state/flags_ledger.jsonl``).
 
-    Reads the rows from the latest ``detected_date`` only, excluding already-
-    resolved tombstones (so a cleared flag doesn't keep re-resolving). Empty when
-    the table doesn't exist yet (first ever run).
+    The ledger is the ONLY prior-flags source: the weekly refresh rebuilds the
+    DuckDB from scratch, so a ``fct_flags`` read-back always saw an empty table
+    in production and every flag shipped as "new" — hysteresis and resolved
+    tombstones never fired (ADR-0009). Rows come from the latest recorded run
+    only, excluding already-resolved tombstones (so a cleared flag doesn't keep
+    re-resolving). Empty on the first ever run. ``state_dir`` defaults to the
+    repo's ``data/state/``, env-overridable so tests inject tmp dirs.
     """
-    con.execute(FLAGS_SCHEMA.read_text())
-    try:
-        rows = con.execute(
-            """
-            SELECT * FROM fct_flags
-            WHERE detected_date = (SELECT max(detected_date) FROM fct_flags)
-              AND COALESCE(lifecycle, '') <> 'resolved'
-            """
-        ).df()
-    except duckdb.Error:
-        return {}
-    return {r["flag_id"]: r.to_dict() for _, r in rows.iterrows()}
+    return prior_flags(state_dir)
 
 
 def _upsert_flags(con: duckdb.DuckDBPyConnection, flags: list[Flag]) -> None:
@@ -539,7 +534,18 @@ def _upsert_flags(con: duckdb.DuckDBPyConnection, flags: list[Flag]) -> None:
 
 def _write_json(flags: list[Flag], path: Path = FLAGS_JSON) -> None:
     flags_sorted = sorted(flags, key=lambda f: f.severity, reverse=True)
-    payload = [{k: asdict(f)[k] for k in FLAG_KEYS} for f in flags_sorted]
+    payload = []
+    for f in flags_sorted:
+        d = asdict(f)
+        row = {k: d[k] for k in FLAG_KEYS}
+        if f.kind == CAPE_KIND:
+            # H1-B: structured chokepoint refs. The cape flag's entity is a story
+            # string ("Red Sea → Cape ..."), not a chokepoint name, so exposure
+            # matches lanes on these instead. An OPTIONAL flags.json field carried
+            # like source_url/license (see _upsert_flags) — fct_flags stays the
+            # table of computed numbers.
+            row["chokepoints"] = list(CAPE_CHOKEPOINTS)
+        payload.append(row)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2))
 
@@ -547,17 +553,18 @@ def _write_json(flags: list[Flag], path: Path = FLAGS_JSON) -> None:
 def run(db_path=DEFAULT_DB_PATH, flags_json: Path | None = None) -> list[Flag]:
     """Detect, gate, label lifecycle, suppress holidays -> upsert + publish.
 
-    Wave-5 pipeline (order matters): read the prior fct_flags state BEFORE writing
-    -> run the (change-point-gated) chokepoint/port detectors + the Cape-reroute
+    Wave-5 pipeline (order matters): read the prior flag state from the committed
+    ledger -> run the (change-point-gated) chokepoint/port detectors + the Cape-reroute
     detector -> downweight benign holiday dips -> label lifecycle (and emit resolved
     tombstones) -> upsert + write flags.json. Public API is unchanged: returns the
     final ``list[Flag]`` (now carrying real lifecycle labels), and the JSON keeps
-    the 18-key contract.
+    the ``FLAG_KEYS`` contract (plus an optional ``chokepoints`` ref on cape-reroute
+    flags).
     """
     cfg = load_config()
     con = duckdb.connect(str(db_path))
     try:
-        prior = _load_prior_flags(con)
+        prior = _load_prior_flags()
         detected = (
             _detect_chokepoints(con, cfg)
             + _detect_ports(con, cfg)

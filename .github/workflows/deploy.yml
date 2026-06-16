@@ -9,22 +9,25 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# The floor for every job; the deploy job elevates to pages/id-token below.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Queue, never cancel: cancelling an in-progress run is SILENT (no failure email),
+# and refresh.yml's deploy job shares this group — killing it could leave main with
+# fresh data committed but never deployed. The newest pending run still supersedes
+# older pending ones, so the latest main always ships.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: npm
@@ -49,8 +52,8 @@ jobs:
       - name: Bundle budget (keep heavy map chunks off the boot path)
         working-directory: frontend
         run: npm run test:bundle
-      - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: frontend/dist
 
@@ -58,9 +61,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      pages: write     # the deploy credentials live ONLY in this artifact-only job
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

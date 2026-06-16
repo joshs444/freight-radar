@@ -12,6 +12,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from freight_radar.derived import reason
 from freight_radar.derived.gate import attribution_violations, gate_briefing
 from freight_radar.registry.layers import REGISTRY
@@ -22,6 +24,15 @@ BRIEFING = DATA / "ai_briefing.json"
 
 
 def test_committed_briefing_passes_the_whole_gate() -> None:
+    if not BRIEFING.exists():
+        # A legitimately demoted briefing (the gate tripped in the last refresh) is allowed
+        # — but ONLY with its receipt. A missing file with no demotion record is a real bug,
+        # and reading it blindly here used to crash CI for every push after a demotion.
+        dem = DATA / "demotions.json"
+        recs = json.loads(dem.read_text()).get("demoted", []) if dem.exists() else []
+        assert any(d.get("stem") == "ai_briefing" for d in recs), \
+            "ai_briefing.json missing with no demotion receipt"
+        pytest.skip("ai_briefing demoted to dark (receipt present) — nothing to gate")
     b = json.loads(BRIEFING.read_text())
     assert gate_briefing(b, VALID, out_dir=DATA) == {}, gate_briefing(b, VALID, out_dir=DATA)
 
@@ -72,7 +83,66 @@ def test_the_reasoner_refuses_to_write_an_ungated_briefing(tmp_path, monkeypatch
             "claims": [{"text": "stress reads 1234.5", "cites": ["stress"]}],
         },
     )
-    import pytest
-
     with pytest.raises(reason.DerivedGateBlocked):
         reason.write(DATA)
+
+
+def test_a_gate_block_demotes_the_layer_never_the_refresh(tmp_path, monkeypatch) -> None:
+    # the briefing is OPTIONAL garnish: a gate trip must take the LAYER dark — stale
+    # ai_briefing.json removed, a demotions.json receipt MERGED (not clobbered) — and let
+    # the refresh proceed (main() exits 0). write() raising stays the fail-closed contract.
+    (tmp_path / "ai_briefing.json").write_text("{}")
+    (tmp_path / "demotions.json").write_text(
+        json.dumps({"note": "n", "demoted": [{"stem": "news", "violations": ["x"]}]})
+    )
+
+    def blocked(out_dir):
+        raise reason.DerivedGateBlocked("forced for the test")
+
+    monkeypatch.setattr(reason, "write", blocked)
+    assert reason.main([str(tmp_path)]) == 0
+    assert not (tmp_path / "ai_briefing.json").exists()
+    rec = json.loads((tmp_path / "demotions.json").read_text())
+    assert [d["stem"] for d in rec["demoted"]] == ["news", "ai_briefing"]
+    assert "forced for the test" in rec["demoted"][1]["violations"][0]
+
+
+def test_a_genuine_crash_still_fails_the_step(tmp_path, monkeypatch) -> None:
+    # the fail-open path catches ONLY DerivedGateBlocked: a real crash (store IO error,
+    # KeyError, ...) must still propagate, so a broken refresh never ships green with a
+    # stale/missing briefing. This locks the narrow-except the exit-0 path depends on.
+    def crash(out_dir):
+        raise ValueError("genuine crash, not a gate trip")
+
+    monkeypatch.setattr(reason, "write", crash)
+    with pytest.raises(ValueError):
+        reason.main([str(tmp_path)])
+
+
+def _stub_briefing(out_dir: Path) -> Path:
+    p = out_dir / "ai_briefing.json"
+    p.write_text(json.dumps({"tier": "DERIVED", "claims": []}))
+    return p
+
+
+def test_a_recovered_briefing_clears_its_stale_demotion(tmp_path, monkeypatch) -> None:
+    # last refresh's gate trip left an ai_briefing demotion record; this run's briefing
+    # passes, so the record must be cleared — else the Source Ledger shows the layer
+    # "demoted to dark" while a fresh briefing renders right beside it.
+    (tmp_path / "demotions.json").write_text(
+        json.dumps({"note": "n", "demoted": [
+            {"stem": "news", "violations": ["x"]},
+            {"stem": "ai_briefing", "violations": ["last week"]},
+        ]})
+    )
+    monkeypatch.setattr(reason, "write", lambda out_dir: _stub_briefing(Path(out_dir)))
+    assert reason.main([str(tmp_path)]) == 0
+    rec = json.loads((tmp_path / "demotions.json").read_text())
+    assert [d["stem"] for d in rec["demoted"]] == ["news"], "ai_briefing cleared; news kept"
+
+    # when ai_briefing was the ONLY thing dark, the whole receipt file is removed
+    (tmp_path / "demotions.json").write_text(
+        json.dumps({"note": "n", "demoted": [{"stem": "ai_briefing", "violations": ["x"]}]})
+    )
+    assert reason.main([str(tmp_path)]) == 0
+    assert not (tmp_path / "demotions.json").exists()

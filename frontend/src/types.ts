@@ -161,6 +161,7 @@ export interface Flag {
   license: string; // registry-resolved root license (P0-B)
   method: string;
   lifecycle: string;
+  chokepoints?: string[]; // structured refs (H1-B) — cape_reroute carries the Red Sea legs it diverts around
   business?: BusinessImpact | null;
   live_storm?: StormChip | null;
   official_event?: OfficialEvent | null;

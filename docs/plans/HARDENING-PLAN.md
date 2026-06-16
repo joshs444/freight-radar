@@ -1,6 +1,6 @@
 # Hardening plan — fix everything the adversarial review found, at the root
 
-**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; foundation track folded in (council-validated); Wave 1a executing.**
+**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; foundation track folded in (council-validated); Wave 1a ✅ executed 2026-06-16 (F1 ledger + lifecycle, H1-A/B/D/G); Wave 1b next.**
 Statuses in this file are kept true as waves land (that discipline is itself item H0-F).
 
 Source: a 37-agent adversarial review (18 dimensions — vision, docs, world model,
@@ -148,7 +148,7 @@ README/FEATURES instead.
   label 5YEAR/AI-NATIVE as satellites in the index rather than front-door
   links.
 
-## Wave 1 — Production correctness — IN PROGRESS (1a executing 2026-06-09)
+## Wave 1 — Production correctness — IN PROGRESS (1a ✅ executed 2026-06-16; 1b/1c pending)
 
 Runs as sub-waves of ≤3 parallel agents with disjoint file ownership.
 **1a:** F1 slices 1–2 (ledger + lifecycle + run ledger + ADR-0009) ·
@@ -157,21 +157,35 @@ H1-B + H1-G · H1-D (all workflow edits, including the F1 refresh steps).
 **1c:** H1-E remainder · H1-H · F4 slice (claims + adjudications) ·
 F2 slice 2 (chat oracle, absorbs H5-C).
 
-- **H1-A** Flag lifecycle — **absorbed by F1 slice 1** (see the foundation
+**1a EXECUTED 2026-06-16.** Built by 3 disjoint agents, then put through a
+5-dimension adversarial review (find → independently verify each finding); 9
+confirmed issues were root-caused and fixed before landing — chiefly: the ledger
+keyed runs on the spine `as_of` alone (which repeats weekly), so a same-date
+re-detection silently froze flag state → now keyed on `(run_key, generated_at)`
+with "latest" by recording order; a gate-trip that demoted `ai_briefing` deleted
+the committed file and would have crashed CI on every later push → the gate test
+tolerates a receipted demotion; and `contracts --demote` blind-overwrote the
+reasoner's demotion receipt → both writers now merge the shared `demotions.json`.
+Receipts: backend non-live 305 passed · dbt build 92 + Python↔dbt parity ·
+frontend typecheck/lint/parity(186)/chat(909)/bundle · actionlint(×3) · all 8
+action SHA-pins resolved · ledger CLI runtime-verified.
+
+- **H1-A** ✅ Flag lifecycle — **absorbed by F1 slice 1** (see the foundation
   track): committed `flags_ledger.jsonl` as the ONLY prior-flags source.
-  Receipt: lifecycle continuity test across two fresh-DB runs; production
-  flags can be `ongoing`/`resolved` again.
-- **H1-B** Cape-reroute exposure: flags carry structured chokepoint refs
+  Receipt: `test_lifecycle_survives_a_fresh_db_rebuild` (continuity across two
+  fresh-DB runs) + `test_same_spine_rerun_records_revised_flag_state`;
+  production flags can be `ongoing`/`resolved` again.
+- **H1-B** ✅ Cape-reroute exposure: flags carry structured chokepoint refs
   (Suez, Bab el-Mandeb) consumed by `_exposed_lanes`; delay/premium keyed off
-  the Cape entry (10d, premium ≠ 0). Receipt: regression test — a Suez-routed
-  lane shows exposure when cape_reroute fires.
+  the Cape entry (10d, premium ≠ 0); Python/JS parity. Receipt: regression test
+  — a Suez-routed lane shows exposure when cape_reroute fires.
 - **H1-C** Stress index: anchor each chokepoint's "normal" to a long reference
   window (the history.py approach) so sustained collapse keeps driving the
   index; weight by capacity (DWT) share, not vessel count — the docstring
   already claims economic weighting. Disclose the window in the method string.
   Changes published numbers: re-bless golden masters in a dedicated reviewed
   commit; update dbt models/vars + parity + README examples together.
-- **H1-D** refresh.yml: own concurrency group (cancel-in-progress: false) so
+- **H1-D** ✅ refresh.yml: own concurrency group (cancel-in-progress: false) so
   deploys can't silently kill the weekly refresh; DERIVED gate block skips the
   layer (demotions.json receipt) instead of aborting the whole refresh; run
   frontend validation BEFORE the data commit; split into two jobs with
@@ -186,7 +200,7 @@ F2 slice 2 (chat oracle, absorbs H5-C).
   stress/timeseries get Shapes (contracts derive from them); the CLI's
   uncontracted-sidecar listing falls out of the registry knowing every
   output stem. One-line remnant: add stress/timeseries to CORE_STEMS.
-- **H1-G** ADR-0005 truth in code: extract one shared ordered publish step
+- **H1-G** ✅ ADR-0005 truth in code: extract one shared ordered publish step
   list that BOTH drivers iterate, so Temporal and publish_static cannot
   diverge again.
 - **H1-H** timeseries honesty: null for never-observed days (no fabricated

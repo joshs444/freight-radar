@@ -15,3 +15,4 @@ engineering judgment without reading the code.
 | [6](0006-flat-globe-markers-out-of-the-depth-test.md) | Take flat globe markers out of the deck.gl depth test |
 | [7](0007-tier-firewall-and-registry-as-single-source-of-truth.md) | The tier firewall + the registry as single source of truth |
 | [8](0008-sidecar-store-publish-time-fetch-gated-by-contracts.md) | The sidecar store: publish-time fetch with contracts as the gate |
+| [9](0009-committed-jsonl-ledgers-the-system-remembers-itself.md) | Committed JSONL ledgers — the system remembers itself |

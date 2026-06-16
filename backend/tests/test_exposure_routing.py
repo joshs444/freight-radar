@@ -1,20 +1,31 @@
-"""Tests for B2 (coverage-aware routing) + B3 (cost-of-disruption stack).
+"""Tests for B2 (coverage-aware routing) + B3 (cost-of-disruption stack) + H1-B
+(cape_reroute exposure via structured chokepoint refs).
 
 The credibility properties under test:
   - a real CSV (LOCODEs, no region column) resolves instead of silently zeroing;
   - the cost stack's total is exactly carrying + reroute (no fabricated lines),
     working capital is excluded from the P&L total (locked ≠ lost), and a port
     drop carries no reroute premium (you can't reroute a port);
-  - coverage is reported honestly (X of N lanes modeled).
+  - coverage is reported honestly (X of N lanes modeled);
+  - the signature cape_reroute flag actually exposes Suez-routed lanes (its story
+    entity matches no route — the structured `chokepoints` refs do), with the
+    Cape's 10-day diversion delay and a nonzero reroute premium.
 """
 
 from __future__ import annotations
 
+import json
+
 import duckdb
+import numpy as np
+import pandas as pd
 import pytest
 
 from freight_radar.business.port_resolver import PortResolver, derive_region
 from freight_radar.business import exposure as X
+from freight_radar.detect.cape_reroute import CAPE_CHOKEPOINTS, detect_cape_reroute
+from freight_radar.detect.detectors import DetectionConfig
+from freight_radar.detect.run_detection import _write_json
 
 
 def _con():
@@ -103,3 +114,65 @@ def test_coverage_counts_only_routed_lanes():
     assert summary["lanes_with_known_route"] == 1
     assert summary["total_flows"] == 2
     assert summary["coverage_pct"] == 50.0
+
+
+# --- H1-B: cape_reroute flags expose Suez-routed lanes ----------------------
+def _emitted_cape_flag(tmp_path) -> dict:
+    """A cape flag built EXACTLY the way the pipeline emits it: the detector fires
+    on a real divergence, run_detection._write_json publishes it, and exposure
+    consumes the JSON dict back — the full contract, not a hand-built fixture."""
+    cfg = DetectionConfig()
+    w = cfg.cape_window
+    idx = pd.date_range("2026-01-01", periods=2 * w, freq="D")
+    red_sea = pd.Series(np.r_[np.full(w, 60.0), np.full(w, 30.0)], index=idx)  # -50%
+    cape = pd.Series(np.r_[np.full(w, 90.0), np.full(w, 120.0)], index=idx)   # +33%
+    flag = detect_cape_reroute(red_sea=red_sea, cape=cape, cape_lat=-34.93,
+                               cape_lon=20.88, as_of=idx[-1].date(), cfg=cfg)
+    assert flag is not None, "the divergence fixture must fire the detector"
+    path = tmp_path / "flags.json"
+    _write_json([flag], path)
+    return json.loads(path.read_text())[0]
+
+
+def test_cape_reroute_flag_exposes_suez_routed_lanes(tmp_path):
+    """Regression for the $0-exposure bug: the cape flag's entity ('Red Sea → Cape
+    of Good Hope reroute') matches no lane's route, so exposure must consume the
+    structured `chokepoints` refs — and key delay/premium off the Cape entry."""
+    flag = _emitted_cape_flag(tmp_path)
+    assert flag["chokepoints"] == list(CAPE_CHOKEPOINTS)  # carried through flags.json
+
+    flows = [
+        {"lane_id": "L1", "origin_region": "East Asia", "dest_region": "North Europe",
+         "origin_port": "Shanghai (Pudong)", "dest_port": "Rotterdam", "item_category": "X",
+         "annual_value_usd": 20_000_000.0, "annual_teu": 1_500.0},  # routes via Suez + Bab
+        {"lane_id": "L2", "origin_region": "East Asia", "dest_region": "North America West",
+         "origin_port": "Shanghai (Pudong)", "dest_port": "Los Angeles", "item_category": "X",
+         "annual_value_usd": 9_000_000.0, "annual_teu": 800.0},     # no Red Sea leg
+    ]
+    X.prepare_routes(flows, None)
+    b = X._business_for_flag(flag, flows)
+    assert b["lane_count"] == 1                                     # was 0 before H1-B
+    assert b["exposed_lanes"][0]["lane_id"] == "L1"
+    # Cape diversion delay (10d), NOT the 3d unknown-chokepoint default
+    assert b["est_delay_days"]["expected"] == X.REROUTE_DELAY["Cape of Good Hope"]
+    # the premium calibrated for exactly this case is no longer zero
+    assert b["cost_stack"]["reroute_premium_usd"]["expected"] > 0
+    assert b["total_cost_of_disruption_usd"]["expected"] > 0
+    # and the portfolio summary counts it as an active disruption hitting you
+    summary = X.enrich([flag], flows, resolver=None)
+    assert summary["active_disruptions_hitting_you"] == 1
+    assert summary["exposed_value_usd"] == 20_000_000
+
+
+def test_cape_flag_without_chokepoints_degrades_to_entity_match():
+    """Back-compat: an old flags.json row with no `chokepoints` falls back to entity
+    matching (zero lanes — the entity is a story string), but delay/premium still
+    key off the Cape entry by kind, never the unknown-chokepoint default."""
+    flag = _flag("cape_reroute", "Red Sea → Cape of Good Hope reroute", "chokepoint7")
+    flows = [{"lane_id": "L1", "origin_region": "East Asia", "dest_region": "North Europe",
+              "origin_port": "Shanghai (Pudong)", "dest_port": "Rotterdam", "item_category": "X",
+              "annual_value_usd": 5_000_000.0, "annual_teu": 400.0}]
+    X.prepare_routes(flows, None)
+    b = X._business_for_flag(flag, flows)
+    assert b["lane_count"] == 0  # documented fallback — no structured refs, no match
+    assert b["est_delay_days"]["expected"] == X.REROUTE_DELAY["Cape of Good Hope"]

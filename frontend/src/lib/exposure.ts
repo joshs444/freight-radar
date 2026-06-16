@@ -49,8 +49,25 @@ function pyRound(x: number): number {
 const isChokepoint = (flag: Flag): boolean =>
   (flag.kind || '').startsWith('chokepoint') || flag.kind === 'cape_reroute';
 
+// Chokepoints a flag disrupts. cape_reroute flags carry structured `chokepoints`
+// refs (the Red Sea legs the diversion avoids) because their entity is a story
+// string, not a chokepoint name; plain chokepoint flags fall back to the entity.
+const flagChokepoints = (flag: Flag): string[] =>
+  flag.chokepoints?.length ? flag.chokepoints : [flag.entity];
+
+// REROUTE_DELAY key for a reroutable chokepoint flag, else null. A cape_reroute
+// flag's delay/premium are the Cape diversion's (~10 extra days round the Cape) —
+// its story-string entity is in no table, so it keys off 'Cape of Good Hope'.
+function delayKey(flag: Flag): string | null {
+  if (!isChokepoint(flag)) return null;
+  if (flag.kind === 'cape_reroute') return 'Cape of Good Hope';
+  return REROUTE_DELAY[flag.entity] != null ? flag.entity : null;
+}
+
 function delayDays(flag: Flag): number {
-  if (isChokepoint(flag)) return REROUTE_DELAY[flag.entity] ?? DEFAULT_CHOKE_DELAY;
+  const key = delayKey(flag);
+  if (key != null) return REROUTE_DELAY[key];
+  if (isChokepoint(flag)) return DEFAULT_CHOKE_DELAY;
   return Math.max(2, pyRound((flag.severity ?? 30) / 12));
 }
 
@@ -66,8 +83,7 @@ const carryingBand = (value: number, db: CostBand): CostBand =>
 const workingCapitalBand = (value: number, db: CostBand): CostBand =>
   toBand(Object.fromEntries(KEYS.map((k) => [k, pyRound((value * db[k]) / 365)])));
 function rerouteBand(teu: number, flag: Flag, db: CostBand): CostBand {
-  if (!isChokepoint(flag) || REROUTE_DELAY[flag.entity] == null)
-    return { low: 0, expected: 0, high: 0 };
+  if (delayKey(flag) == null) return { low: 0, expected: 0, high: 0 };
   return toBand(
     Object.fromEntries(
       KEYS.map((k, i) => [k, pyRound(teu * REROUTE_PREMIUM_PER_TEU_DAY[i] * db[k])])
@@ -90,7 +106,10 @@ function prepareRoutes(lanes: RoutedLane[], resolver: Resolver): void {
 }
 
 function exposedLanes(flag: Flag, lanes: RoutedLane[]): RoutedLane[] {
-  if (isChokepoint(flag)) return lanes.filter((ln) => ln._route_cps.has(flag.entity));
+  if (isChokepoint(flag)) {
+    const cps = flagChokepoints(flag);
+    return lanes.filter((ln) => cps.some((c) => ln._route_cps.has(c)));
+  }
   return lanes.filter(
     (ln) =>
       flag.portid === ln._origin_portid ||

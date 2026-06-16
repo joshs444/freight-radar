@@ -143,6 +143,39 @@ def test_demote_is_a_noop_on_healthy_feeds(tmp_path):
     assert not (tmp_path / "demotions.json").exists()
 
 
+def test_demote_preserves_foreign_receipt_and_drops_stale_owned(tmp_path):
+    """demote_drifted owns ONLY the contracted stems. The reasoner writes its ai_briefing
+    demotion into the SAME file one step earlier; a blind write would clobber that foreign
+    receipt exactly when a contracted feed also drifts. So foreign entries survive, this
+    run's owned stems are recomputed fresh, and a recovered contracted feed's stale entry
+    is dropped."""
+    owned_other = next(s for s in sorted(SIDECAR_CONTRACTS) if s != "eonet")
+    (tmp_path / "demotions.json").write_text(_json.dumps({
+        "note": "n",
+        "demoted": [
+            {"stem": "ai_briefing", "violations": ["gate tripped"]},  # foreign (not contracted)
+            {"stem": owned_other, "violations": ["last week — recovered since"]},  # stale owned
+        ],
+    }))
+    _write(tmp_path, "eonet", {"generated_at": "x", "source": "s", "source_url": "u", "items": []})  # drift now
+    report = demote_drifted(tmp_path)
+    assert {d["stem"] for d in report["demoted"]} == {"eonet"}, "report covers only this run's owned demotion"
+    stems = [d["stem"] for d in _json.loads((tmp_path / "demotions.json").read_text())["demoted"]]
+    assert "ai_briefing" in stems, "foreign reasoner receipt must survive (not clobbered)"
+    assert "eonet" in stems, "this run's owned demotion is recorded"
+    assert owned_other not in stems, "a recovered contracted feed's stale entry is dropped"
+
+
+def test_demote_clears_a_stale_owned_receipt_when_all_recovered(tmp_path):
+    owned = sorted(SIDECAR_CONTRACTS)[0]
+    (tmp_path / "demotions.json").write_text(_json.dumps(
+        {"note": "n", "demoted": [{"stem": owned, "violations": ["last week"]}]}))
+    _write(tmp_path, "tides", _GOOD_TIDES)  # everything healthy this run
+    report = demote_drifted(tmp_path)
+    assert report["demoted"] == []
+    assert not (tmp_path / "demotions.json").exists(), "no layer dark -> stale receipt removed"
+
+
 def test_catalog_surfaces_contract_monitored():
     """The agent-legible catalog marks each output layer whose feed shape is monitored, so
     the Source Ledger (and an agent) can see which feeds are drift-checked."""

@@ -196,6 +196,56 @@ def write(out_dir) -> Path:
     return pth
 
 
+_DEMOTION_NOTE = (
+    "Feeds auto-demoted to dark because they failed their data contract "
+    "(schema/liveness drift). Demotion is automatic + loud, never silent."
+)
+
+
+def _demote_briefing(out_dir: Path, why: str) -> None:
+    """Take the briefing LAYER dark, loudly: remove any stale ai_briefing.json (last week's
+    committed briefing must not ship stamped as fresh) and merge an ai_briefing record into
+    demotions.json — the exact receipt ``contracts.demote_drifted`` writes, so the Source
+    Ledger surfaces this demotion with no second format."""
+    stale = out_dir / "ai_briefing.json"
+    if stale.exists():
+        stale.unlink()
+    pth = out_dir / "demotions.json"
+    try:
+        existing = json.loads(pth.read_text()) if pth.exists() else {}
+    except Exception:  # noqa: BLE001
+        existing = {}
+    demoted = [d for d in existing.get("demoted", []) if d.get("stem") != "ai_briefing"]
+    demoted.append({"stem": "ai_briefing", "violations": [why]})
+    pth.write_text(
+        json.dumps({"note": existing.get("note") or _DEMOTION_NOTE, "demoted": demoted}, indent=2)
+        + "\n"
+    )
+
+
+def _clear_briefing_demotion(out_dir: Path) -> None:
+    """Symmetric inverse of ``_demote_briefing``: a fresh briefing shipped, so drop any
+    stale ``ai_briefing`` record from demotions.json. Without this, last week's gate trip
+    leaves the layer marked demoted in the Source Ledger while THIS week's briefing renders
+    — a self-contradicting receipt. Leaves other feeds' demotions untouched; removes the
+    file when nothing is left dark (so the next ``contracts --demote`` starts clean)."""
+    pth = out_dir / "demotions.json"
+    if not pth.exists():
+        return
+    try:
+        existing = json.loads(pth.read_text())
+    except Exception:  # noqa: BLE001
+        return
+    kept = [d for d in existing.get("demoted", []) if d.get("stem") != "ai_briefing"]
+    if kept:
+        pth.write_text(
+            json.dumps({"note": existing.get("note") or _DEMOTION_NOTE, "demoted": kept}, indent=2)
+            + "\n"
+        )
+    else:
+        pth.unlink()
+
+
 def main(argv: list[str] | None = None) -> int:
     import sys
 
@@ -206,11 +256,17 @@ def main(argv: list[str] | None = None) -> int:
     try:
         p = write(out)
         b = json.loads(p.read_text())
+        _clear_briefing_demotion(out)
         print(f"reasoner: {len(b['claims'])} grounded claims, gate clean -> {p}")
-        return 0
     except DerivedGateBlocked as e:
-        print(f"reasoner BLOCKED (fail-closed): {e}")
-        return 1
+        # Fail-closed for the LAYER, never the PIPELINE. The briefing is optional DERIVED
+        # garnish; "one bad layer never aborts publish" applies to it too. Exiting 1 here
+        # used to abort the whole weekly refresh — a stale site for a week because the one
+        # quarantined layer flinched. Now the layer goes dark with a loud receipt and the
+        # refresh proceeds; ``write()`` raising stays the fail-closed contract for callers.
+        _demote_briefing(out, str(e))
+        print(f"reasoner BLOCKED (fail-closed): ai_briefing demoted to dark, refresh proceeds — {e}")
+    return 0
 
 
 if __name__ == "__main__":

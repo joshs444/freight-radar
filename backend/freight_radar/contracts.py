@@ -234,18 +234,34 @@ def demote_drifted(data_dir: Path, *, core_stems: frozenset[str] = CORE_STEMS) -
         else:
             p.unlink()  # go dark — the frontend hides an absent layer
             demoted.append({"stem": stem, "violations": v})
-    if demoted:
-        (data_dir / "demotions.json").write_text(
+    # MERGE into demotions.json, never clobber it. This writer owns only the contracted
+    # stems (SIDECAR_CONTRACTS); the reasoner records its own DERIVED ai_briefing demotion
+    # into the SAME file one step earlier (reason._demote_briefing, refresh.yml). A blind
+    # write_text would erase that foreign receipt whenever any contracted feed also drifts
+    # — the layer would go dark with no receipt, exactly when the metabolism is busiest. So
+    # preserve foreign-stem entries, recompute this run's owned stems fresh (a recovered
+    # contracted feed thus drops its stale entry), and clear the file when nothing is dark.
+    pth = data_dir / "demotions.json"
+    try:
+        existing = json.loads(pth.read_text()).get("demoted", []) if pth.exists() else []
+    except (OSError, ValueError):
+        existing = []
+    foreign = [d for d in existing if d.get("stem") not in SIDECAR_CONTRACTS]
+    merged = foreign + demoted
+    if merged:
+        pth.write_text(
             json.dumps(
                 {
                     "note": "Feeds auto-demoted to dark because they failed their data contract "
                     "(schema/liveness drift). Demotion is automatic + loud, never silent.",
-                    "demoted": demoted,
+                    "demoted": merged,
                 },
                 indent=2,
             )
             + "\n"
         )
+    elif pth.exists():
+        pth.unlink()  # nothing demoted anywhere — leave no stale receipt behind
     return {"checked": len(SIDECAR_CONTRACTS), "demoted": demoted, "blocked": blocked}
 
 

@@ -1,7 +1,9 @@
-"""The 5 pipeline activities: fetch -> detect -> attribute -> assemble -> publish.
+"""The pipeline activities: fetch -> detect -> attribute -> enrich -> assemble -> publish.
 
 Each wraps already-proven backend code. Activities do the real I/O (network,
 DuckDB, files); the workflow (workflow.py) just orchestrates them durably.
+The assemble activity iterates the SAME ``PUBLISH_STEPS`` registry
+``publish_static`` runs (publish.py), so the two drivers cannot diverge (H1-G).
 
 The attribution activity is the dedup ledger: it 'attributes' (and would call an
 LLM for) ONLY flags not seen before this ISO week. A second identical run sees
@@ -21,7 +23,7 @@ from ..detect import run_detection
 from ..export_snapshot import export
 from ..ingest.dims import load_dims
 from ..ingest.portwatch import stage_chokepoint_daily, stage_port_daily
-from ..publish import write_manifest
+from ..publish import run_publish_steps, write_manifest
 from ..storage.db import connect as db_connect, join_coverage
 from ..wap import PublishBlocked, promote
 
@@ -168,7 +170,12 @@ async def enrich_sidecars() -> dict:
 @activity.defn
 async def assemble_snapshot() -> dict:
     # real detection (compute_and_detect) owns flags.json; don't clobber it.
-    return export(db_path=db_path(), out_dir=publish_dir(), write_flags=False)
+    receipt = export(db_path=db_path(), out_dir=publish_dir(), write_flags=False)
+    # the SAME ordered post-export step list publish_static iterates (PUBLISH_STEPS):
+    # signal pool, claimed-vs-measured, substrate, scorecard, catalog — one registry,
+    # two drivers, so a Temporal-driven publish can't silently drop a sidecar (H1-G).
+    steps = run_publish_steps(db_path(), publish_dir())
+    return {**receipt, "publish_steps": steps}
 
 
 # --- 5. publish (atomic manifest + version bump) ---------------------------

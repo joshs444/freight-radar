@@ -74,6 +74,19 @@ async def test_pipeline_end_to_end(isolated_env):
     for f in ("snapshot.json", "flags.json", "manifest.json"):
         assert (pub / f).exists(), f"{f} was not published"
 
+    # H1-G: the durable driver must run the SAME PUBLISH_STEPS publish_static does. The step
+    # list the assemble activity reports proves every step RAN (a regression dropping
+    # run_publish_steps makes this key absent -> KeyError); we then anchor it behaviorally on
+    # the two UNCONDITIONAL outputs that must land in the durable path's dir. signals_fdr.json
+    # / claimed_vs_measured.json are deliberately NOT asserted as files — they are written
+    # conditionally (no signal family / stress-dependent), so existence is DB-content-dependent;
+    # the step-list assertion is what guards that signal_pool & claimed_vs_measured ran.
+    from freight_radar import publish
+
+    assert result["assemble"]["publish_steps"] == [name for name, _ in publish.PUBLISH_STEPS]
+    for f in ("scoreboard.json", "store/catalog.json"):
+        assert (pub / f).exists(), f"{f} (an unconditional PUBLISH_STEPS output) missing on the Temporal path"
+
 
 async def test_dedup_free_rerun(isolated_env):
     async with await WorkflowEnvironment.start_time_skipping() as env:

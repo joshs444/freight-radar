@@ -130,12 +130,21 @@ def _is_chokepoint(flag: dict) -> bool:
     return flag.get("kind", "").startswith("chokepoint") or flag.get("kind") == "cape_reroute"
 
 
+def _flag_chokepoints(flag: dict) -> set[str]:
+    """Chokepoints a flag disrupts. cape_reroute flags carry structured `chokepoints`
+    refs (the Red Sea legs the diversion avoids) because their entity is a story
+    string, not a chokepoint name; plain chokepoint flags fall back to the entity."""
+    cps = flag.get("chokepoints")
+    return set(cps) if cps else {flag["entity"]}
+
+
 def _exposed_lanes(flag: dict, flows: list[dict]) -> list[dict]:
     """Lanes hit by a flag. Assumes prepare_routes() has run (lanes carry _route_cps).
     Port flags match a resolved portid first, then fall back to a name match."""
     entity = flag["entity"]
     if _is_chokepoint(flag):
-        return [ln for ln in flows if entity in ln.get("_route_cps", set())]
+        cps = _flag_chokepoints(flag)
+        return [ln for ln in flows if cps & ln.get("_route_cps", set())]
     return [ln for ln in flows
             if flag["portid"] in (ln.get("_origin_portid"), ln.get("_dest_portid"))
             or entity in (ln["origin_port"], ln["dest_port"])]
@@ -152,9 +161,23 @@ CARRYING_RATE = (0.20, 0.25, 0.30)
 REROUTE_PREMIUM_PER_TEU_DAY = (15, 25, 40)
 
 
+def _delay_key(flag: dict) -> str | None:
+    """REROUTE_DELAY key for a reroutable chokepoint flag, else None. A cape_reroute
+    flag's delay/premium are the Cape diversion's (~10 extra days round the Cape) —
+    its story-string entity is in no table, so it keys off 'Cape of Good Hope'."""
+    if not _is_chokepoint(flag):
+        return None
+    if flag.get("kind") == "cape_reroute":
+        return "Cape of Good Hope"
+    return flag["entity"] if flag["entity"] in REROUTE_DELAY else None
+
+
 def _delay_days(flag: dict) -> int:
+    key = _delay_key(flag)
+    if key is not None:
+        return REROUTE_DELAY[key]
     if _is_chokepoint(flag):
-        return REROUTE_DELAY.get(flag["entity"], DEFAULT_CHOKE_DELAY)
+        return DEFAULT_CHOKE_DELAY
     # port congestion/drop: scale modestly with severity
     return max(2, round(flag.get("severity", 30) / 12))
 
@@ -178,7 +201,7 @@ def _working_capital_band(value: float, db: dict) -> dict:
 def _reroute_premium_band(teu: float, flag: dict, db: dict) -> dict:
     """Extra fuel/charter from diverting around a closed chokepoint. Only reroutable
     chokepoint flags incur it; port-drop flags don't (you can't reroute a port)."""
-    if not _is_chokepoint(flag) or flag["entity"] not in REROUTE_DELAY:
+    if _delay_key(flag) is None:
         return {"low": 0, "expected": 0, "high": 0}
     return {k: round(teu * REROUTE_PREMIUM_PER_TEU_DAY[i] * db[k])
             for i, k in enumerate(("low", "expected", "high"))}

@@ -57,8 +57,13 @@ def build_fct_observation(con: duckdb.DuckDBPyConnection, knowledge_time: str, r
 
     Two measured shapes collapse onto one narrow table — the chokepoint throughput history
     and the port port-call history — proving the unification without a wide schema. Each row
-    carries valid-time (`date_key` / `source_observed_at`) and knowledge-time, the bitemporal
-    keystone (§4). `value` is the cited observation; tier is SPINE (we own the chain).
+    carries valid-time (`date_key` / `source_observed_at`) and a knowledge-time stamp — for
+    the CURRENT build only: the warehouse is rebuilt from scratch weekly, so prior knowledge
+    times are not retained here. The committed run ledger (`data/state/run_ledger.jsonl`) is
+    the durable knowledge-time record; per-run partitions are deliberately not committed
+    (rejected on git-growth math — ADR-0009; bulk per-run artifacts only ever ship via
+    GitHub Releases, never git). `value` is the cited observation; tier is SPINE (we own
+    the chain).
     """
     con.execute(
         f"""
@@ -211,9 +216,10 @@ def export_observation(con: duckdb.DuckDBPyConnection, out_dir) -> Path:
 def publish_substrate(db_path, out_dir, knowledge_time: str, run_id: str = "substrate") -> dict:
     """Build the substrate against the published DB and export the thin index to a sidecar.
 
-    ``knowledge_time`` is the run's real as-of (NOT a static literal) — the bitemporal stamp on
-    every row: 'as of when did we know this'. Called from publish; additive (only CREATEs the
-    index tables, never touches the facts it reads)."""
+    ``knowledge_time`` is the run's real as-of (NOT a static literal) — the knowledge-time
+    stamp on every row: 'as of when did we know this'. It covers this build only; the
+    run-over-run knowledge record is the committed run ledger (ADR-0009). Called from
+    publish; additive (only CREATEs the index tables, never touches the facts it reads)."""
     con = duckdb.connect(str(db_path), read_only=False)
     try:
         summary = build_substrate(con, knowledge_time=knowledge_time, run_id=run_id)

@@ -77,6 +77,45 @@ def _build_fixture_db(db_path: Path) -> None:
     mod.main()
 
 
+def _seed_prior_ledger(db_path: Path, state: Path) -> None:
+    """Seed the tmp flags ledger from the fixture's committed prior-flag rows
+    (``fct_flags.csv`` — the fixture's "last week's run").
+
+    The committed ledger is the ONLY prior-flags source for lifecycle
+    (ADR-0009), so without this seed the goldens would stop exercising
+    ``ongoing`` continuity and the resolved tombstones the fixture's prior rows
+    deliberately produce.
+    """
+    import duckdb
+    import pandas as pd
+
+    from freight_radar import ledger
+
+    con = duckdb.connect(str(db_path), read_only=True)
+    try:
+        rows = con.execute(
+            "SELECT * FROM fct_flags "
+            "WHERE detected_date = (SELECT max(detected_date) FROM fct_flags) "
+            "  AND COALESCE(lifecycle, '') <> 'resolved'"
+        ).df()
+    finally:
+        con.close()
+    if rows.empty:
+        return
+    flags = []
+    for _, r in rows.iterrows():
+        d = {}
+        for k in ledger.FLAG_FIELDS:
+            v = r[k] if k in r else None
+            if v is not None and pd.isna(v):
+                v = None
+            elif hasattr(v, "item"):  # numpy scalar -> plain Python for JSON
+                v = v.item()
+            d[k] = str(v)[:10] if k == "as_of" else v
+        flags.append(d)
+    ledger.append_flags(str(rows["as_of"].max())[:10], flags, state)
+
+
 def capture() -> dict[str, str]:
     """Build the fixture DB, run the offline pipeline, return {name: normalized json}."""
     from freight_radar import _http
@@ -92,6 +131,13 @@ def capture() -> dict[str, str]:
         out = tmpd / "out"
         out.mkdir()
         _build_fixture_db(db)
+        # Isolate the committed-state ledgers (ADR-0009) exactly like the DB: the
+        # detector seeds lifecycle from data/state/flags_ledger.jsonl, so a capture
+        # against the REAL ledger would drift with production history instead of
+        # being a pure function of the fixture inputs. The fixture's prior rows
+        # are seeded into the tmp ledger so lifecycle continuity stays covered.
+        os.environ["FREIGHT_RADAR_STATE_DIR"] = str(tmpd / "state")
+        _seed_prior_ledger(db, tmpd / "state")
         _http.client = _blocked  # type: ignore[assignment]
         _http.get = _blocked  # type: ignore[assignment]
         try:
