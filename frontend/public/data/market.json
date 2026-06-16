@@ -1,57 +1,57 @@
 {
-  "generated_at": "2026-06-15T08:38:00+00:00",
+  "generated_at": "2026-06-16T18:07:45+00:00",
   "indicators": {
     "brent": {
-      "value": 83.31,
-      "change_pct": -10.52,
+      "value": 97.46,
+      "change_pct": 0.17,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
-      "source": "Yahoo Finance",
-      "source_url": "https://finance.yahoo.com/quote/BZ=F",
+      "as_of": "2026-06-08",
+      "source": "FRED (St. Louis Fed)",
+      "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
       "name": "Brent crude",
       "unit": "$/bbl",
-      "stale": false
+      "stale": true
     },
     "wti": {
-      "value": 80.41,
-      "change_pct": -10.69,
+      "value": 95.0,
+      "change_pct": 0.72,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
-      "source": "Yahoo Finance",
-      "source_url": "https://finance.yahoo.com/quote/CL=F",
+      "as_of": "2026-06-08",
+      "source": "FRED (St. Louis Fed)",
+      "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
       "name": "WTI crude",
       "unit": "$/bbl",
-      "stale": false
+      "stale": true
     },
     "natgas": {
-      "value": 3.046,
-      "change_pct": -4.36,
+      "value": 3.1,
+      "change_pct": 1.64,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
-      "source": "Yahoo Finance",
-      "source_url": "https://finance.yahoo.com/quote/NG=F",
+      "as_of": "2026-06-08",
+      "source": "FRED (St. Louis Fed)",
+      "source_url": "https://fred.stlouisfed.org/series/DHHNGSP",
       "name": "Henry Hub gas",
       "unit": "$/MMBtu",
-      "stale": false
+      "stale": true
     },
     "eurusd": {
-      "value": 1.1612,
-      "change_pct": 0.73,
+      "value": 1.1573,
+      "change_pct": 0.5,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
-      "source": "Yahoo Finance",
-      "source_url": "https://finance.yahoo.com/quote/EURUSD=X",
+      "as_of": "2026-06-12",
+      "source": "FRED (St. Louis Fed)",
+      "source_url": "https://fred.stlouisfed.org/series/DEXUSEU",
       "name": "EUR/USD",
       "unit": "",
       "stale": false
     },
     "usdcny": {
-      "value": 6.7563,
-      "change_pct": -0.14,
+      "value": 6.7626,
+      "change_pct": -0.19,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
-      "source": "Yahoo Finance",
-      "source_url": "https://finance.yahoo.com/quote/CNY=X",
+      "as_of": "2026-06-12",
+      "source": "FRED (St. Louis Fed)",
+      "source_url": "https://fred.stlouisfed.org/series/DEXCHUS",
       "name": "USD/CNY",
       "unit": "",
       "stale": false
@@ -59,15 +59,15 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 625,
-      "change_pct": -10.52,
+      "value": 731,
+      "change_pct": 0.17,
       "change_basis": "modeled",
-      "as_of": "2026-06-15",
+      "as_of": "2026-06-08",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
       "basis": "modeled_from_brent",
-      "stale": false
+      "stale": true
     }
   },
   "items": {
@@ -81,10 +81,44 @@
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
     },
+    "6561a3b6e79e2664": {
+      "entity": "Malacca Strait",
+      "linked": [
+        "brent",
+        "bunker_vlsfo"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
+    "a873d762a306119a": {
+      "entity": "Panama Canal",
+      "linked": [
+        "wti"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
     "4ca42c7991379d9e": {
       "entity": "Kerch Strait",
       "linked": [
         "brent"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
+    "f2ff7c5f86f7476b": {
+      "entity": "Bosporus Strait",
+      "linked": [
+        "brent"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
+    "0cbfd09119aec874": {
+      "entity": "Bab el-Mandeb Strait",
+      "linked": [
+        "brent",
+        "bunker_vlsfo"
       ],
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
