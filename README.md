@@ -58,8 +58,8 @@ Re-derived, not asserted — every receipt names its date:
 
 - **285 deterministic backend tests** passing, 0 failures (`pytest -m "not live"`, run 2026-06-09): detection, cargo-aware, ETL guards, WAP, Temporal durability, narrative, MCP read-only, the honesty suite — including this README's own receipts test.
 - **Chat grounding** — 833 facts across 39 questions, 0 ungrounded; 6/6 adversarial bait questions refused (run 2026-06-09).
-- **dbt** — 10 models, **82 data tests**, hermetic-fixture CI; reconciled to the Python pipeline exactly: stress index max |Δ| = 0 across all 120 daily points (2026-06-08 refresh: 41.6 / "high", data through 2026-05-31).
-- **Published store** (2026-06-08 refresh, data through 2026-05-31) — 28 chokepoints + 2,065 ports in the snapshot; 168 flags on the rail.
+- **dbt** — 10 models, **82 data tests**, hermetic-fixture CI; reconciled to the Python pipeline exactly: stress index max |Δ| = 0 across all 120 daily points (2026-06-16 refresh: 44.3 / "high", data through 2026-06-14).
+- **Published store** (2026-06-16 refresh, data through 2026-06-14) — 28 chokepoints + 2,065 ports in the snapshot; 208 flags on the rail.
 - **Build-moment receipts** (initial-backfill row counts, prod guard dispatches, headless-Chrome frontend runs) are kept, dated, in [docs/FEATURES.md](docs/FEATURES.md#build-time-verification-receipts).
 
 ## The one architectural seam

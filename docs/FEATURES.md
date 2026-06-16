@@ -223,8 +223,8 @@ sources (main.*)            staging (views, main_staging)        marts (tables, 
   check. `dbt build` materializes 10 models (4 tables + 6 views) and runs **82 data tests** —
   green or the build fails.
 - **Reconciled to the Python pipeline, exactly.** Every materialized figure was diffed
-  against the functions it re-expresses: on the 2026-06-08 refresh the stress index matches
-  on **all 120 daily points** (max |Δ| = 0; latest = 41.6 / "high", data through 2026-05-31),
+  against the functions it re-expresses: on the 2026-06-16 refresh the stress index matches
+  on **all 120 daily points** (max |Δ| = 0; latest = 44.3 / "high", data through 2026-06-14),
   chokepoint pressure on all 28×5 computed fields, port activity on portcalls/vessels +
   full-precision shares — **0 mismatches**.
 - **Isolation.** dbt writes to `main_staging` / `main_marts`; the app + API still read `main`
