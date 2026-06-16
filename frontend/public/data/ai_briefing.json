@@ -2,7 +2,7 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-06-16T18:08:28+00:00",
+  "generated_at": "2026-06-16T18:22:12+00:00",
   "as_of": "2026-06-14",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
@@ -55,7 +55,7 @@
       "flag_id": "3f25664cc411d5e4"
     },
     {
-      "text": "Taiwan Strait transit change of 32.0% (measured) co-occurs this week with 4 cited news reports (CCTV.com English, bastillepost.com, \u65b0\u534e\u62a5\u4e1a\u7f51, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Taiwan Strait transit change of 32.0% (measured) co-occurs this week with 4 cited news reports (CCTV.com English, \u5df4\u58eb\u7684\u5831, \u65b0\u534e\u62a5\u4e1a\u7f51, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -64,7 +64,7 @@
       "flag_id": "b8251a91c9fef2b7"
     },
     {
-      "text": "Cited context this week: 167 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 166 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"

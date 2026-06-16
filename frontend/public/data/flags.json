@@ -19,7 +19,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "sustained level-shift vs pre-disruption norm",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 65000000,
       "exposed_teu": 1700,
@@ -126,7 +126,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -209,7 +209,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -292,7 +292,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 133500000,
       "exposed_teu": 7400,
@@ -408,7 +408,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -491,7 +491,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -574,7 +574,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -657,7 +657,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -740,7 +740,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -823,7 +823,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 274500000,
       "exposed_teu": 22900,
@@ -1003,7 +1003,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1086,7 +1086,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1169,7 +1169,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1252,7 +1252,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1335,7 +1335,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1418,7 +1418,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1501,7 +1501,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1584,7 +1584,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1667,7 +1667,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1750,7 +1750,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 15500000,
       "exposed_teu": 2400,
@@ -1844,7 +1844,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -1927,7 +1927,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2010,7 +2010,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2093,7 +2093,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2176,7 +2176,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2259,7 +2259,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 16000000,
       "exposed_teu": 1900,
@@ -2353,7 +2353,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2436,7 +2436,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2519,7 +2519,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2602,7 +2602,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2685,7 +2685,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2768,7 +2768,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2851,7 +2851,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -2934,7 +2934,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3017,7 +3017,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3100,7 +3100,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3183,7 +3183,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3266,7 +3266,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3349,7 +3349,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3432,7 +3432,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3515,7 +3515,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3598,7 +3598,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3681,7 +3681,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3764,7 +3764,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3847,7 +3847,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -3930,7 +3930,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4013,7 +4013,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4096,7 +4096,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4179,7 +4179,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4262,7 +4262,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4345,7 +4345,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4428,7 +4428,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 40000000,
       "exposed_teu": 5300,
@@ -4534,7 +4534,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4617,7 +4617,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4700,7 +4700,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4783,7 +4783,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4866,7 +4866,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -4949,7 +4949,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5032,7 +5032,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5115,7 +5115,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5198,7 +5198,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5281,7 +5281,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5364,7 +5364,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5447,7 +5447,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5530,7 +5530,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5613,7 +5613,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 28000000,
       "exposed_teu": 0,
@@ -5707,7 +5707,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5790,7 +5790,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5873,7 +5873,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -5956,7 +5956,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6039,7 +6039,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6122,7 +6122,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6205,7 +6205,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6288,7 +6288,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 71000000,
       "exposed_teu": 2700,
@@ -6391,7 +6391,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6474,7 +6474,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6557,7 +6557,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6651,7 +6651,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6734,7 +6734,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6817,7 +6817,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6900,7 +6900,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -6983,7 +6983,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7066,7 +7066,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7149,7 +7149,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7232,7 +7232,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7315,7 +7315,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7398,7 +7398,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7481,7 +7481,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7564,7 +7564,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7647,7 +7647,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7730,7 +7730,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7813,7 +7813,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7896,7 +7896,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -7979,7 +7979,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8062,7 +8062,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8145,7 +8145,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8228,7 +8228,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8311,7 +8311,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8394,7 +8394,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8477,7 +8477,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8560,7 +8560,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8643,7 +8643,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 25500000,
       "exposed_teu": 3400,
@@ -8746,7 +8746,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8829,7 +8829,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8912,7 +8912,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -8995,7 +8995,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9078,7 +9078,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9161,7 +9161,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9244,7 +9244,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9327,7 +9327,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9410,7 +9410,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9493,7 +9493,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9576,7 +9576,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9659,7 +9659,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9742,7 +9742,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9825,7 +9825,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9908,7 +9908,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -9991,7 +9991,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10074,7 +10074,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10157,7 +10157,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10240,7 +10240,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10323,7 +10323,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10406,7 +10406,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10489,7 +10489,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10572,7 +10572,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10655,7 +10655,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10738,7 +10738,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10821,7 +10821,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10904,7 +10904,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -10987,7 +10987,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11070,7 +11070,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11153,7 +11153,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11236,7 +11236,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11319,7 +11319,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11402,7 +11402,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11485,7 +11485,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11568,7 +11568,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11651,7 +11651,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11734,7 +11734,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11817,7 +11817,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11900,7 +11900,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -11983,7 +11983,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12066,7 +12066,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12149,7 +12149,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12232,7 +12232,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12315,7 +12315,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12398,7 +12398,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 49000000,
       "exposed_teu": 0,
@@ -12500,7 +12500,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12583,7 +12583,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12666,7 +12666,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12749,7 +12749,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12832,7 +12832,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12915,7 +12915,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -12998,7 +12998,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13081,7 +13081,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13164,7 +13164,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13247,7 +13247,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13330,7 +13330,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13413,7 +13413,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13496,7 +13496,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13579,7 +13579,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13662,7 +13662,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13745,7 +13745,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13828,7 +13828,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13911,7 +13911,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -13994,7 +13994,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 305000000,
       "exposed_teu": 23500,
@@ -14182,7 +14182,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14265,7 +14265,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14348,7 +14348,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14431,7 +14431,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14514,7 +14514,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14597,7 +14597,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14680,7 +14680,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14763,7 +14763,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14846,7 +14846,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -14929,7 +14929,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15012,7 +15012,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15095,7 +15095,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15178,7 +15178,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15261,7 +15261,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15344,7 +15344,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15427,7 +15427,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15510,7 +15510,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15593,7 +15593,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15676,7 +15676,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15759,7 +15759,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15842,7 +15842,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -15925,7 +15925,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16008,7 +16008,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16091,7 +16091,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16174,7 +16174,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16257,7 +16257,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16340,7 +16340,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16423,7 +16423,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16506,7 +16506,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16589,7 +16589,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16672,7 +16672,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16755,7 +16755,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16838,7 +16838,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -16921,7 +16921,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17004,7 +17004,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17087,7 +17087,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17170,7 +17170,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17253,7 +17253,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17336,7 +17336,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17419,7 +17419,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17502,7 +17502,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
@@ -17585,7 +17585,7 @@
     "source_url": "https://portwatch.imf.org",
     "license": "PortWatch terms",
     "method": "STL(7,robust) residual + 28d rolling z",
-    "lifecycle": "new",
+    "lifecycle": "ongoing",
     "business": {
       "exposed_value_usd": 0,
       "exposed_teu": 0,
