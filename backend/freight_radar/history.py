@@ -57,14 +57,14 @@ async def _pull_daily(db_path) -> pd.DataFrame:
     rows = con.execute(
         """
         SELECT c.portid, d.fullname AS name, d.lat AS lat, d.lon AS lon,
-               CAST(c.date AS VARCHAR) AS date, c.n_total AS v
+               CAST(c.date AS VARCHAR) AS date, c.n_total AS v, c.capacity_total AS cap
         FROM fct_chokepoint_daily c JOIN dim_chokepoint d USING (portid)
         WHERE c.date >= ?
         ORDER BY c.portid, c.date
         """,
         [HISTORY_START],
     ).fetchall()
-    return pd.DataFrame(rows, columns=["portid", "name", "lat", "lon", "date", "v"])
+    return pd.DataFrame(rows, columns=["portid", "name", "lat", "lon", "date", "v", "cap"])
 
 
 def build_payload(df: pd.DataFrame, today: str) -> dict:
@@ -78,12 +78,29 @@ def build_payload(df: pd.DataFrame, today: str) -> dict:
         .bfill()
     )
     daily_dates = list(wide.index)
+    # long-window normal (full record) + capacity (DWT) basis per chokepoint, so the
+    # history index uses the SAME anchored normal + DWT weighting as the live view (H1-C).
+    # Capacity is optional — the real _pull_daily always supplies it; a frame without it
+    # (e.g. a unit fixture) falls back to vessel-count weighting in stress.compute.
+    normals = {pid: float(wide[pid].quantile(NORMAL_PCTILE)) for pid in wide.columns}
+    if "cap" in df.columns:
+        wide_cap = (
+            df.pivot_table(index="date", columns="portid", values="cap", aggfunc="sum")
+            .sort_index()
+            .ffill()
+            .bfill()
+        )
+        cap_normals = {pid: float(wide_cap[pid].quantile(NORMAL_PCTILE)) for pid in wide.columns}
+    else:
+        cap_normals = {pid: None for pid in wide.columns}
     daily_chokes = [
         {
             "portid": pid,
             "name": meta.loc[pid, "name"],
             "lat": float(meta.loc[pid, "lat"]),
             "lon": float(meta.loc[pid, "lon"]),
+            "normal": normals[pid],
+            "cap_normal": cap_normals[pid],
             "values": [float(x) for x in wide[pid].tolist()],
         }
         for pid in wide.columns
@@ -105,7 +122,7 @@ def build_payload(df: pd.DataFrame, today: str) -> dict:
                 "name": meta.loc[pid, "name"],
                 "lat": float(meta.loc[pid, "lat"]),
                 "lon": float(meta.loc[pid, "lon"]),
-                "normal": round(float(wide[pid].quantile(NORMAL_PCTILE)), 1),
+                "normal": round(normals[pid], 1),
                 "values": [round(float(x)) for x in weekly[pid].tolist()],
             }
         )

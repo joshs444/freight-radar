@@ -16,6 +16,7 @@ import duckdb
 import pandas as pd
 
 from .config import DEFAULT_DB_PATH, PUBLISH_DIR
+from .narrative.stress import NORMAL_PCTILE
 
 WINDOW_DAYS = 120
 TOP_PORTS = 45
@@ -109,14 +110,35 @@ def export_timeseries(db_path=DEFAULT_DB_PATH, out_dir: Path = PUBLISH_DIR) -> d
             [WINDOW_DAYS],
         ).fetchall()
 
+        # Long-window "normal" (full record, NOT the 120d window) + capacity (DWT) basis
+        # for the stress index (H1-C). Computed with quantile_cont so they match the dbt
+        # mart_freight_stress_index exactly (same engine, same percentile), keeping the
+        # CI Python<->dbt parity gate green. Anchoring normal to the full history is what
+        # keeps a sustained collapse driving the index instead of fading once it fills
+        # the trailing window.
+        norm_df = con.execute(
+            """
+            SELECT portid,
+                   quantile_cont(n_total, ?) AS normal,
+                   quantile_cont(capacity_total, ?) AS cap_normal
+            FROM fct_chokepoint_daily
+            GROUP BY portid
+            """,
+            [NORMAL_PCTILE, NORMAL_PCTILE],
+        ).df()
+        norms = {r.portid: (r.normal, r.cap_normal) for r in norm_df.itertuples()}
+
         dates = sorted(rows["date"].unique().tolist())
         meta = rows.groupby("portid").first()[["name", "lat", "lon"]]
         chokepoints = []
         for portid, grp in rows.groupby("portid"):
             m = meta.loc[portid]
+            normal, cap_normal = norms.get(portid, (None, None))
             chokepoints.append({
                 "portid": portid, "name": str(m["name"]),
                 "lat": float(m["lat"]), "lon": float(m["lon"]),
+                "normal": float(normal) if normal is not None else None,
+                "cap_normal": float(cap_normal) if cap_normal is not None else None,
                 "values": _align(dict(zip(grp["date"], grp["n_total"])), dates),
             })
         series = _build_series(con, dates)

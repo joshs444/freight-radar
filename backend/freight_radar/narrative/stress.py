@@ -6,12 +6,17 @@ Python from the same ``timeseries.json`` that already drives the scrubber/sparkl
 — no new data, no new fetch, every value traceable.
 
 Method (documented so it survives scrutiny):
-  - Each of the 28 chokepoints gets an ECONOMIC WEIGHT = its *normal* throughput
-    share, where "normal" is the 80th percentile of its 120-day vessel/day history.
-    We weight by the normal (not the current) level on purpose: when a major artery
-    like the Strait of Hormuz collapses to ~6/day, its *current* share is tiny but
-    its *importance* is not — weighting by normal keeps a sustained collapse driving
-    the index, which is the whole Hormuz lesson.
+  - Each of the 28 chokepoints gets an ECONOMIC WEIGHT = its *normal* vessel-CAPACITY
+    (DWT) share — bigger ships carry far more trade, so Suez/Panama outweigh a busy
+    short-sea strait like Dover instead of being averaged in by vessel count. "Normal"
+    is the 80th percentile of the chokepoint's FULL PortWatch record (2019->now), NOT a
+    trailing window: anchoring to the long history is what keeps a sustained collapse
+    (the Strait of Hormuz at ~6/day for months) reading as stressed, rather than the
+    "normal" silently converging to the collapsed level once it fills the window — the
+    whole Hormuz lesson, and what makes the live index agree with the 2019->now history
+    view. The long-window normal + capacity weight are supplied by the exporter (it has
+    the full DB); compute() falls back to the window percentile + count weight only for
+    bare-values callers (synthetic tests).
   - Each chokepoint's daily STRESS s_i(t) in [0,1] = how far its level sits from its
     own normal: squash(|value - normal| / normal), floored at 15% (ignore daily
     wiggle) and saturated at 100% deviation. Deviation is measured vs the *normal*
@@ -104,10 +109,24 @@ def compute(timeseries: dict) -> dict:
         return {"available": False}
 
     n_days = len(dates)
-    # economic weight = normal-throughput share (computed once, over the full window)
-    normals = {c["portid"]: _pctile(c.get("values", []), NORMAL_PCTILE) for c in chokes}
-    total_normal = sum(normals.values()) or 1.0
-    weights = {pid: nv / total_normal for pid, nv in normals.items()}
+    # "normal" throughput, anchored to the chokepoint's FULL record so a sustained
+    # collapse keeps driving the index: the exporter supplies it (`normal`, computed
+    # over the whole DB history); we fall back to the window percentile only for
+    # bare-values callers (synthetic tests).
+    normals = {
+        c["portid"]: (c["normal"] if c.get("normal") is not None
+                      else _pctile(c.get("values", []), NORMAL_PCTILE))
+        for c in chokes
+    }
+    # economic weight = normal vessel-CAPACITY (DWT) share when supplied (`cap_normal`,
+    # also a full-history 80th-pct), else fall back to the count-based normal share.
+    cap_basis = {
+        c["portid"]: (c["cap_normal"] if c.get("cap_normal") is not None
+                      else normals[c["portid"]])
+        for c in chokes
+    }
+    total_cap = sum(cap_basis.values()) or 1.0
+    weights = {pid: cv / total_cap for pid, cv in cap_basis.items()}
     meta = {c["portid"]: c for c in chokes}
 
     # raw per-chokepoint stress for every day, then causal 3-day smoothing
@@ -207,8 +226,10 @@ def compute(timeseries: dict) -> dict:
         "fastest_deteriorating": fastest_deteriorating,
         "most_improved": most_improved,
         "method": (
-            "Economic-weighted mean of per-chokepoint deviation from normal "
-            "throughput (normal = 80th-pct of 120d history); 0-100, recomputed daily."
+            "Capacity-weighted (DWT share) mean of per-chokepoint deviation from "
+            "normal throughput, blended with the worst single chokepoint (0.6 breadth "
+            "/ 0.4 depth). Normal = 80th-pct of each chokepoint's full PortWatch record "
+            "(2019->now), so a sustained collapse keeps driving the index; 0-100, daily."
         ),
         "source": "IMF PortWatch — daily granularity, refreshed weekly",
     }

@@ -213,8 +213,8 @@ sources (main.*)            staging (views, main_staging)        marts (tables, 
 
 - **Re-expression, not new analysis.** The marts reproduce the existing numbers — the 28-day
   rolling baseline (`pct_change`/`z-score`), the per-port latest snapshot, and the stress
-  index (80th-pctile normal → deviation squash → causal 3-day smoothing →
-  `100·(0.6·breadth + 0.4·depth)`). The pipeline's named constants are dbt `vars`, and
+  index (full-record 80th-pctile normal, capacity/DWT-weighted → deviation squash → causal
+  3-day smoothing → `100·(0.6·breadth + 0.4·depth)`). The pipeline's named constants are dbt `vars`, and
   DuckDB's `round_even` matches Python's banker's rounding so the figures are identical, not
   merely close.
 - **The ETL guards become dbt tests.** Generic schema tests plus **singular tests** for the

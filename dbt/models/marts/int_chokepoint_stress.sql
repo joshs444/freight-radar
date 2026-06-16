@@ -3,9 +3,12 @@
 -- int_chokepoint_stress — the per-(portid, date) substrate of the Global Ocean
 -- Freight Stress Index, for the trailing {{ var('stress_window_days') }}-day window.
 -- A faithful SQL re-expression of narrative/stress.py:
---   * "normal" throughput = {{ var('stress_normal_pctile') }}-pctile of the window
---     (quantile_cont = linear interpolation, matching stress._pctile),
---   * economic weight  = a chokepoint's normal share of total normal throughput,
+--   * "normal" throughput = {{ var('stress_normal_pctile') }}-pctile of the chokepoint's
+--     FULL record (quantile_cont = linear interpolation, matching export_timeseries'
+--     quantile_cont over all of fct_chokepoint_daily) — anchored long, NOT the trailing
+--     window, so a sustained collapse keeps driving the index (H1-C),
+--   * economic weight  = a chokepoint's normal vessel-CAPACITY (DWT) share of the total
+--     (bigger ships carry more trade) — matches stress.compute's cap_normal weighting,
 --   * raw stress       = deviation-from-normal squashed into [0,1], ignored below
 --     DEV_FLOOR ({{ var('stress_dev_floor') }}) and saturated at DEV_SATURATE
 --     ({{ var('stress_dev_saturate') }}) — stress._stress,
@@ -36,20 +39,35 @@ obs as (
     where s.date > b.max_date - {{ var('stress_window_days') }}
 ),
 
--- "normal" is computed once over the whole window (not rolling), per stress.compute.
+-- "normal" + capacity basis are anchored to the chokepoint's FULL record (no window),
+-- matching export_timeseries' quantile_cont over all of fct_chokepoint_daily (H1-C):
+-- anchoring long is what keeps a sustained collapse driving the index.
+long_obs as (
+    select
+        portid,
+        cast(n_total as double)        as n_value,
+        cast(capacity_total as double) as cap_value
+    from {{ ref('stg_chokepoint_daily') }}
+),
+
 normals as (
     select
         portid,
-        quantile_cont(value, {{ var('stress_normal_pctile') }}) as normal
-    from obs
+        quantile_cont(n_value, {{ var('stress_normal_pctile') }})   as normal,
+        quantile_cont(cap_value, {{ var('stress_normal_pctile') }}) as cap_normal
+    from long_obs
     group by portid
 ),
 
+-- economic weight = normal DWT-capacity share (bigger ships carry more trade), NOT
+-- vessel-count share — matches stress.compute's cap_normal weighting. A chokepoint
+-- with no capacity data falls back to its vessel-count normal, exactly as Python does.
 weighted as (
     select
         portid,
         normal,
-        normal / nullif(sum(normal) over (), 0) as weight
+        coalesce(cap_normal, normal)
+            / nullif(sum(coalesce(cap_normal, normal)) over (), 0) as weight
     from normals
 ),
 

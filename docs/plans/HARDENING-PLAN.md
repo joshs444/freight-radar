@@ -179,12 +179,15 @@ action SHA-pins resolved · ledger CLI runtime-verified.
   (Suez, Bab el-Mandeb) consumed by `_exposed_lanes`; delay/premium keyed off
   the Cape entry (10d, premium ≠ 0); Python/JS parity. Receipt: regression test
   — a Suez-routed lane shows exposure when cape_reroute fires.
-- **H1-C** Stress index: anchor each chokepoint's "normal" to a long reference
-  window (the history.py approach) so sustained collapse keeps driving the
-  index; weight by capacity (DWT) share, not vessel count — the docstring
-  already claims economic weighting. Disclose the window in the method string.
-  Changes published numbers: re-bless golden masters in a dedicated reviewed
-  commit; update dbt models/vars + parity + README examples together.
+- **H1-C** ✅ (2026-06-16) Stress index: each chokepoint's "normal" is now the
+  80th-pct of its FULL PortWatch record (the history.py approach), computed by the
+  exporter via `quantile_cont` so a sustained collapse keeps driving the index
+  instead of fading once it fills the trailing window; weighted by capacity (DWT)
+  share, not vessel count. The dbt mirror (`int_chokepoint_stress`) computes the
+  same over full history; window disclosed in the method string. Receipts:
+  Python↔dbt parity green (fixture 42.0), dbt build 92, golden re-blessed
+  (stress/timeseries/brief/world), full non-live suite green; README/FEATURES
+  example numbers re-dated to the post-refresh live value on deploy.
 - **H1-D** ✅ refresh.yml: own concurrency group (cancel-in-progress: false) so
   deploys can't silently kill the weekly refresh; DERIVED gate block skips the
   layer (demotions.json receipt) instead of aborting the whole refresh; run
