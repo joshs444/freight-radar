@@ -6625,10 +6625,10 @@
       "basin": "N Atlantic",
       "agency": "NHC",
       "source": "NHC",
-      "km": 131,
+      "km": 110,
       "max_wind_kmh": 46,
       "url": "https://www.nhc.noaa.gov/refresh/graphics_al1+shtml/",
-      "cone_url": "https://www.nhc.noaa.gov/storm_graphics/api/AL012026_001adv_CONE.kmz"
+      "cone_url": "https://www.nhc.noaa.gov/storm_graphics/api/AL012026_001Aadv_CONE.kmz"
     }
   },
   {

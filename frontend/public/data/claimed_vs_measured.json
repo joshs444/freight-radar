@@ -9,7 +9,7 @@
   "measured": {
     "layer": "stress",
     "what": "Global Ocean Freight Stress Index",
-    "value": 39.0,
+    "value": 44.3,
     "label": "high",
     "as_of": "2026-06-14",
     "method": "a breadth+depth composite computed in Python from IMF PortWatch \u2014 no model in the number path"
