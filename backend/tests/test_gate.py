@@ -38,13 +38,18 @@ def test_committed_briefing_passes_the_whole_gate() -> None:
 
 
 def test_attribution_fires_on_an_unentailed_number() -> None:
-    # a fabricated value the cited layer does not contain must be caught (the hallucination gate)
+    # a fabricated value the cited layer does not contain must be caught (the hallucination gate).
+    # Use a value far outside every range stress.json holds (index/stress 0-100, vessel counts
+    # ~hundreds): the current oracle is a number-SET match with a 0.1% tolerance, so a
+    # plausible in-range fake (e.g. 99.9) can be spuriously "entailed" by a real neighbor like
+    # 100.0 — that looseness is what F2's value-at-path oracle (H5-C) replaces; until then the
+    # sentinel must be unambiguously out of range so the assertion is data-independent.
     bad = {
         "tier": "DERIVED",
         "agent_model": "x",
-        "claims": [{"text": "The stress index reads 99.9.", "cites": ["stress"]}],
+        "claims": [{"text": "The stress index reads 12345.6.", "cites": ["stress"]}],
     }
-    assert attribution_violations(bad, out_dir=DATA), "99.9 is not in stress.json — must fail"
+    assert attribution_violations(bad, out_dir=DATA), "12345.6 is not in stress.json — must fail"
     assert gate_briefing(bad, VALID, out_dir=DATA).get("attribution")
 
 
