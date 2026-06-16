@@ -137,8 +137,11 @@ def export_timeseries(db_path=DEFAULT_DB_PATH, out_dir: Path = PUBLISH_DIR) -> d
             chokepoints.append({
                 "portid": portid, "name": str(m["name"]),
                 "lat": float(m["lat"]), "lon": float(m["lon"]),
-                "normal": float(normal) if normal is not None else None,
-                "cap_normal": float(cap_normal) if cap_normal is not None else None,
+                # round to 3 dp: quantile_cont's full-precision result differs at the ULP
+                # level across CPUs (the golden master is byte-compared cross-platform),
+                # while 3 dp is far finer than the stress index's 0.1 parity tolerance.
+                "normal": round(float(normal), 3) if normal is not None else None,
+                "cap_normal": round(float(cap_normal), 3) if cap_normal is not None else None,
                 "values": _align(dict(zip(grp["date"], grp["n_total"])), dates),
             })
         series = _build_series(con, dates)
