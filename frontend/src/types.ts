@@ -230,6 +230,13 @@ export interface Ships {
 // `import { LayerId } from '../types.ts'` callers keep working unchanged.
 export type { LayerId, LayerVisibility } from './lib/layers.gen.ts';
 
+// The generated CONTEXT wrappers are also USED below (the AppData payload), so bring them
+// into local scope; the per-section re-export lines further down expose them to external
+// `from '../types'` importers (a re-export alone is not a local binding).
+import type {
+  Quakes, Eonet, Marine, Tides, Streamflow, Disruptions, Gatun,
+} from './types.gen.ts';
+
 // the two ways to read the same data: explore-by-poking globe, or scan-and-sort board
 export type AppView = 'globe' | 'board' | 'data' | 'ledger';
 
@@ -303,30 +310,8 @@ export interface NewsGeo {
 // ---- quakes.json (USGS M4+ earthquakes — a CONTEXT layer) ------------------
 // One dot per observed M4.0+ event in the past 7 days, sized by magnitude. Carries no
 // computed metric and is never a stated cause of a freight number — click to open the
-// USGS event page.
-
-export interface QuakeItem {
-  id: string;
-  mag: number;
-  place: string;
-  lat: number;
-  lon: number;
-  depth_km: number | null;
-  time: string;
-  tsunami: boolean;
-  url: string;
-}
-
-export interface Quakes {
-  generated_at: string;
-  as_of: string;
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  min_mag: number;
-  counts: { total: number; m5plus: number };
-  items: QuakeItem[];
-}
+// USGS event page. QuakeItem + Quakes are GENERATED from registry/shapes.py (types.gen.ts).
+export type { QuakeItem, Quakes } from './types.gen.ts';
 
 // ---- market.json -----------------------------------------------------------
 
@@ -476,67 +461,12 @@ export interface World {
 }
 
 // ---- disruptions.json ------------------------------------------------------
-
-export interface DisruptionEvent {
-  eventid: number;
-  type: string;
-  type_label: string;
-  name: string;
-  alertlevel: string;
-  country: string;
-  from: string;
-  to: string;
-  lat: number;
-  lon: number;
-  severity: string;
-  affected_ports: { portid: string; name: string }[];
-  n_affected_ports: number;
-  near_chokepoints: { portid: string; name: string; km: number }[];
-  affected_population: string;
-}
-
-export interface Disruptions {
-  generated_at: string;
-  as_of: string;
-  window_days: number;
-  source: string;
-  source_url: string;
-  events: DisruptionEvent[];
-  counts: { events: number; red: number; flags_corroborated: number };
-}
+// DisruptionEvent + Disruptions are GENERATED from registry/shapes.py (types.gen.ts).
+export type { DisruptionEvent, Disruptions } from './types.gen.ts';
 
 // ---- gatun.json (Panama Canal lake-level leading indicator) ----------------
-
-export interface GatunProjection {
-  date: string;
-  level_ft: number;
-  surcharge_pct: number;
-  neopanamax_draft_ft: number;
-  panamax_draft_ft: number;
-}
-
-export interface Gatun {
-  available: boolean;
-  portid: string;
-  name: string;
-  as_of: string;
-  current_level_ft: number;
-  pctile_alltime: number;
-  change_30d_ft: number;
-  change_365d_ft: number;
-  level_spark: number[];
-  normal_max_draft_ft: number;
-  min_projected_neopanamax_draft_ft: number;
-  draft_restricted: boolean;
-  surcharge_pct_now: number;
-  projection: GatunProjection[];
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  lat: number;
-  lon: number;
-  generated_at: string;
-}
+// GatunProjection + Gatun are GENERATED from registry/shapes.py (types.gen.ts).
+export type { GatunProjection, Gatun } from './types.gen.ts';
 
 // ---- weather.json (live storm layer) ---------------------------------------
 
@@ -618,83 +548,13 @@ export interface History {
   source: string;
 }
 
-// ---- eonet.json (NASA EONET natural events — a CONTEXT globe layer) ---------
-export interface EonetItem {
-  id: string;
-  title: string;
-  category: string;
-  lat: number;
-  lon: number;
-  date: string;
-  url: string;
-}
-export interface Eonet {
-  generated_at: string;
-  as_of: string;
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  counts: { events: number; by_category: Record<string, number> };
-  items: EonetItem[];
-}
-
-// ---- marine.json (Open-Meteo wave height at chokepoints — a CONTEXT globe layer) ----
-export interface MarineItem {
-  name: string;
-  lat: number;
-  lon: number;
-  wave_height_m: number;
-  wave_period_s: number | null;
-  observed_at: string;
-}
-export interface Marine {
-  generated_at: string;
-  as_of: string;
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  counts: { chokepoints: number };
-  items: MarineItem[];
-}
-
-export interface TideItem {
-  port: string;
-  station: string;
-  lat: number;
-  lon: number;
-  water_level_ft: number;
-  observed_at: string;
-  url: string;
-}
-export interface Tides {
-  generated_at: string;
-  as_of: string;
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  counts: { ports: number };
-  items: TideItem[];
-}
-
-export interface StreamflowItem {
-  site: string;
-  river: string;
-  place: string;
-  lat: number;
-  lon: number;
-  stage_ft: number;
-  observed_at: string;
-  url: string;
-}
-export interface Streamflow {
-  generated_at: string;
-  as_of: string;
-  source: string;
-  source_url: string;
-  disclaimer: string;
-  counts: { gauges: number };
-  items: StreamflowItem[];
-}
+// ---- eonet / marine / tides / streamflow (CONTEXT dot layers) --------------
+// All four (wrapper + item) are GENERATED from registry/shapes.py (types.gen.ts) — the same
+// shape registry the data contracts derive from. Re-exported so `from '../types'` keeps working.
+export type { EonetItem, Eonet } from './types.gen.ts';
+export type { MarineItem, Marine } from './types.gen.ts';
+export type { TideItem, Tides } from './types.gen.ts';
+export type { StreamflowItem, Streamflow } from './types.gen.ts';
 
 // ---- the full payload useData() resolves -----------------------------------
 

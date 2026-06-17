@@ -54,11 +54,15 @@ class BOOL(_Field):
 
 @dataclass(frozen=True)
 class OPT(_Field):
-    """An optional / nullable field — the key may be absent (`?`) and/or the value null.
-    A top-level OPT field is NOT a contract-required key; a nested OPT field is `?` in TS."""
+    """A non-required field. Two independent axes (both default True — the common case):
+    `key_optional` renders the `?` (the key may be absent) and marks it NOT contract-required;
+    `nullable` renders `| null` (the value may be null). A nullable-but-always-present field
+    (e.g. `country: string | null`) is OPT(STR(), key_optional=False) — a present, required key
+    whose value can be null. `?`-rendering uses `is_opt_key` so the contract floor stays exact."""
 
     inner: _Field
-    nullable: bool = True  # `| null` in TS as well as `?`
+    key_optional: bool = True
+    nullable: bool = True
 
     def ts(self) -> str:
         return f"{self.inner.ts()} | null" if self.nullable else self.inner.ts()
@@ -109,16 +113,22 @@ class RAW(_Field):
 
 
 # --- a named object shape (becomes a TS interface; defines item_requires) ----
+def is_opt_key(typ: _Field) -> bool:
+    """True for a field whose KEY may be absent (renders `?`, not contract-required). A
+    nullable-but-present field — OPT(..., key_optional=False) — returns False."""
+    return isinstance(typ, OPT) and typ.key_optional
+
+
 @dataclass(frozen=True)
 class OBJ:
     """A fixed-field object. `name` is the TS interface name. `fields` is ordered
-    (name -> grammar node). A field wrapped in OPT is optional/non-required."""
+    (name -> grammar node). A field whose key may be absent is non-required (see is_opt_key)."""
 
     name: str
     fields: tuple[tuple[str, _Field], ...]
 
     def required_keys(self) -> list[str]:
-        return [k for k, t in self.fields if not isinstance(t, OPT)]
+        return [k for k, t in self.fields if not is_opt_key(t)]
 
 
 # --- the contract floor a shape exposes to the drift detector ---------------
@@ -145,12 +155,16 @@ class Shape:
     `root` is the top-level structure: an OBJ (a JSON object sidecar) or a LIST(REF(...))
     (a top-level JSON array sidecar like lanes/flags). `objs` are the named nested object
     shapes it references (each becomes a TS interface). `contract` is the drift floor.
-    `ts_root` names the top-level interface (defaults to the root OBJ's name)."""
+    `ts_root` names the top-level interface (defaults to the root OBJ's name).
+    `gen` marks a shape whose TS interface is GENERATED into types.gen.ts (deliverable 4):
+    only the mechanical, comment-free CONTEXT shapes set it; spine/exotic interfaces with
+    hand-written doc comments stay authored in types.ts and leave it False."""
 
     root: object  # OBJ | LIST
     contract: ContractSpec
     objs: tuple[OBJ, ...] = field(default_factory=tuple)
     ts_root: Optional[str] = None
+    gen: bool = False
 
 
 # shared item shape referenced by the per-family signal stems
@@ -238,8 +252,40 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     # --- cited context ring (the globe dot layers) ---
+    # These seven are GENERATED into types.gen.ts (gen=True): mechanical, comment-free shapes
+    # whose interface is a pure reduction of the fields below. News_geo stays hand-written
+    # (it carries field-level doc comments the capped grammar shouldn't encode).
     "quakes": Shape(
-        root=OBJ("Quakes", ()),
+        gen=True,
+        root=OBJ(
+            "Quakes",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("min_mag", NUM()),
+                ("counts", RAW("{ total: number; m5plus: number }")),
+                ("items", LIST(REF("QuakeItem"))),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "QuakeItem",
+                (
+                    ("id", STR()),
+                    ("mag", NUM()),
+                    ("place", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("depth_km", OPT(NUM(), key_optional=False)),
+                    ("time", STR()),
+                    ("tsunami", BOOL()),
+                    ("url", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("generated_at", "items", "source", "source_url"),
             items_key="items",
@@ -257,7 +303,33 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "eonet": Shape(
-        root=OBJ("Eonet", ()),
+        gen=True,
+        root=OBJ(
+            "Eonet",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("counts", RAW("{ events: number; by_category: Record<string, number> }")),
+                ("items", LIST(REF("EonetItem"))),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "EonetItem",
+                (
+                    ("id", STR()),
+                    ("title", STR()),
+                    ("category", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("date", STR()),
+                    ("url", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("generated_at", "items", "source", "source_url"),
             items_key="items",
@@ -266,7 +338,32 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "marine": Shape(
-        root=OBJ("Marine", ()),
+        gen=True,
+        root=OBJ(
+            "Marine",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("counts", RAW("{ chokepoints: number }")),
+                ("items", LIST(REF("MarineItem"))),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "MarineItem",
+                (
+                    ("name", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("wave_height_m", NUM()),
+                    ("wave_period_s", OPT(NUM(), key_optional=False)),
+                    ("observed_at", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("generated_at", "items", "source", "source_url"),
             items_key="items",
@@ -275,7 +372,33 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "tides": Shape(
-        root=OBJ("Tides", ()),
+        gen=True,
+        root=OBJ(
+            "Tides",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("counts", RAW("{ ports: number }")),
+                ("items", LIST(REF("TideItem"))),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "TideItem",
+                (
+                    ("port", STR()),
+                    ("station", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("water_level_ft", NUM()),
+                    ("observed_at", STR()),
+                    ("url", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("generated_at", "items", "source", "source_url"),
             items_key="items",
@@ -284,7 +407,34 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "streamflow": Shape(
-        root=OBJ("Streamflow", ()),
+        gen=True,
+        root=OBJ(
+            "Streamflow",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("counts", RAW("{ gauges: number }")),
+                ("items", LIST(REF("StreamflowItem"))),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "StreamflowItem",
+                (
+                    ("site", STR()),
+                    ("river", STR()),
+                    ("place", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("stage_ft", NUM()),
+                    ("observed_at", STR()),
+                    ("url", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("generated_at", "items", "source", "source_url"),
             items_key="items",
@@ -293,7 +443,41 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "disruptions": Shape(
-        root=OBJ("Disruptions", ()),
+        gen=True,
+        root=OBJ(
+            "Disruptions",
+            (
+                ("generated_at", STR()),
+                ("as_of", STR()),
+                ("window_days", NUM()),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("events", LIST(REF("DisruptionEvent"))),
+                ("counts", RAW("{ events: number; red: number; flags_corroborated: number }")),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "DisruptionEvent",
+                (
+                    ("eventid", NUM()),
+                    ("type", STR()),
+                    ("type_label", STR()),
+                    ("name", STR()),
+                    ("alertlevel", STR()),
+                    ("country", STR()),
+                    ("from", STR()),
+                    ("to", STR()),
+                    ("lat", NUM()),
+                    ("lon", NUM()),
+                    ("severity", STR()),
+                    ("affected_ports", RAW("{ portid: string; name: string }[]")),
+                    ("n_affected_ports", NUM()),
+                    ("near_chokepoints", RAW("{ portid: string; name: string; km: number }[]")),
+                    ("affected_population", STR()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=("events", "generated_at", "source", "source_url"),
             items_key="events",
@@ -302,7 +486,44 @@ SHAPES: dict[str, Shape] = {
         ),
     ),
     "gatun": Shape(
-        root=OBJ("Gatun", ()),
+        gen=True,
+        root=OBJ(
+            "Gatun",
+            (
+                ("available", BOOL()),
+                ("portid", STR()),
+                ("name", STR()),
+                ("as_of", STR()),
+                ("current_level_ft", NUM()),
+                ("pctile_alltime", NUM()),
+                ("change_30d_ft", NUM()),
+                ("change_365d_ft", NUM()),
+                ("level_spark", LIST(NUM())),
+                ("normal_max_draft_ft", NUM()),
+                ("min_projected_neopanamax_draft_ft", NUM()),
+                ("draft_restricted", BOOL()),
+                ("surcharge_pct_now", NUM()),
+                ("projection", LIST(REF("GatunProjection"))),
+                ("source", STR()),
+                ("source_url", STR()),
+                ("disclaimer", STR()),
+                ("lat", NUM()),
+                ("lon", NUM()),
+                ("generated_at", STR()),
+            ),
+        ),
+        objs=(
+            OBJ(
+                "GatunProjection",
+                (
+                    ("date", STR()),
+                    ("level_ft", NUM()),
+                    ("surcharge_pct", NUM()),
+                    ("neopanamax_draft_ft", NUM()),
+                    ("panamax_draft_ft", NUM()),
+                ),
+            ),
+        ),
         contract=ContractSpec(
             requires=(
                 "as_of",

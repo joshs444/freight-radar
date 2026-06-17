@@ -12,11 +12,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from freight_radar.registry.codegen import render_ts
+from freight_radar.registry.codegen import generated_type_names, render_ts, render_types_ts
 from freight_radar.registry.layers import REGISTRY
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GEN_TS = REPO_ROOT / "frontend" / "src" / "lib" / "layers.gen.ts"
+TYPES_GEN_TS = REPO_ROOT / "frontend" / "src" / "types.gen.ts"
+TYPES_TS = REPO_ROOT / "frontend" / "src" / "types.ts"
 USE_DATA_TS = REPO_ROOT / "frontend" / "src" / "lib" / "useData.ts"
 
 
@@ -29,6 +31,31 @@ def test_generated_ts_is_current() -> None:
     assert committed == rendered, (
         "layers.gen.ts is stale or hand-edited. Regenerate:\n"
         "  cd backend && uv run python -m freight_radar.registry.codegen"
+    )
+
+
+def test_generated_types_ts_is_current() -> None:
+    """The committed types.gen.ts is exactly what the shape registry renders (byte-identity)."""
+    assert TYPES_GEN_TS.exists(), (
+        "types.gen.ts is missing — run: uv run python -m freight_radar.registry.codegen"
+    )
+    assert TYPES_GEN_TS.read_text() == render_types_ts(), (
+        "types.gen.ts is stale or hand-edited. Regenerate:\n"
+        "  cd backend && uv run python -m freight_radar.registry.codegen"
+    )
+
+
+def test_types_ts_reexports_every_generated_interface() -> None:
+    """types.ts must re-export exactly the interfaces types.gen.ts generates, so every
+    `from '../types'` import keeps resolving (a generated interface that isn't re-exported,
+    or a re-export that no longer exists, both fail here)."""
+    reexported = set(re.findall(r"export type \{([^}]+)\} from '\./types\.gen\.ts'", TYPES_TS.read_text()))
+    names: set[str] = set()
+    for group in reexported:
+        names |= {n.strip() for n in group.split(",")}
+    assert names == set(generated_type_names()), (
+        "types.ts re-exports drifted from types.gen.ts — "
+        f"only generated: {set(generated_type_names()) - names}; only re-exported: {names - set(generated_type_names())}"
     )
 
 
