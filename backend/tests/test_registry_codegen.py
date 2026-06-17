@@ -42,12 +42,20 @@ def test_layerid_set_matches_python() -> None:
     assert ts_ids == py_ids, f"LayerId drift — only in TS: {ts_ids - py_ids}; only in Python: {py_ids - ts_ids}"
 
 
-def test_usedata_fetches_exactly_the_registry_manifest() -> None:
-    """useData.ts fetches exactly the registry's CORE + OPTIONAL fetch files — no more,
-    no less. (useData keeps its typed fetches; this gate keeps it honest to the registry.)"""
-    fetched = set(re.findall(r"data/[\w.]+\.json", USE_DATA_TS.read_text()))
-    declared = {d.fetch_file for d in REGISTRY if d.fetch_file}
-    assert fetched == declared, (
-        f"useData fetch set drifted from the registry — "
-        f"only in useData: {fetched - declared}; only in registry: {declared - fetched}"
+def test_usedata_drives_off_the_generated_manifest() -> None:
+    """useData.ts loads its files by ITERATING the generated manifest, not a hand-kept list.
+
+    The fetch set itself is gated by ``test_generated_ts_is_current`` (the byte-identical
+    layers.gen.ts is rendered from REGISTRY, including CORE_FILES / OPTIONAL_SIDECAR_FILES /
+    APPDATA_KEY_MAP). This gate keeps useData honest to THAT manifest: it must import the
+    three generated exports and must NOT smuggle in a hardcoded `data/*.json` fetch list
+    (the dead-codegen finding — the generated manifest existed but nothing consumed it)."""
+    src = USE_DATA_TS.read_text()
+    for name in ("CORE_FILES", "OPTIONAL_SIDECAR_FILES", "APPDATA_KEY_MAP"):
+        assert name in src, f"useData.ts must import {name} from layers.gen.ts (drive off the manifest)"
+    assert "layers.gen.ts" in src, "useData.ts must import the generated manifest"
+    hardcoded = set(re.findall(r"data/[\w.]+\.json", src))
+    assert not hardcoded, (
+        f"useData.ts hardcodes a fetch list ({sorted(hardcoded)}) — it must iterate the "
+        f"generated CORE_FILES / OPTIONAL_SIDECAR_FILES instead, so it can't drift from the registry"
     )

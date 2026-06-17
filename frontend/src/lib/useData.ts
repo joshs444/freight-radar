@@ -1,30 +1,6 @@
 import { useEffect, useState } from 'react';
-import type {
-  AppData,
-  Snapshot,
-  Lane,
-  Flag,
-  Timeseries,
-  Ships,
-  ExposureSummary,
-  News,
-  NewsGeo,
-  Quakes,
-  Eonet,
-  Marine,
-  Tides,
-  Streamflow,
-  Market,
-  Stress,
-  Brief,
-  Events,
-  World,
-  Disruptions,
-  Gatun,
-  Weather,
-  Wind,
-  SignalsFdr,
-} from '../types.ts';
+import type { AppData } from '../types.ts';
+import { CORE_FILES, OPTIONAL_SIDECAR_FILES, APPDATA_KEY_MAP } from './layers.gen.ts';
 
 interface DataState {
   loading: boolean;
@@ -32,106 +8,41 @@ interface DataState {
   data: AppData | null;
 }
 
-// Vite serves /public at the root; the exporters write these files.
-const CORE = {
-  snapshot: 'data/snapshot.json',
-  lanes: 'data/lanes.json',
-  flags: 'data/flags.json',
-};
-
+// The fetch manifest is GENERATED from the Python registry (registry/layers.py ->
+// layers.gen.ts): CORE_FILES are the measured spine the app blocks on, OPTIONAL_SIDECAR_FILES
+// degrade to null when absent, and APPDATA_KEY_MAP maps each data file to the AppData field it
+// populates. Adding a layer is one descriptor in the registry — useData picks it up here with
+// no hand-edit, so the loader can't drift from the backend (test_registry_codegen gates it).
 export function useData(): DataState {
   const [state, setState] = useState<DataState>({ loading: true, error: null, data: null });
 
   useEffect(() => {
     let alive = true;
     const base = import.meta.env.BASE_URL || '/';
-    const getJson = <T>(f: string): Promise<T> =>
+    const getJson = (f: string): Promise<unknown> =>
       fetch(base + f).then((r) => {
         if (!r.ok) throw new Error(`${f}: ${r.status}`);
-        return r.json() as Promise<T>;
+        return r.json() as Promise<unknown>;
       });
 
-    Promise.all([
-      getJson<Snapshot>(CORE.snapshot),
-      getJson<Lane[]>(CORE.lanes),
-      getJson<Flag[]>(CORE.flags),
-    ])
-      .then(async ([snapshot, lanes, flags]) => {
-        // timeseries + ships + exposure + news + stress/brief/events are optional —
-        // features hide if absent (never block the core globe on a missing sidecar).
-        const [
-          timeseries,
-          ships,
-          exposure,
-          news,
-          newsGeo,
-          quakes,
-          eonet,
-          marine,
-          tides,
-          streamflow,
-          market,
-          stress,
-          brief,
-          events,
-          world,
-          disruptions,
-          gatun,
-          weather,
-          wind,
-          signals,
-        ] = await Promise.all([
-          getJson<Timeseries>('data/timeseries.json').catch(() => null),
-          getJson<Ships>('data/ships.json').catch(() => null),
-          getJson<ExposureSummary>('data/exposure.json').catch(() => null),
-          getJson<News>('data/news.json').catch(() => null),
-          getJson<NewsGeo>('data/news_geo.json').catch(() => null),
-          getJson<Quakes>('data/quakes.json').catch(() => null),
-          getJson<Eonet>('data/eonet.json').catch(() => null),
-          getJson<Marine>('data/marine.json').catch(() => null),
-          getJson<Tides>('data/tides.json').catch(() => null),
-          getJson<Streamflow>('data/streamflow.json').catch(() => null),
-          getJson<Market>('data/market.json').catch(() => null),
-          getJson<Stress>('data/stress.json').catch(() => null),
-          getJson<Brief>('data/brief.json').catch(() => null),
-          getJson<Events>('data/events.json').catch(() => null),
-          getJson<World>('data/world.json').catch(() => null),
-          getJson<Disruptions>('data/disruptions.json').catch(() => null),
-          getJson<Gatun>('data/gatun.json').catch(() => null),
-          getJson<Weather>('data/weather.json').catch(() => null),
-          getJson<Wind>('data/wind.json').catch(() => null),
-          getJson<SignalsFdr>('data/signals_fdr.json').catch(() => null),
-        ]);
+    // CORE blocks (a missing spine file rejects the whole load); OPTIONAL degrades to null so a
+    // missing sidecar hides its feature instead of darkening the globe.
+    Promise.all(CORE_FILES.map(getJson))
+      .then(async (coreValues) => {
+        const optionalValues = await Promise.all(
+          OPTIONAL_SIDECAR_FILES.map((f) => getJson(f).catch(() => null)),
+        );
         if (!alive) return;
-        setState({
-          loading: false,
-          error: null,
-          data: {
-            snapshot,
-            lanes,
-            flags,
-            timeseries,
-            ships,
-            exposure,
-            news,
-            newsGeo,
-            quakes,
-            eonet,
-            marine,
-            tides,
-            streamflow,
-            market,
-            stress,
-            brief,
-            events,
-            world,
-            disruptions,
-            gatun,
-            weather,
-            wind,
-            signals,
-          },
+        // Assemble AppData by mapping each file to its registry-declared field. The shape +
+        // CORE-required / OPTIONAL-nullable contract is the same one types.ts AppData declares.
+        const out: Record<string, unknown> = {};
+        CORE_FILES.forEach((f, i) => {
+          out[APPDATA_KEY_MAP[f]] = coreValues[i];
         });
+        OPTIONAL_SIDECAR_FILES.forEach((f, i) => {
+          out[APPDATA_KEY_MAP[f]] = optionalValues[i];
+        });
+        setState({ loading: false, error: null, data: out as unknown as AppData });
       })
       .catch((e: Error) => alive && setState({ loading: false, error: e.message, data: null }));
     return () => {

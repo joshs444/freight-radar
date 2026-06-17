@@ -121,6 +121,16 @@ def render_ts() -> str:
     lines.append("];")
     lines.append("")
 
+    # ---- the fetch_file -> AppData key map (useData assembles AppData from this) ----
+    lines.append("// Maps each fetched data file to the AppData field it populates. useData()")
+    lines.append("// iterates CORE_FILES + OPTIONAL_SIDECAR_FILES and assembles AppData through")
+    lines.append("// this map, so the registry — not a hand-kept fetch list — drives the loader.")
+    lines.append("export const APPDATA_KEY_MAP: Readonly<Record<string, string>> = {")
+    for d in core + optional:
+        lines.append(f"  {_q(d.fetch_file)}: {_q(d.appdata_key)},")  # type: ignore[arg-type]
+    lines.append("};")
+    lines.append("")
+
     return "\n".join(lines)
 
 

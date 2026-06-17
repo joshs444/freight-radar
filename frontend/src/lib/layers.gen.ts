@@ -133,3 +133,32 @@ export const OPTIONAL_SIDECAR_FILES: readonly string[] = [
   'data/ships.json',
   'data/wind.json',
 ];
+
+// Maps each fetched data file to the AppData field it populates. useData()
+// iterates CORE_FILES + OPTIONAL_SIDECAR_FILES and assembles AppData through
+// this map, so the registry — not a hand-kept fetch list — drives the loader.
+export const APPDATA_KEY_MAP: Readonly<Record<string, string>> = {
+  'data/snapshot.json': 'snapshot',
+  'data/flags.json': 'flags',
+  'data/lanes.json': 'lanes',
+  'data/exposure.json': 'exposure',
+  'data/news.json': 'news',
+  'data/disruptions.json': 'disruptions',
+  'data/weather.json': 'weather',
+  'data/gatun.json': 'gatun',
+  'data/news_geo.json': 'newsGeo',
+  'data/quakes.json': 'quakes',
+  'data/timeseries.json': 'timeseries',
+  'data/market.json': 'market',
+  'data/stress.json': 'stress',
+  'data/world.json': 'world',
+  'data/events.json': 'events',
+  'data/brief.json': 'brief',
+  'data/streamflow.json': 'streamflow',
+  'data/eonet.json': 'eonet',
+  'data/marine.json': 'marine',
+  'data/signals_fdr.json': 'signals',
+  'data/tides.json': 'tides',
+  'data/ships.json': 'ships',
+  'data/wind.json': 'wind',
+};
