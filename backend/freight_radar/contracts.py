@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .config import publish_dir
+from .registry.shapes import SHAPES, to_contract_kwargs
 
 
 @dataclass(frozen=True)
@@ -47,87 +48,16 @@ class Contract:
     nonempty_lists: frozenset[str] = field(default_factory=frozenset)
 
 
-# Keyed by sidecar stem (file is `<stem>.json`). Only the layers with a stable, well-known
-# schema are contracted; uncontracted sidecars are simply not yet covered (reported by the
-# CLI so the gap is visible, never silent). The geo/identity keys below are exactly what
-# Globe.tsx + the tooltips read, so a drop here is a real, user-visible break.
+# Keyed by sidecar stem (file is `<stem>.json`). DERIVED from the shape registry
+# (registry/shapes.py) — the contracts are no longer a hand-maintained mirror: each stem's
+# Contract is reduced from its Shape's declared contract floor. Only the layers with a
+# stable, well-known schema have a Shape; uncontracted sidecars are simply not yet covered
+# (reported by the CLI so the gap is visible, never silent). The geo/identity keys the
+# shapes declare are exactly what Globe.tsx + the tooltips read, so a drop is a real break.
+# (A migration test — test_shapes_contracts.py — pins the derived dict to the old literals.)
 SIDECAR_CONTRACTS: dict[str, Contract] = {
-    # --- the measured spine (core) ---
-    "snapshot": Contract(
-        requires=frozenset({"generated_at", "as_of", "chokepoints", "ports", "source"}),
-        nonempty_lists=frozenset({"chokepoints", "ports"}),
-    ),
-    "lanes": Contract(
-        is_array=True,
-        item_requires=frozenset({"from", "to", "intensity"}),
-        min_items=1,
-    ),
-    "flags": Contract(
-        is_array=True,
-        item_requires=frozenset({"flag_id", "portid", "entity", "severity"}),
-        min_items=0,  # a calm day can carry zero flags
-    ),
-    # --- cited context ring (the globe dot layers) ---
-    "quakes": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"id", "mag", "lat", "lon", "place", "url"}),
-        min_items=1,
-    ),
-    "news_geo": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"category", "lat", "lon", "url"}),
-        min_items=1,
-    ),
-    "eonet": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"id", "title", "category", "lat", "lon", "url"}),
-        min_items=1,
-    ),
-    "marine": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"name", "lat", "lon", "wave_height_m", "observed_at"}),
-        min_items=1,
-    ),
-    "tides": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"port", "lat", "lon", "water_level_ft", "observed_at", "url"}),
-        min_items=1,
-    ),
-    "streamflow": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "items"}),
-        items_key="items",
-        item_requires=frozenset({"site", "river", "lat", "lon", "stage_ft", "url"}),
-        min_items=1,
-    ),
-    "disruptions": Contract(
-        requires=frozenset({"generated_at", "source", "source_url", "events"}),
-        items_key="events",
-        item_requires=frozenset({"eventid", "type", "alertlevel", "lat", "lon", "name"}),
-        min_items=0,  # GDACS can be quiet over the trailing window
-    ),
-    "gatun": Contract(
-        requires=frozenset(
-            {"generated_at", "as_of", "available", "current_level_ft", "lat", "lon", "projection"}
-        ),
-    ),
+    stem: Contract(**to_contract_kwargs(stem)) for stem in SHAPES
 }
-
-# the measured SIGNAL families share one shape (FRED-z): an items array where each row owns a
-# z-score + its FDR verdict. Contracting them drift-checks that our anomaly math still has the
-# fields the store + ledger read — and that the upstream FRED feed didn't go empty.
-_SIGNAL_CONTRACT = Contract(
-    requires=frozenset({"generated_at", "source", "source_url", "method", "items", "counts"}),
-    items_key="items",
-    item_requires=frozenset({"id", "name", "our_zscore", "fdr_significant"}),
-    min_items=1,
-)
-for _sig in ("commodities", "macro", "metals", "freight_rate", "slack", "labor"):
-    SIDECAR_CONTRACTS[_sig] = _SIGNAL_CONTRACT
 
 # how many items to spot-check for missing keys (catches partial drift without scanning all)
 _ITEM_SAMPLE = 12
@@ -205,7 +135,9 @@ def check_dir(data_dir: Path) -> tuple[dict[str, list[str]], list[str]]:
 
 # The measured spine the app blocks on — absent is fatal, so a broken one HARD-fails the
 # publish (an absent spine beats a silently-broken one). Everything else degrades to dark.
-CORE_STEMS = frozenset({"snapshot", "lanes", "flags"})
+# stress + timeseries join the spine (H1-F): the headline/Board read stress, and the
+# play-through-history view blocks on timeseries — a broken one must fail, not ship dark.
+CORE_STEMS = frozenset({"snapshot", "lanes", "flags", "stress", "timeseries"})
 
 
 class DriftBlocked(RuntimeError):
