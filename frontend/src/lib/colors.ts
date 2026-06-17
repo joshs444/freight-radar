@@ -54,7 +54,7 @@ export const FLAG_CATEGORIES: {
     id: 'congestion',
     label: 'Congestion / surge',
     color: [217, 119, 6], // amber — backlog / buildup
-    kinds: ['port_congestion_spike', 'chokepoint_transit_spike'],
+    kinds: ['port_congestion_spike', 'chokepoint_transit_spike', 'chokepoint_persistent_surge'],
   },
   {
     id: 'cargo',

@@ -63,6 +63,21 @@ KINDS = {
     ("port", "up"): "port_congestion_spike",
 }
 
+# The canonical set of flag `kind` strings the detectors can produce — the SSOT the
+# frontend's legend/sub-toggle (colors.ts FLAG_CATEGORIES) must agree with (a backend test,
+# test_flag_kind_parity.py, gates the two). The change-point kinds derive from KINDS so they
+# stay coupled; the rest are constructed at their detector but enumerated here once: the
+# persistent level-shift pass (persistent.py, chokepoint only), the vessel-size / cargo-type
+# passes (run_detection.py), and the Cape-of-Good-Hope reroute (cape_reroute.py).
+FLAG_KINDS: frozenset[str] = frozenset(KINDS.values()) | {
+    "chokepoint_persistent_collapse",
+    "chokepoint_persistent_surge",
+    "chokepoint_vessel_size_shift",
+    "port_cargo_type_drop",
+    "port_cargo_type_spike",
+    "cape_reroute",
+}
+
 
 @dataclass(frozen=True)
 class DetectionConfig:
