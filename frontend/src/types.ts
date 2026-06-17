@@ -233,9 +233,7 @@ export type { LayerId, LayerVisibility } from './lib/layers.gen.ts';
 // The generated CONTEXT wrappers are also USED below (the AppData payload), so bring them
 // into local scope; the per-section re-export lines further down expose them to external
 // `from '../types'` importers (a re-export alone is not a local binding).
-import type {
-  Quakes, Eonet, Marine, Tides, Streamflow, Disruptions, Gatun,
-} from './types.gen.ts';
+import type { Quakes, Eonet, Marine, Tides, Streamflow, Disruptions, Gatun } from './types.gen.ts';
 
 // the two ways to read the same data: explore-by-poking globe, or scan-and-sort board
 export type AppView = 'globe' | 'board' | 'data' | 'ledger';

@@ -30,7 +30,7 @@ export function useData(): DataState {
     Promise.all(CORE_FILES.map(getJson))
       .then(async (coreValues) => {
         const optionalValues = await Promise.all(
-          OPTIONAL_SIDECAR_FILES.map((f) => getJson(f).catch(() => null)),
+          OPTIONAL_SIDECAR_FILES.map((f) => getJson(f).catch(() => null))
         );
         if (!alive) return;
         // Assemble AppData by mapping each file to its registry-declared field. The shape +

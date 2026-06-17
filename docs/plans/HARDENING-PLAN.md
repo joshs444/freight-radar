@@ -1,6 +1,6 @@
 # Hardening plan — fix everything the adversarial review found, at the root
 
-**Status: IN PROGRESS — Wave 0 ✅ executed 2026-06-09; foundation track folded in (council-validated); Wave 1a ✅ executed 2026-06-16 (F1 ledger + lifecycle, H1-A/B/D/G); Wave 1b next.**
+**Status: IN PROGRESS — Wave 0 ✅ 2026-06-09; foundation track folded in (council-validated); Wave 1a ✅ 2026-06-16 (F1 ledger + lifecycle, H1-A/B/D/G); Wave 1b in progress — H1-C ✅ + F3 slice 1 ✅ 2026-06-17, F2 slice 1 next.**
 Statuses in this file are kept true as waves land (that discipline is itself item H0-F).
 
 Source: a 37-agent adversarial review (18 dimensions — vision, docs, world model,
@@ -78,7 +78,8 @@ waves stay as listed.
   derived number (the Gatún draft cut) moves into `gatun.py`'s published
   payload. *Absorbs H5-C, the bag-of-numbers entailment + boilerplate-key
   holes, and the firewall-skips-brief/captions/chat finding.*
-- **F3 — one shape registry generates the contracts.** New
+- **F3 — one shape registry generates the contracts.** *(slice 1 ✅ 2026-06-17;
+  catalog JSON-Schema/hash = slice 2, pending.)* New
   `registry/shapes.py`: a deliberately tiny field-spec grammar (8 type
   constructors, capped) keyed by output stem. Three renderers, one source:
   `contracts.py` SIDECAR_CONTRACTS derived from Shapes (equality-tested
@@ -94,6 +95,18 @@ waves stay as listed.
   two weekly cycles before it may gate the production demote path. Derived
   frontend-only UI shapes stay hand-written. *Absorbs H1-F, most of H5-F,
   the schema_version gap; `max_age_days` (H1-E) gets its one home here.*
+  **Slice 1 shipped:** `registry/shapes.py` (8 capped constructors + a `RAW`
+  escape hatch); `SIDECAR_CONTRACTS` derived from it (migration test pins the
+  derived dict to the old literals; literals deleted); **H1-F closed** —
+  contracts added for `signals_fdr`/`timeseries`/`stress` and the latter two
+  added to `CORE_STEMS` (contracts CLI now 20/20 on live data); `useData.ts`
+  drives off the generated `CORE_FILES`/`OPTIONAL_SIDECAR_FILES`/`APPDATA_KEY_MAP`
+  manifest (dead-codegen finding closed); `types.gen.ts` generates the
+  context-ring interfaces (spine/signals/UI stay hand-written) with a
+  byte-identity gate; flag-`kind` parity test added. Receipts: backend non-live
+  312 passed · tsc/lint/parity(208)/chat/build/bundle green · codegen leaves no
+  diff. Built by a worktree agent, gate-verified + adversarially reviewed by the
+  orchestrator before merge.
 
 ## Wave 0 — Truth reconciliation (docs say what is true) — ✅ EXECUTED 2026-06-09
 
@@ -199,10 +212,10 @@ action SHA-pins resolved · ledger CLI runtime-verified.
   `max_age_days` so a dead feed actually demotes; post-publish assertion that
   snapshot `as_of` advanced; failure notification (issue-on-failure); UI
   stale-data badge past ~10 days.
-- **H1-F** Contract coverage — **absorbed by F3 slice 1**: signals_fdr/
-  stress/timeseries get Shapes (contracts derive from them); the CLI's
-  uncontracted-sidecar listing falls out of the registry knowing every
-  output stem. One-line remnant: add stress/timeseries to CORE_STEMS.
+- **H1-F** ✅ Contract coverage — **done via F3 slice 1**: signals_fdr/
+  stress/timeseries now have Shapes (contracts derive from them); stress +
+  timeseries added to CORE_STEMS; contracts CLI now covers 20/20 sidecars and
+  validates the live data clean.
 - **H1-G** ✅ ADR-0005 truth in code: extract one shared ordered publish step
   list that BOTH drivers iterate, so Temporal and publish_static cannot
   diverge again.
