@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-06-16T19:23:46+00:00",
+  "generated_at": "2026-06-22T08:36:34+00:00",
   "as_of": "2026-06-14",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 44.3 (label: high), with 208 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 44.3 (label: high), with 268 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -30,14 +30,14 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 85.19 ft, in the 38.3th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 85.21 ft, in the 38.9th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Strait of Hormuz transit change of -94.5% (measured) co-occurs this week with 4 cited news reports (BBC, NBC News, Reuters, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Strait of Hormuz transit change of -94.5% (measured) co-occurs this week with 4 cited news reports (Al Jazeera, The New York Times, Reuters, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -46,7 +46,16 @@
       "flag_id": "b74be045769441ea"
     },
     {
-      "text": "Donghae activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (Chosunbiz, Xinhua, The Korea Times, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Madero activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (Mexico Business News, Malay Mail, Geo News, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "cites": [
+        "flags",
+        "news"
+      ],
+      "section": "connection",
+      "flag_id": "b474920a13d41266"
+    },
+    {
+      "text": "Donghae activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (Britannica, \ub9e4\uc77c\uacbd\uc81c, Chosunbiz, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -55,16 +64,7 @@
       "flag_id": "3f25664cc411d5e4"
     },
     {
-      "text": "Taiwan Strait transit change of 32.0% (measured) co-occurs this week with 4 cited news reports (CCTV.com English, bastillepost.com, \u65b0\u534e\u62a5\u4e1a\u7f51, \u2026) \u2014 possibly-related context, never a stated cause.",
-      "cites": [
-        "flags",
-        "news"
-      ],
-      "section": "connection",
-      "flag_id": "b8251a91c9fef2b7"
-    },
-    {
-      "text": "Cited context this week: 168 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 164 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"

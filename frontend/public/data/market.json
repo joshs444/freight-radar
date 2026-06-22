@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-16T19:21:51+00:00",
+  "generated_at": "2026-06-22T08:34:47+00:00",
   "indicators": {
     "brent": {
-      "value": 97.46,
-      "change_pct": 0.17,
+      "value": 84.36,
+      "change_pct": -4.83,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
       "name": "Brent crude",
@@ -13,10 +13,10 @@
       "stale": true
     },
     "wti": {
-      "value": 95.0,
-      "change_pct": 0.72,
+      "value": 84.65,
+      "change_pct": -4.48,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": true
     },
     "natgas": {
-      "value": 3.1,
-      "change_pct": 1.64,
+      "value": 3.06,
+      "change_pct": 0.0,
       "change_basis": "prev_close",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DHHNGSP",
       "name": "Henry Hub gas",
@@ -43,7 +43,7 @@
       "source_url": "https://fred.stlouisfed.org/series/DEXUSEU",
       "name": "EUR/USD",
       "unit": "",
-      "stale": false
+      "stale": true
     },
     "usdcny": {
       "value": 6.7626,
@@ -54,15 +54,15 @@
       "source_url": "https://fred.stlouisfed.org/series/DEXCHUS",
       "name": "USD/CNY",
       "unit": "",
-      "stale": false
+      "stale": true
     },
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 731,
-      "change_pct": 0.17,
+      "value": 633,
+      "change_pct": -4.83,
       "change_basis": "modeled",
-      "as_of": "2026-06-08",
+      "as_of": "2026-06-15",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
@@ -100,14 +100,6 @@
     },
     "4ca42c7991379d9e": {
       "entity": "Kerch Strait",
-      "linked": [
-        "brent"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
-    "f2ff7c5f86f7476b": {
-      "entity": "Bosporus Strait",
       "linked": [
         "brent"
       ],

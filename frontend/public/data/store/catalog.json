@@ -217,7 +217,7 @@
       "sidecar": "data/timeseries.json",
       "globe_layer": null,
       "derives_from": "snapshot",
-      "contract_monitored": false,
+      "contract_monitored": true,
       "source": null,
       "honesty_note": null
     },
@@ -259,7 +259,7 @@
       "sidecar": "data/stress.json",
       "globe_layer": null,
       "derives_from": "flags",
-      "contract_monitored": false,
+      "contract_monitored": true,
       "source": null,
       "honesty_note": null
     },
