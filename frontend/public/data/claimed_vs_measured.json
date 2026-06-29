@@ -9,9 +9,9 @@
   "measured": {
     "layer": "stress",
     "what": "Global Ocean Freight Stress Index",
-    "value": 44.3,
-    "label": "high",
-    "as_of": "2026-06-14",
+    "value": 34.1,
+    "label": "elevated",
+    "as_of": "2026-06-21",
     "method": "a breadth+depth composite computed in Python from IMF PortWatch \u2014 no model in the number path"
   },
   "standpoint_says": "We forecast nothing and publish no accuracy number. We show the measured value, its method, and its date \u2014 cited and falsifiable \u2014 and stop. Co-occurrence is association, never a cause."

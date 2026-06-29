@@ -1,25 +1,25 @@
 {
   "total_flows": 24,
   "total_value_usd": 596500000,
-  "exposed_lanes": 20,
-  "exposed_value_usd": 546500000,
+  "exposed_lanes": 4,
+  "exposed_value_usd": 105000000,
   "carrying_cost_of_delay_usd": {
-    "low": 2177533,
-    "expected": 4070204,
-    "high": 6535068
+    "low": 294795,
+    "expected": 525342,
+    "high": 851507
   },
   "working_capital_tied_up_usd": {
-    "low": 10887673,
-    "expected": 16280820,
-    "high": 21783562
+    "low": 1473973,
+    "expected": 2101369,
+    "high": 2838356
   },
   "total_cost_of_disruption_usd": {
-    "low": 6485533,
-    "expected": 14707704,
-    "high": 29299068
+    "low": 873795,
+    "expected": 1840342,
+    "high": 3727507
   },
   "carrying_rate_assumed": 0.25,
-  "active_disruptions_hitting_you": 9,
+  "active_disruptions_hitting_you": 3,
   "lanes_with_known_route": 23,
   "coverage_pct": 95.8
 }

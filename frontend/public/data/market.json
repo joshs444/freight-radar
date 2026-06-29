@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-22T08:34:47+00:00",
+  "generated_at": "2026-06-29T08:11:28+00:00",
   "indicators": {
     "brent": {
-      "value": 84.36,
-      "change_pct": -4.83,
+      "value": 76.49,
+      "change_pct": -4.93,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
+      "as_of": "2026-06-22",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
       "name": "Brent crude",
@@ -13,10 +13,10 @@
       "stale": true
     },
     "wti": {
-      "value": 84.65,
-      "change_pct": -4.48,
+      "value": 78.94,
+      "change_pct": -1.75,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
+      "as_of": "2026-06-22",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": true
     },
     "natgas": {
-      "value": 3.06,
-      "change_pct": 0.0,
+      "value": 3.16,
+      "change_pct": 2.6,
       "change_basis": "prev_close",
-      "as_of": "2026-06-15",
+      "as_of": "2026-06-22",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DHHNGSP",
       "name": "Henry Hub gas",
@@ -35,10 +35,10 @@
       "stale": true
     },
     "eurusd": {
-      "value": 1.1573,
-      "change_pct": 0.5,
+      "value": 1.147,
+      "change_pct": -1.06,
       "change_basis": "prev_close",
-      "as_of": "2026-06-12",
+      "as_of": "2026-06-18",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXUSEU",
       "name": "EUR/USD",
@@ -46,10 +46,10 @@
       "stale": true
     },
     "usdcny": {
-      "value": 6.7626,
-      "change_pct": -0.19,
+      "value": 6.7686,
+      "change_pct": 0.16,
       "change_basis": "prev_close",
-      "as_of": "2026-06-12",
+      "as_of": "2026-06-18",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXCHUS",
       "name": "USD/CNY",
@@ -59,10 +59,10 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 633,
-      "change_pct": -4.83,
+      "value": 574,
+      "change_pct": -4.93,
       "change_basis": "modeled",
-      "as_of": "2026-06-15",
+      "as_of": "2026-06-22",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
@@ -71,7 +71,7 @@
     }
   },
   "items": {
-    "b74be045769441ea": {
+    "93786dcf7b266924": {
       "entity": "Strait of Hormuz",
       "linked": [
         "brent",
@@ -81,36 +81,10 @@
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
     },
-    "6561a3b6e79e2664": {
-      "entity": "Malacca Strait",
-      "linked": [
-        "brent",
-        "bunker_vlsfo"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
     "a873d762a306119a": {
       "entity": "Panama Canal",
       "linked": [
         "wti"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
-    "4ca42c7991379d9e": {
-      "entity": "Kerch Strait",
-      "linked": [
-        "brent"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
-    "0cbfd09119aec874": {
-      "entity": "Bab el-Mandeb Strait",
-      "linked": [
-        "brent",
-        "bunker_vlsfo"
       ],
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
