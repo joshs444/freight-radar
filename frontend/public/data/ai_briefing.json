@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-07-27T07:33:19+00:00",
-  "as_of": "2026-07-19",
+  "generated_at": "2026-08-03T07:29:49+00:00",
+  "as_of": "2026-07-26",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 40.9 (label: high), with 382 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 43.9 (label: high), with 394 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -30,41 +30,41 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 84.92 ft, in the 32.7th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 84.59 ft, in the 26.6th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Strait of Hormuz transit change of -65.1% (measured) co-occurs this week with 4 cited news reports (ABC News - Breaking News, Latest News and Videos, The Atlantic, Axios, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Providenciales activity change of 250.0% (measured) co-occurs this week with 2 cited news reports (instagram.com, magneticmediatv.com, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "b74be045769441ea"
+      "flag_id": "bda5babf6795290b"
     },
     {
-      "text": "Qinzhou activity change of 156.4% (measured) co-occurs this week with 4 cited news reports (Arab News, \u1014\u102d\u102f\u1004\u103a\u1004\u1036\u1001\u103c\u102c\u1038 \u101b\u1031\u1038 \u101d\u1014\u103a\u1000\u103c\u102e\u1038, IDNFinancials, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Shanghai activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (FanDuel Sportsbook, OneFootball, Manifold Times, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "0d12c066cb61ee36"
+      "flag_id": "9ede25f5606e9369"
     },
     {
-      "text": "Kaohsiung activity change of -96.5% (measured) co-occurs this week with 4 cited news reports (\ub9e4\uc77c\uacbd\uc81c, Focus Taiwan, Taipei Times, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Jiaxing activity change of 227.3% (measured) co-occurs this week with 4 cited news reports (newsbreak.com, euractiv.com, ecns.cn, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "b10a8f3ad93eda43"
+      "flag_id": "9845ade3e28bbf63"
     },
     {
-      "text": "Cited context this week: 192 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 211 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"
