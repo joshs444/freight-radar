@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-08-03T07:29:49+00:00",
-  "as_of": "2026-07-26",
+  "generated_at": "2026-08-10T06:51:20+00:00",
+  "as_of": "2026-08-02",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 43.9 (label: high), with 394 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 42.7 (label: high), with 397 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -16,7 +16,7 @@
       "section": "lead"
     },
     {
-      "text": "Strait of Hormuz shows a transit change of -65.1% versus its baseline \u2014 a measured reading, never a stated cause.",
+      "text": "Strait of Hormuz shows a transit change of -80.1% versus its baseline \u2014 a measured reading, never a stated cause.",
       "cites": [
         "flags"
       ],
@@ -30,41 +30,41 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 84.59 ft, in the 26.6th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 84.42 ft, in the 24.5th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Providenciales activity change of 250.0% (measured) co-occurs this week with 2 cited news reports (instagram.com, magneticmediatv.com, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Hong Kong activity change of 9.6% (measured) co-occurs this week with 4 cited news reports (Cargo Airports & Airline Services, South China Morning Post, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "bda5babf6795290b"
+      "flag_id": "ef11b83be193fa70"
     },
     {
-      "text": "Shanghai activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (FanDuel Sportsbook, OneFootball, Manifold Times, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Strait of Hormuz transit change of -80.1% (measured) co-occurs this week with 4 cited news reports (CNBC, Axios, NPR, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "9ede25f5606e9369"
+      "flag_id": "b8f714181e8cd7cd"
     },
     {
-      "text": "Jiaxing activity change of 227.3% (measured) co-occurs this week with 4 cited news reports (newsbreak.com, euractiv.com, ecns.cn, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Kerch Strait transit change of -91.6% (measured) co-occurs this week with 4 cited news reports (\u0406\u043d\u0442\u0435\u043d\u0442, theins.press, Encyclopedia Britannica, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "9845ade3e28bbf63"
+      "flag_id": "3c6262bd76a15255"
     },
     {
-      "text": "Cited context this week: 211 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 148 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"
