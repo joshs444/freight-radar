@@ -1,44 +1,44 @@
 {
-  "generated_at": "2026-08-10T06:50:46+00:00",
+  "generated_at": "2026-08-17T06:30:27+00:00",
   "indicators": {
     "brent": {
-      "value": 88.9,
-      "change_pct": -8.3,
+      "value": 93.26,
+      "change_pct": 0.56,
       "change_basis": "prev_close",
-      "as_of": "2026-08-03",
+      "as_of": "2026-08-11",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
       "name": "Brent crude",
       "unit": "$/bbl",
-      "stale": true
+      "stale": false
     },
     "wti": {
-      "value": 81.96,
-      "change_pct": -4.87,
+      "value": 84.77,
+      "change_pct": 1.21,
       "change_basis": "prev_close",
-      "as_of": "2026-08-03",
+      "as_of": "2026-08-11",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
       "name": "WTI crude",
       "unit": "$/bbl",
-      "stale": true
+      "stale": false
     },
     "natgas": {
-      "value": 2.81,
-      "change_pct": 8.49,
+      "value": 2.79,
+      "change_pct": 2.57,
       "change_basis": "prev_close",
-      "as_of": "2026-08-03",
+      "as_of": "2026-08-11",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DHHNGSP",
       "name": "Henry Hub gas",
       "unit": "$/MMBtu",
-      "stale": true
+      "stale": false
     },
     "eurusd": {
-      "value": 1.1519,
-      "change_pct": -0.03,
+      "value": 1.1559,
+      "change_pct": 0.33,
       "change_basis": "prev_close",
-      "as_of": "2026-07-31",
+      "as_of": "2026-08-07",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXUSEU",
       "name": "EUR/USD",
@@ -46,10 +46,10 @@
       "stale": true
     },
     "usdcny": {
-      "value": 6.7509,
-      "change_pct": -0.06,
+      "value": 6.7474,
+      "change_pct": -0.02,
       "change_basis": "prev_close",
-      "as_of": "2026-07-31",
+      "as_of": "2026-08-07",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXCHUS",
       "name": "USD/CNY",
@@ -59,18 +59,26 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 667,
-      "change_pct": -8.3,
+      "value": 699,
+      "change_pct": 0.56,
       "change_basis": "modeled",
-      "as_of": "2026-08-03",
+      "as_of": "2026-08-11",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
       "basis": "modeled_from_brent",
-      "stale": true
+      "stale": false
     }
   },
   "items": {
+    "3c6262bd76a15255": {
+      "entity": "Kerch Strait",
+      "linked": [
+        "brent"
+      ],
+      "relation": "exposure_context",
+      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
+    },
     "b8f714181e8cd7cd": {
       "entity": "Strait of Hormuz",
       "linked": [
@@ -81,18 +89,11 @@
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
     },
-    "3c6262bd76a15255": {
-      "entity": "Kerch Strait",
+    "c59d17e3da6863bf": {
+      "entity": "Bab el-Mandeb Strait",
       "linked": [
-        "brent"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
-    "e6edd8f7ea5a0a75": {
-      "entity": "Bosporus Strait",
-      "linked": [
-        "brent"
+        "brent",
+        "bunker_vlsfo"
       ],
       "relation": "exposure_context",
       "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."

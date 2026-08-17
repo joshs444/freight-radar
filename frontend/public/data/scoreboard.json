@@ -19,5 +19,5 @@
   "zero_cost_compliance_pct": 100.0,
   "source_coverage_pct": 100.0,
   "note": "Binary CI gates decide shipping; this scorecard tracks trend only (correct != improving). Grows one row per phase.",
-  "generated_at": "2026-08-10T06:51:05+00:00"
+  "generated_at": "2026-08-17T06:30:46+00:00"
 }
