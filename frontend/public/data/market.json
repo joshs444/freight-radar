@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-17T06:30:27+00:00",
+  "generated_at": "2026-08-24T06:33:23+00:00",
   "indicators": {
     "brent": {
-      "value": 93.26,
-      "change_pct": 0.56,
+      "value": 95.29,
+      "change_pct": 3.09,
       "change_basis": "prev_close",
-      "as_of": "2026-08-11",
+      "as_of": "2026-08-18",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
       "name": "Brent crude",
@@ -13,10 +13,10 @@
       "stale": false
     },
     "wti": {
-      "value": 84.77,
-      "change_pct": 1.21,
+      "value": 86.48,
+      "change_pct": 0.51,
       "change_basis": "prev_close",
-      "as_of": "2026-08-11",
+      "as_of": "2026-08-18",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DCOILWTICO",
       "name": "WTI crude",
@@ -24,10 +24,10 @@
       "stale": false
     },
     "natgas": {
-      "value": 2.79,
-      "change_pct": 2.57,
+      "value": 2.82,
+      "change_pct": 1.81,
       "change_basis": "prev_close",
-      "as_of": "2026-08-11",
+      "as_of": "2026-08-18",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DHHNGSP",
       "name": "Henry Hub gas",
@@ -35,10 +35,10 @@
       "stale": false
     },
     "eurusd": {
-      "value": 1.1559,
-      "change_pct": 0.33,
+      "value": 1.1581,
+      "change_pct": 0.43,
       "change_basis": "prev_close",
-      "as_of": "2026-08-07",
+      "as_of": "2026-08-14",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXUSEU",
       "name": "EUR/USD",
@@ -46,10 +46,10 @@
       "stale": true
     },
     "usdcny": {
-      "value": 6.7474,
+      "value": 6.7412,
       "change_pct": -0.02,
       "change_basis": "prev_close",
-      "as_of": "2026-08-07",
+      "as_of": "2026-08-14",
       "source": "FRED (St. Louis Fed)",
       "source_url": "https://fred.stlouisfed.org/series/DEXCHUS",
       "name": "USD/CNY",
@@ -59,10 +59,10 @@
     "bunker_vlsfo": {
       "name": "VLSFO bunker (modeled)",
       "unit": "$/tonne",
-      "value": 699,
-      "change_pct": 0.56,
+      "value": 715,
+      "change_pct": 3.09,
       "change_basis": "modeled",
-      "as_of": "2026-08-11",
+      "as_of": "2026-08-18",
       "source": "modeled from Brent (~7.5x)",
       "source_url": "https://shipandbunker.com/",
       "estimate": true,
@@ -84,15 +84,6 @@
       "linked": [
         "brent",
         "natgas",
-        "bunker_vlsfo"
-      ],
-      "relation": "exposure_context",
-      "disclaimer": "Dated market context, not causation \u2014 these prices move for many reasons."
-    },
-    "c59d17e3da6863bf": {
-      "entity": "Bab el-Mandeb Strait",
-      "linked": [
-        "brent",
         "bunker_vlsfo"
       ],
       "relation": "exposure_context",
