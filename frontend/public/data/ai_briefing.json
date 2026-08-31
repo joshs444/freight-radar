@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-08-24T06:33:53+00:00",
-  "as_of": "2026-08-16",
+  "generated_at": "2026-08-31T06:56:17+00:00",
+  "as_of": "2026-08-23",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 43.1 (label: high), with 352 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 41.9 (label: high), with 382 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -30,14 +30,14 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 83.97 ft, in the 18.7th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 84.01 ft, in the 19.0th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Kerch Strait transit change of -97.0% (measured) co-occurs this week with 4 cited news reports (theins.press, Khmer Times, The Indian Express, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Kerch Strait transit change of -98.6% (measured) co-occurs this week with 4 cited news reports (\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0456 \u041d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u0456 \u041d\u043e\u0432\u0438\u043d\u0438 (\u0423\u041d\u041d), theins.press, Khmer Times, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -46,25 +46,25 @@
       "flag_id": "3c6262bd76a15255"
     },
     {
-      "text": "Strait of Hormuz transit change of -68.2% (measured) co-occurs this week with 4 cited news reports (Reuters, USNI News, The Guardian, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Djibouti activity change of 211.1% (measured) co-occurs this week with 4 cited news reports (Mmegi Online, Hiiraan Online, The Reporter Ethiopia, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "b8f714181e8cd7cd"
+      "flag_id": "a52e75e4f86fdb6c"
     },
     {
-      "text": "Korea Strait transit change of 29.9% (measured) co-occurs this week with 4 cited news reports (National Security Journal, Encyclopedia Britannica, Washington Examiner, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Lome activity change of -60.6% (measured) co-occurs this week with 4 cited news reports (Modern Ghana, The Africa Report, Benin Web TV, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "8e51ec34f698ab3b"
+      "flag_id": "d255b165d7f7616e"
     },
     {
-      "text": "Cited context this week: 199 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 166 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"
