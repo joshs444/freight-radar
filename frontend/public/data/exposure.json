@@ -2,21 +2,21 @@
   "total_flows": 24,
   "total_value_usd": 596500000,
   "exposed_lanes": 5,
-  "exposed_value_usd": 171000000,
+  "exposed_value_usd": 70500000,
   "carrying_cost_of_delay_usd": {
-    "low": 276437,
-    "expected": 511986,
-    "high": 814109
+    "low": 78083,
+    "expected": 156850,
+    "high": 259315
   },
   "working_capital_tied_up_usd": {
-    "low": 1382192,
-    "expected": 2047945,
-    "high": 2713699
+    "low": 390411,
+    "expected": 627397,
+    "high": 864384
   },
   "total_cost_of_disruption_usd": {
-    "low": 498437,
-    "expected": 1066986,
-    "high": 1998109
+    "low": 126083,
+    "expected": 316850,
+    "high": 643315
   },
   "carrying_rate_assumed": 0.25,
   "active_disruptions_hitting_you": 4,
