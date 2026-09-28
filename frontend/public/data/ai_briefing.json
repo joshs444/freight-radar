@@ -2,18 +2,25 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-09-21T06:55:40+00:00",
-  "as_of": "2026-09-13",
+  "generated_at": "2026-09-28T07:00:52+00:00",
+  "as_of": "2026-09-20",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 42.8 (label: high), with 360 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 42.2 (label: high), with 342 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
       ],
       "section": "lead"
+    },
+    {
+      "text": "Strait of Hormuz shows a transit change of -53.0% versus its baseline \u2014 a measured reading, never a stated cause.",
+      "cites": [
+        "flags"
+      ],
+      "section": "spine"
     },
     {
       "text": "Our freight-cost signal flags the Truckload freight rate at a +1.92 z-score \u2014 an anomaly we computed, association only.",
@@ -23,14 +30,14 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 84.54 ft, in the 24.4th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 84.66 ft, in the 26.1th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Kerch Strait transit change of -99.6% (measured) co-occurs this week with 4 cited news reports (unn.ua, Al Majalla, The Indian Express, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Kerch Strait transit change of -99.5% (measured) co-occurs this week with 4 cited news reports (\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0456 \u041d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u0456 \u041d\u043e\u0432\u0438\u043d\u0438 (\u0423\u041d\u041d), The Indian Express, Kyiv Post, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -39,25 +46,16 @@
       "flag_id": "3c6262bd76a15255"
     },
     {
-      "text": "Misrata activity change of -100.0% (measured) co-occurs this week with 4 cited news reports (Libya Herald, libyaobserver.ly, New York Post, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Gibraltar Strait transit change of -27.6% (measured) co-occurs this week with 4 cited news reports (IndexBox, engine.online, Goodreturns, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "83f3a4b9815543a5"
+      "flag_id": "633adc2c30144048"
     },
     {
-      "text": "Baku Port activity change of 243.9% (measured) co-occurs this week with 4 cited news reports (Caliber.Az, Apa.az, Report.az, \u2026) \u2014 possibly-related context, never a stated cause.",
-      "cites": [
-        "flags",
-        "news"
-      ],
-      "section": "connection",
-      "flag_id": "bf09e74467f009ce"
-    },
-    {
-      "text": "Cited context this week: 161 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 177 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"
