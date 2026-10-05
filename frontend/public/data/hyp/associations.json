@@ -5,9 +5,9 @@
   "q": 0.1,
   "counts": {
     "tested": 3927,
-    "significant": 872,
-    "expected_false": 87.2,
-    "truncated_from_display": 832
+    "significant": 898,
+    "expected_false": 89.8,
+    "truncated_from_display": 858
   },
   "items": [
     {
@@ -75,7 +75,7 @@
       "layer_b": "signal:CEU4348400001",
       "lag": 2,
       "method": "lead_lag",
-      "effect_size": -0.82,
+      "effect_size": -0.818,
       "p": 0.0,
       "n": 34,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
@@ -141,6 +141,16 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
+      "layer_a": "signal:CES4348400001",
+      "layer_b": "signal:MANEMP",
+      "lag": -1,
+      "method": "lead_lag",
+      "effect_size": 0.788,
+      "p": 0.0,
+      "n": 35,
+      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
+    },
+    {
       "layer_a": "signal:PNICKUSDM",
       "layer_b": "signal:PSOYBUSDM",
       "lag": -2,
@@ -148,6 +158,16 @@
       "effect_size": 0.785,
       "p": 0.0,
       "n": 34,
+      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
+    },
+    {
+      "layer_a": "signal:CES4348400001",
+      "layer_b": "signal:MANEMP",
+      "lag": 0,
+      "method": "lead_lag",
+      "effect_size": 0.783,
+      "p": 0.0,
+      "n": 36,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
@@ -171,13 +191,13 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:CES4348400001",
-      "layer_b": "signal:PWHEAMTUSDM",
-      "lag": -1,
+      "layer_a": "signal:CEU4348400001",
+      "layer_b": "signal:PCU493110493110",
+      "lag": 1,
       "method": "lead_lag",
-      "effect_size": 0.758,
+      "effect_size": -0.756,
       "p": 0.0,
-      "n": 36,
+      "n": 34,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
@@ -191,26 +211,6 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:CEU4348400001",
-      "layer_b": "signal:PCU493110493110",
-      "lag": 1,
-      "method": "lead_lag",
-      "effect_size": -0.751,
-      "p": 0.0,
-      "n": 35,
-      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
-    },
-    {
-      "layer_a": "signal:AISRSA",
-      "layer_b": "signal:PMAIZMTUSDM",
-      "lag": 0,
-      "method": "lead_lag",
-      "effect_size": -0.746,
-      "p": 0.0,
-      "n": 36,
-      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
-    },
-    {
       "layer_a": "signal:MNFCTRIRSA",
       "layer_b": "signal:PSOYBUSDM",
       "lag": -3,
@@ -221,11 +221,11 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:CEU4300000001",
-      "layer_b": "signal:CEU4348400001",
-      "lag": 1,
+      "layer_a": "signal:CES4348400001",
+      "layer_b": "signal:PWHEAMTUSDM",
+      "lag": -1,
       "method": "lead_lag",
-      "effect_size": -0.733,
+      "effect_size": 0.741,
       "p": 0.0,
       "n": 35,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
@@ -236,6 +236,16 @@
       "lag": 0,
       "method": "lead_lag",
       "effect_size": -0.733,
+      "p": 0.0,
+      "n": 35,
+      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
+    },
+    {
+      "layer_a": "signal:CEU4300000001",
+      "layer_b": "signal:CEU4348400001",
+      "lag": 1,
+      "method": "lead_lag",
+      "effect_size": -0.732,
       "p": 0.0,
       "n": 35,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
@@ -281,16 +291,6 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:CES4348400001",
-      "layer_b": "signal:PWHEAMTUSDM",
-      "lag": 0,
-      "method": "lead_lag",
-      "effect_size": 0.719,
-      "p": 0.0,
-      "n": 35,
-      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
-    },
-    {
       "layer_a": "signal:PCU481111481111",
       "layer_b": "signal:PWHEAMTUSDM",
       "lag": 1,
@@ -301,13 +301,13 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:AISRSA",
-      "layer_b": "signal:PMAIZMTUSDM",
-      "lag": -1,
+      "layer_a": "signal:MANEMP",
+      "layer_b": "signal:PWHEAMTUSDM",
+      "lag": -2,
       "method": "lead_lag",
-      "effect_size": -0.714,
+      "effect_size": 0.715,
       "p": 0.0,
-      "n": 35,
+      "n": 36,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
@@ -321,16 +321,6 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
-      "layer_a": "signal:AISRSA",
-      "layer_b": "signal:PMAIZMTUSDM",
-      "lag": 1,
-      "method": "lead_lag",
-      "effect_size": -0.712,
-      "p": 0.0,
-      "n": 35,
-      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
-    },
-    {
       "layer_a": "signal:INDPRO",
       "layer_b": "signal:RETAILIRSA",
       "lag": 0,
@@ -338,6 +328,16 @@
       "effect_size": -0.712,
       "p": 0.0,
       "n": 35,
+      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
+    },
+    {
+      "layer_a": "signal:CES4348400001",
+      "layer_b": "signal:PWHEAMTUSDM",
+      "lag": 0,
+      "method": "lead_lag",
+      "effect_size": 0.711,
+      "p": 0.0,
+      "n": 34,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
@@ -371,6 +371,16 @@
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     },
     {
+      "layer_a": "signal:CES4348400001",
+      "layer_b": "signal:PWHEAMTUSDM",
+      "lag": -2,
+      "method": "lead_lag",
+      "effect_size": 0.703,
+      "p": 0.0,
+      "n": 36,
+      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
+    },
+    {
       "layer_a": "signal:INDPRO",
       "layer_b": "signal:PCU493110493110",
       "lag": 3,
@@ -398,16 +408,6 @@
       "effect_size": -0.7,
       "p": 0.0,
       "n": 33,
-      "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
-    },
-    {
-      "layer_a": "signal:ISRATIO",
-      "layer_b": "signal:RETAILIRSA",
-      "lag": 1,
-      "method": "lead_lag",
-      "effect_size": 0.699,
-      "p": 0.0,
-      "n": 35,
       "confounder_note": "Measured signals co-move with the global business cycle / aggregate demand; this is co-movement, NOT evidence either series drives the other. Association only, never a cause."
     }
   ]
