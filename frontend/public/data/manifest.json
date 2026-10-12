@@ -1,9 +1,9 @@
 {
-  "version": 55,
-  "as_of": "2026-09-27",
-  "generated_at": "2026-10-05T07:04:56+00:00",
+  "version": 56,
+  "as_of": "2026-10-04",
+  "generated_at": "2026-10-12T07:07:08+00:00",
   "source": "IMF PortWatch \u2014 daily granularity, refreshed weekly",
-  "flag_count": 342,
+  "flag_count": 396,
   "chokepoints": 28,
   "ports": 2065,
   "lanes": 10,
@@ -11,13 +11,13 @@
     "verdict": "pass",
     "runs": [
       {
-        "lineage_run_id": "stg_chokepoint_daily-2026-09-27-r4844",
+        "lineage_run_id": "stg_chokepoint_daily-2026-10-04-r4844",
         "verdict": "pass",
         "rows_promoted": 4844,
         "checks_run": 4
       },
       {
-        "lineage_run_id": "stg_port_daily-2026-09-25-r353115",
+        "lineage_run_id": "stg_port_daily-2026-10-02-r353115",
         "verdict": "pass",
         "rows_promoted": 353115,
         "checks_run": 4
@@ -31,37 +31,37 @@
     },
     "news": {
       "present": true,
-      "kb": 288.4,
-      "generated_at": "2026-10-05T07:04:40+00:00"
+      "kb": 340.1,
+      "generated_at": "2026-10-12T07:06:52+00:00"
     },
     "disruptions": {
       "present": true,
       "kb": 1.8,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "weather": {
       "present": true,
       "kb": 0.6,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "gatun": {
       "present": true,
       "kb": 7.8,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "news_geo": {
       "present": true,
-      "kb": 86.1,
-      "generated_at": "2026-10-05"
+      "kb": 85.8,
+      "generated_at": "2026-10-12"
     },
     "quakes": {
       "present": true,
-      "kb": 39.8,
-      "generated_at": "2026-10-05"
+      "kb": 50.0,
+      "generated_at": "2026-10-12"
     },
     "timeseries": {
       "present": true,
-      "kb": 213.6
+      "kb": 239.8
     },
     "ports_lookup": {
       "present": true,
@@ -69,98 +69,98 @@
     },
     "market": {
       "present": true,
-      "kb": 2.9,
-      "generated_at": "2026-10-05T07:04:44+00:00"
+      "kb": 2.6,
+      "generated_at": "2026-10-12T07:06:57+00:00"
     },
     "stress": {
       "present": true,
       "kb": 4.5,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "world": {
       "present": true,
       "kb": 2.0,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "events": {
       "present": true,
-      "kb": 19.2,
-      "generated_at": "2026-10-05"
+      "kb": 19.3,
+      "generated_at": "2026-10-12"
     },
     "brief": {
       "present": true,
       "kb": 1.4,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "commodities": {
       "present": true,
       "kb": 8.1,
-      "generated_at": "2026-10-05T07:04:45+00:00"
+      "generated_at": "2026-10-12T07:06:57+00:00"
     },
     "streamflow": {
       "present": true,
       "kb": 1.5,
-      "generated_at": "2026-10-05T07:04:46+00:00"
+      "generated_at": "2026-10-12T07:06:58+00:00"
     },
     "space_weather": {
       "present": true,
       "kb": 1.3,
-      "generated_at": "2026-10-05T07:04:46+00:00"
+      "generated_at": "2026-10-12T07:06:58+00:00"
     },
     "eonet": {
       "present": true,
       "kb": 53.5,
-      "generated_at": "2026-10-05T07:04:46+00:00"
+      "generated_at": "2026-10-12T07:06:58+00:00"
     },
     "marine": {
       "present": true,
       "kb": 1.7,
-      "generated_at": "2026-10-05T07:04:47+00:00"
+      "generated_at": "2026-10-12T07:06:59+00:00"
     },
     "macro": {
       "present": true,
       "kb": 8.0,
-      "generated_at": "2026-10-05T07:04:48+00:00"
+      "generated_at": "2026-10-12T07:07:00+00:00"
     },
     "metals": {
       "present": true,
       "kb": 10.5,
-      "generated_at": "2026-10-05T07:04:49+00:00"
+      "generated_at": "2026-10-12T07:07:02+00:00"
     },
     "freight_rate": {
       "present": true,
       "kb": 6.8,
-      "generated_at": "2026-10-05T07:04:51+00:00"
+      "generated_at": "2026-10-12T07:07:04+00:00"
     },
     "slack": {
       "present": true,
       "kb": 6.9,
-      "generated_at": "2026-10-05T07:04:52+00:00"
+      "generated_at": "2026-10-12T07:07:05+00:00"
     },
     "labor": {
       "present": true,
       "kb": 5.6,
-      "generated_at": "2026-10-05T07:04:54+00:00"
+      "generated_at": "2026-10-12T07:07:06+00:00"
     },
     "tides": {
       "present": true,
       "kb": 1.7,
-      "generated_at": "2026-10-05T07:04:50+00:00"
+      "generated_at": "2026-10-12T07:07:02+00:00"
     },
     "ships": {
       "present": true,
-      "kb": 7.0,
-      "generated_at": "2026-09-28T07:02:06+00:00"
+      "kb": 8.6,
+      "generated_at": "2026-10-05T07:06:20+00:00"
     },
     "wind": {
       "present": true,
       "kb": 0.6,
-      "generated_at": "2026-10-05"
+      "generated_at": "2026-10-12"
     },
     "ai_briefing": {
       "present": true,
-      "kb": 2.7,
-      "generated_at": "2026-09-28T07:00:52+00:00"
+      "kb": 3.0,
+      "generated_at": "2026-10-05T07:05:07+00:00"
     }
   }
 }
