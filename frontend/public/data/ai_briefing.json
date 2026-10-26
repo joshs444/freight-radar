@@ -2,13 +2,13 @@
   "tier": "DERIVED",
   "metric": null,
   "agent_model": "deterministic template reasoner (no model in the loop)",
-  "generated_at": "2026-10-19T07:03:28+00:00",
-  "as_of": "2026-10-11",
+  "generated_at": "2026-10-26T07:07:01+00:00",
+  "as_of": "2026-10-18",
   "method": "An offline deterministic step reads the published store, grounds every claim through verify(), and the briefing is gate-validated (attribution + abstention + the language firewall) before it ships. Selection, phrasing (fixed templates), and gating are all deterministic Python \u2014 no model anywhere in the loop.",
   "disclaimer": "DERIVED \u2014 templated commentary computed over the cited facts; no model wrote this. Every claim traces to a layer; co-occurrence is association, never causation.",
   "claims": [
     {
-      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 39.3 (label: high), with 386 ports and chokepoints carrying an FDR-significant disruption flag.",
+      "text": "This week \u2014 the Global Ocean Freight Stress Index reads 42.7 (label: high), with 347 ports and chokepoints carrying an FDR-significant disruption flag.",
       "cites": [
         "stress",
         "flags"
@@ -30,14 +30,14 @@
       "section": "spine"
     },
     {
-      "text": "At the Panama Canal, the Gatun lake level reads 85.8 ft, in the 52.9th percentile all-time.",
+      "text": "At the Panama Canal, the Gatun lake level reads 86.31 ft, in the 64.3th percentile all-time.",
       "cites": [
         "gatun"
       ],
       "section": "spine"
     },
     {
-      "text": "Kerch Strait transit change of -99.1% (measured) co-occurs this week with 4 cited news reports (Britannica, Baird Maritime, \u0413\u043e\u0432\u043e\u0440\u0438\u0442 \u041d\u0435\u041c\u043e\u0441\u043a\u0432\u0430, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Kerch Strait transit change of -99.1% (measured) co-occurs this week with 4 cited news reports (\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0456 \u041d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u0456 \u041d\u043e\u0432\u0438\u043d\u0438 (\u0423\u041d\u041d), Baird Maritime, TradeWinds News, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
@@ -46,25 +46,16 @@
       "flag_id": "3c6262bd76a15255"
     },
     {
-      "text": "Strait of Hormuz transit change of -63.1% (measured) co-occurs this week with 4 cited news reports (Al Jazeera, NBC News, New York Post, \u2026) \u2014 possibly-related context, never a stated cause.",
+      "text": "Jorf Lasfar activity change of -75.4% (measured) co-occurs this week with 4 cited news reports (Quantum Commodity Intelligence, Port Technology, Business Insider Africa, \u2026) \u2014 possibly-related context, never a stated cause.",
       "cites": [
         "flags",
         "news"
       ],
       "section": "connection",
-      "flag_id": "c03c46b0a94df286"
+      "flag_id": "774965e363be1ee3"
     },
     {
-      "text": "Freetown activity change of 460.0% (measured) co-occurs this week with 4 cited news reports (Trinidad Express Newspapers, Britannica, \u2026) \u2014 possibly-related context, never a stated cause.",
-      "cites": [
-        "flags",
-        "news"
-      ],
-      "section": "connection",
-      "flag_id": "0fea9a7c8550b206"
-    },
-    {
-      "text": "Cited context this week: 153 USGS earthquakes and 250 NASA EONET natural events near the chain.",
+      "text": "Cited context this week: 248 USGS earthquakes and 250 NASA EONET natural events near the chain.",
       "cites": [
         "quakes",
         "eonet"
